@@ -761,6 +761,9 @@ $("#aiSavePhoto").onclick = ()=>{
 $("#aiSubmitJson").onclick = ()=>{
   let raw=$("#aiJsonBox").value.trim();
   if(!raw){ toast("Paste the AI's JSON first"); return; }
+  // normalize smart/curly quotes -> straight quotes (phones & some AIs use these)
+  raw = raw.replace(/[\u201C\u201D\u201E\u201F\u2033\u2036]/g,'"')
+           .replace(/[\u2018\u2019\u201A\u201B\u2032\u2035]/g,"'");
   // tolerate code fences / extra text — grab the first {...}
   const m=raw.match(/\{[\s\S]*\}/); if(m) raw=m[0];
   let obj; try{ obj=JSON.parse(raw); }catch{ toast("That's not valid JSON"); return; }
@@ -1078,14 +1081,14 @@ let WIKI=null, wikiByName=null;
 async function loadWiki(){
   if(WIKI) return WIKI;
   try{
-    const r=await fetch("./wiki_all.json"); if(!r.ok) throw 0;
+    const r=await fetch("./wiki_species.json"); if(!r.ok) throw new Error("HTTP "+r.status);
     WIKI=await r.json();
-    // index by both en and fi common name, lowercased, for lookup
     wikiByName={};
     WIKI.forEach(w=>{
       [w.name_en, w.name_fi, w.name].forEach(n=>{ if(n) wikiByName[n.toLowerCase()]=w; });
     });
-  }catch{ WIKI=[]; wikiByName={}; }
+    console.log("wiki loaded:", WIKI.length, "species profiles");
+  }catch(e){ console.error("wiki failed to load:", e.message); WIKI=[]; wikiByName={}; }
   return WIKI;
 }
 async function populateWiki(key){
