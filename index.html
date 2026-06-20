@@ -1097,14 +1097,22 @@ async function populateWiki(key){
   // names
   $("#dSci").textContent = w?.sci || "";
   $("#dFi").textContent  = w?.name_fi && w.name_fi.toLowerCase()!==key.toLowerCase() ? w.name_fi : "";
-  // size stats
+  // size stats — data may give separate length/wingspan, or one combined string
   const size = w?.size || {};
-  const len = size.length || size.wingspan_or_length || "—";
-  const wing= size.wingspan || "—";
-  const wt  = size.weight || "—";
-  if(w && (len!=="—"||wing!=="—"||wt!=="—")){
+  let len = size.length || "", wing = size.wingspan || "", wt = size.weight || "—";
+  if(!len && !wing && size.wingspan_or_length){
+    // combined like "50–65 cm length, 81–98 cm wingspan" — split on the comma
+    const s = size.wingspan_or_length;
+    const lm = s.match(/([\d.,–-]+\s*cm)\s*(?:length)?/i);
+    const wm = s.match(/([\d.,–-]+\s*cm)\s*wingspan/i);
+    if(wm){ wing = wm[1]; len = lm && lm[1]!==wm[1] ? lm[1] : ""; }
+    else { len = s; }   // couldn't parse — show whole thing as length
+  }
+  if(w && (len||wing||wt!=="—")){
     $("#dStats").style.display="flex";
-    $("#dLen").textContent=len; $("#dWing").textContent=wing; $("#dWeight").textContent=wt;
+    $("#dLen").textContent = len||"—";
+    $("#dWing").textContent = wing||"—";
+    $("#dWeight").textContent = wt;
   } else $("#dStats").style.display="none";
   // unique summary (always visible)
   const sum = w?.summary?.en || w?.summary || w?.summary_2s || w?.extract || "";
