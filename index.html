@@ -428,9 +428,10 @@ let model_session=null, mode="photo", stream=null, me=null, log=null, pending=nu
 /* ============ STORAGE — Supabase-backed, offline localStorage mirror ============
    Same sget/sset interface the app used, but durable + synced. Writes mirror
    to localStorage instantly (offline-safe) and push to Supabase when online. */
-const LK='fieldmark_cache';
-function lget(k){ try{return JSON.parse(localStorage.getItem(LK)||'{}')[k]??null;}catch{return null;} }
-function lset(k,v){ try{const c=JSON.parse(localStorage.getItem(LK)||'{}');c[k]=v;localStorage.setItem(LK,JSON.stringify(c));}catch{} }
+// cache is namespaced PER USER so switching accounts never bleeds data.
+function cacheKey(){ return 'fieldmark_cache_' + (session?.user?.id || 'anon'); }
+function lget(k){ try{return JSON.parse(localStorage.getItem(cacheKey())||'{}')[k]??null;}catch{return null;} }
+function lset(k,v){ try{const ck=cacheKey();const c=JSON.parse(localStorage.getItem(ck)||'{}');c[k]=v;localStorage.setItem(ck,JSON.stringify(c));}catch{} }
 
 async function sget(k){
   const local=lget(k);
@@ -488,7 +489,12 @@ $("#gSignin").onclick = async ()=>{
     session=data.session; enterApp();
   }catch(e){ $("#gateErr").textContent="Sign-in failed: "+e.message; }
 };
-$("#signOutBtn").onclick = async ()=>{ await sb.auth.signOut(); location.reload(); };
+$("#signOutBtn").onclick = async ()=>{
+  await sb.auth.signOut();
+  // wipe any cached app data so the next user starts clean
+  try{ Object.keys(localStorage).filter(k=>k.startsWith('fieldmark_cache')).forEach(k=>localStorage.removeItem(k)); }catch{}
+  location.reload();
+};
 
 async function enterApp(){
   $("#gate").style.display="none";
