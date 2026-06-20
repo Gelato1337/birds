@@ -6,7 +6,7 @@ rejoins training.
 Run on the machine that has the dataset (your dev box, then sync to LUMI):
 
   pip install supabase
-  export SUPABASE_URL="https://.supabase.co"
+  export SUPABASE_URL="https://ljuendcuoruxorjdcdmu.supabase.co"
   export SUPABASE_KEY="<secret key sb_secret_...>"
   python pull_labels.py
 
@@ -31,15 +31,18 @@ print(f"{len(rows)} labels in Supabase")
 
 wrote = 0
 moved = 0
+noise = 0
 for r in rows:
     stem, split, lines = r["stem"], r["split"], r["lines"]
+    src = UNUSED / f"{stem}.jpg"
     if not lines:
+        # NOISE marker — no animal. Leave the image in _unused (out of training).
+        noise += 1
         continue
     lp = OUT / "labels" / split / f"{stem}.txt"
     lp.parent.mkdir(parents=True, exist_ok=True)
     lp.write_text("\n".join(lines) + "\n")
     wrote += 1
-    src = UNUSED / f"{stem}.jpg"
     dst = OUT / "images" / split / f"{stem}.jpg"
     if src.exists():
         dst.parent.mkdir(parents=True, exist_ok=True)
@@ -47,5 +50,4 @@ for r in rows:
         moved += 1
 
 print(f"wrote {wrote} label files; moved {moved} images back into training")
-print("now sync dataset/ to LUMI and retrain.")
-print("tip: rsync -av dataset/ lumi:/path/to/birds/dataset/")
+print(f"{noise} images marked NOISE (left in _unused, excluded from training)")

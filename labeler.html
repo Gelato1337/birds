@@ -87,18 +87,24 @@ document.getElementById('signinBtn').onclick = async ()=>{
     document.getElementById('loadBtn').disabled=false;
   }catch(e){ el.textContent='Sign-in failed: '+e.message; }
 };
-// push one label to Supabase (called from commit). Safe if offline — localStorage still holds it.
+// push one label to Supabase. lines=[] means NOISE (no animal) — still recorded
+// so the image is marked done and won't be served again.
 window._pushLabel = async (stem, split, lines)=>{
-  if(!window._session) return;
-  try{ await window._sb.from('labels').upsert(
-    { stem, split, lines, updated_at:new Date().toISOString() },
-    { onConflict:'stem' }); }catch(e){ console.warn('label sync failed (kept local):', e.message); }
+  if(!window._session){ console.warn('not signed in — label not synced'); return; }
+  try{
+    const { error } = await window._sb.from('labels').upsert(
+      { stem, split, lines, updated_at:new Date().toISOString() },
+      { onConflict:'stem' });
+    if(error){ console.error('label sync FAILED:', error.message); }
+    else { console.log('synced', stem, lines.length?'('+lines.length+' boxes)':'(noise)'); }
+  }catch(e){ console.error('label sync threw:', e.message); }
 };
-// pull already-labeled stems so we don't re-serve them to either labeler
+// pull already-labeled stems (boxes OR noise) so neither labeler re-serves them
 window._labeledStems = async ()=>{
   if(!window._session) return [];
-  try{ const {data}=await window._sb.from('labels').select('stem');
-    return (data||[]).map(r=>r.stem); }catch{ return []; }
+  try{ const {data,error}=await window._sb.from('labels').select('stem');
+    if(error){ console.error('labeledStems failed:', error.message); return []; }
+    return (data||[]).map(r=>r.stem); }catch(e){ console.error(e); return []; }
 };
 </script>
 <!-- end Supabase block -->
@@ -330,19 +336,26 @@ function renderBoxes(){
 }
 
 // ---------- navigation / saving ----------
-function commit(){
+// commit(markNoise): if there are boxes, save+push them. If no boxes AND
+// markNoise is true (user pressed Skip), record an explicit NOISE marker so
+// the image is done and never re-served. Plain next with no boxes does nothing.
+function commit(markNoise=false){
   const m=misses[idx];
   if(boxes.length){
     const lines = boxes.map(b=>`${b.cls} ${(b.x+b.w/2).toFixed(6)} ${(b.y+b.h/2).toFixed(6)} ${b.w.toFixed(6)} ${b.h.toFixed(6)}`);
     saved[m.stem] = {split:m.split, boxes:[...boxes], lines};
+    persist();
+    window._pushLabel(m.stem, m.split, lines);
+  } else if(markNoise){
+    saved[m.stem] = {split:m.split, boxes:[], lines:[], noise:true};
+    persist();
+    window._pushLabel(m.stem, m.split, []);   // empty lines = noise, marks done
   } else {
-    delete saved[m.stem];   // no box = skip
+    persist();
   }
-  persist();   // autosave to localStorage every commit — crash-safe
-  if(boxes.length){ const sv=saved[m.stem]; window._pushLabel(m.stem, sv.split, sv.lines); }
 }
-$("#nextBtn").onclick=()=>{ commit(); if(idx<misses.length-1){idx++; load();} else { alert("Reached the end. Export when ready."); } };
-$("#skipBtn").onclick=()=>{ boxes=[]; commit(); if(idx<misses.length-1){idx++; load();} };
+$("#nextBtn").onclick=()=>{ commit(); if(idx<misses.length-1){idx++; load();} else { alert("Reached the end of this batch."); } };
+$("#skipBtn").onclick=()=>{ boxes=[]; commit(true); if(idx<misses.length-1){idx++; load();} };
 $("#prevBtn").onclick=()=>{ commit(); if(idx>0){idx--; load();} };
 
 // ---------- export ----------
