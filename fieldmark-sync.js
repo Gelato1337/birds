@@ -20,9 +20,8 @@
 // =====================================================================
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-const SUPABASE_URL = 'https://ljuendcuoruxorjdcdmu.supabase.co';   // <-- fill in
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqdWVuZGN1b3J1eG9yamRjZG11Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE5MjI2NTUsImV4cCI6MjA5NzQ5ODY1NX0.vWksX51Z3VK7UyWnQLg98RsY8f7gmsRw8DZqfMRFfWk';          // <-- fill in
-
+const SUPABASE_URL = 'https://ljuendcuoruxorjdcdmu.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_ZPJYzhstIt9ccIv-vm7Mhg_pMssWP18';
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let session = null;
 let online = navigator.onLine;
