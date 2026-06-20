@@ -48,11 +48,60 @@
 
 <div class="setup" id="setup">
   <h2>Hand-label the misses</h2>
-  <p>Serve your project folder over http (<code>python -m http.server 8000</code>) and open this tool from there, so it can load the images.</p>
-  <p>Point it at <code>dataset/misses.json</code> (written by <code>make_boxes.py</code>). It loads each image MegaDetector couldn't box, you draw tight boxes around the animal, and it exports YOLO label files.</p>
-  <input class="field" id="missesPath" value="dataset/misses.json">
-  <button class="btn" id="loadBtn">Load misses</button>
+  <p>Sign in first (shared account), then load a batch. Boxes you draw sync to
+  Supabase so they reach the training machine — and so you and your partner
+  don't label the same images.</p>
+  <input class="field" id="email" placeholder="email">
+  <input class="field" id="pw" type="password" placeholder="password">
+  <button class="btn" id="signinBtn">Sign in</button>
+  <div class="hint" id="authState" style="font-size:12px;color:var(--ink-soft);margin:8px 0"></div>
+  <hr style="border:0;border-top:1px solid var(--line);margin:14px 0">
+  <p>Loads the unlabeled images from <code>misses_index.json</code> (the list
+  written by <code>upload_misses.py</code>; images come from Supabase Storage).
+  Draw a tight box on each animal — boxes sync to Supabase live.</p>
+  <input class="field" id="missesPath" value="misses_index.json">
+  <input class="field" id="batchSize" type="number" value="200" placeholder="batch size (0 = all)">
+  <button class="btn" id="loadBtn" disabled>Load next batch</button>
   <p style="margin-top:14px" id="setupErr"></p>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+// fill these with the SAME values as fieldmark-sync.js
+const SUPABASE_URL = 'https://ljuendcuoruxorjdcdmu.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_ZPJYzhstIt9ccIv-vm7Mhg_pMssWP18';
+window._sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+window._session = null;
+(async ()=>{ const {data}=await window._sb.auth.getSession(); window._session=data.session;
+  const el=document.getElementById('authState');
+  if(window._session){ el.textContent='Signed in.'; document.getElementById('loadBtn').disabled=false; }
+})();
+document.getElementById('signinBtn').onclick = async ()=>{
+  const email=document.getElementById('email').value.trim();
+  const pw=document.getElementById('pw').value;
+  const el=document.getElementById('authState');
+  try{
+    const {data,error}=await window._sb.auth.signInWithPassword({email,password:pw});
+    if(error) throw error;
+    window._session=data.session; el.textContent='Signed in.';
+    document.getElementById('loadBtn').disabled=false;
+  }catch(e){ el.textContent='Sign-in failed: '+e.message; }
+};
+// push one label to Supabase (called from commit). Safe if offline — localStorage still holds it.
+window._pushLabel = async (stem, split, lines)=>{
+  if(!window._session) return;
+  try{ await window._sb.from('labels').upsert(
+    { stem, split, lines, updated_at:new Date().toISOString() },
+    { onConflict:'stem' }); }catch(e){ console.warn('label sync failed (kept local):', e.message); }
+};
+// pull already-labeled stems so we don't re-serve them to either labeler
+window._labeledStems = async ()=>{
+  if(!window._session) return [];
+  try{ const {data}=await window._sb.from('labels').select('stem');
+    return (data||[]).map(r=>r.stem); }catch{ return []; }
+};
+</script>
+<!-- end Supabase block -->
 </div>
 
 <main id="workspace" style="display:none">
@@ -103,7 +152,14 @@ $("#loadBtn").onclick = async ()=>{
   try{
     const r = await fetch(path);
     if(!r.ok) throw new Error("HTTP "+r.status);
-    misses = await r.json();
+    const raw = await r.json();
+    // new shape: {base_url, images:[{stem,file}]}  (images live in Supabase Storage)
+    if(raw && raw.images && raw.base_url){
+      window._imgBase = raw.base_url;
+      misses = raw.images.map(it=>({stem:it.stem, file:it.file, split:'train',
+        species:'(unlabeled)', coarse:'bird',
+        path: raw.base_url + it.file}));
+    } else { misses = raw; window._imgBase = ''; }
     if(!misses.length){ $("#setupErr").textContent="misses.json is empty — nothing to label."; return; }
 
     // restore any saved progress from a previous session (survives crashes)
@@ -113,7 +169,9 @@ $("#loadBtn").onclick = async ()=>{
     // PRIORITIZE: order misses so the LEAST-labeled species come first.
     // count how many of each species are still unlabeled, sort those species
     // to the front so the worst-covered animals get done first.
-    const doneStems = new Set(Object.keys(saved));
+    let serverDone = [];
+    try{ serverDone = await window._labeledStems(); }catch{}
+    const doneStems = new Set([...Object.keys(saved), ...serverDone]);
     const remaining = misses.filter(m=>!doneStems.has(m.stem));
     const speciesRemaining = {};
     remaining.forEach(m=>{ speciesRemaining[m.species]=(speciesRemaining[m.species]||0)+1; });
@@ -121,6 +179,10 @@ $("#loadBtn").onclick = async ()=>{
     misses = [...remaining].sort((a,b)=>
       (speciesRemaining[b.species]-speciesRemaining[a.species]) ||
       a.species.localeCompare(b.species));
+
+    // BATCH: only hand you a manageable chunk this session (least-covered first).
+    const batchSize = parseInt($("#batchSize").value) || 0;
+    if(batchSize > 0) misses = misses.slice(0, batchSize);
 
     const totalDone = doneStems.size;
     $("#setup").style.display="none"; $("#workspace").style.display="flex";
@@ -162,11 +224,18 @@ function fit(){
 function draw(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
   if(img.complete && img.naturalWidth) ctx.drawImage(img,0,0,canvas.width,canvas.height);
-  boxes.forEach(b=>{
+  boxes.forEach((b,bi)=>{
+    const bx=b.x*canvas.width, by=b.y*canvas.height, bw=b.w*canvas.width, bh=b.h*canvas.height;
     ctx.lineWidth=2; ctx.strokeStyle=COL[b.cls];
-    ctx.strokeRect(b.x*canvas.width, b.y*canvas.height, b.w*canvas.width, b.h*canvas.height);
-    ctx.fillStyle=COL[b.cls]; ctx.fillRect(b.x*canvas.width, b.y*canvas.height-16, 52, 16);
-    ctx.fillStyle="#fff"; ctx.font="600 11px Inter"; ctx.fillText(CLASSES[b.cls], b.x*canvas.width+4, b.y*canvas.height-4);
+    ctx.strokeRect(bx, by, bw, bh);
+    ctx.fillStyle=COL[b.cls]; ctx.fillRect(bx, by-16, 52, 16);
+    ctx.fillStyle="#fff"; ctx.font="600 11px Inter"; ctx.fillText(CLASSES[b.cls], bx+4, by-4);
+    // corner resize handles (draggable circles)
+    cornerPoints(b).forEach(c=>{
+      ctx.beginPath(); ctx.arc(c.x, c.y, HANDLE, 0, 7);
+      ctx.fillStyle="#fff"; ctx.fill();
+      ctx.lineWidth=2; ctx.strokeStyle=COL[b.cls]; ctx.stroke();
+    });
   });
   if(drawing && start && cur){
     const x=Math.min(start.x,cur.x), y=Math.min(start.y,cur.y), w=Math.abs(cur.x-start.x), h=Math.abs(cur.y-start.y);
@@ -175,17 +244,66 @@ function draw(){
   }
 }
 
-// ---------- drawing ----------
-let cur=null;
+const HANDLE=7;  // corner circle radius (px)
+// the four corners of a box, in canvas pixels, tagged with which corner
+function cornerPoints(b){
+  const x=b.x*canvas.width, y=b.y*canvas.height, w=b.w*canvas.width, h=b.h*canvas.height;
+  return [
+    {x:x,    y:y,    cx:"l", cy:"t"},
+    {x:x+w,  y:y,    cx:"r", cy:"t"},
+    {x:x,    y:y+h,  cx:"l", cy:"b"},
+    {x:x+w,  y:y+h,  cx:"r", cy:"b"},
+  ];
+}
+
+// ---------- drawing + resizing ----------
+let cur=null, resizing=null;  // resizing = {box, cx, cy} when dragging a corner
 function pos(e){
   const r=canvas.getBoundingClientRect();
   const cx=(e.touches?e.touches[0].clientX:e.clientX)-r.left;
   const cy=(e.touches?e.touches[0].clientY:e.clientY)-r.top;
   return {x:Math.max(0,Math.min(canvas.width,cx)), y:Math.max(0,Math.min(canvas.height,cy))};
 }
-function down(e){ e.preventDefault(); drawing=true; start=pos(e); cur=start; }
-function move(e){ if(!drawing)return; e.preventDefault(); cur=pos(e); draw(); }
+// is point p near a corner handle of any box? return {box,cx,cy} or null
+function hitHandle(p){
+  for(let i=boxes.length-1;i>=0;i--){       // topmost first
+    for(const c of cornerPoints(boxes[i])){
+      if(Math.hypot(p.x-c.x, p.y-c.y) <= HANDLE+5)
+        return {box:boxes[i], cx:c.cx, cy:c.cy};
+    }
+  }
+  return null;
+}
+function down(e){
+  e.preventDefault();
+  const p=pos(e);
+  const grab=hitHandle(p);
+  if(grab){ resizing=grab; return; }   // grabbed a corner -> resize, don't draw new
+  drawing=true; start=p; cur=p;
+}
+function move(e){
+  if(resizing){
+    e.preventDefault();
+    const p=pos(e);
+    const b=resizing.box;
+    // current edges in canvas px
+    let x1=b.x*canvas.width, y1=b.y*canvas.height;
+    let x2=x1+b.w*canvas.width, y2=y1+b.h*canvas.height;
+    // move the grabbed corner's edges to the pointer
+    if(resizing.cx==="l") x1=p.x; else x2=p.x;
+    if(resizing.cy==="t") y1=p.y; else y2=p.y;
+    const nx=Math.min(x1,x2), ny=Math.min(y1,y2), nw=Math.abs(x2-x1), nh=Math.abs(y2-y1);
+    b.x=nx/canvas.width; b.y=ny/canvas.height; b.w=nw/canvas.width; b.h=nh/canvas.height;
+    // if you drag past the opposite edge, the grabbed corner flips side
+    if(x2<x1) resizing.cx = resizing.cx==="l"?"r":"l";
+    if(y2<y1) resizing.cy = resizing.cy==="t"?"b":"t";
+    draw();
+    return;
+  }
+  if(!drawing)return; e.preventDefault(); cur=pos(e); draw();
+}
 function up(e){
+  if(resizing){ resizing=null; e.preventDefault(); draw(); renderBoxes(); return; }
   if(!drawing)return; e.preventDefault(); drawing=false;
   const a=start, b=cur||start;
   const x=Math.min(a.x,b.x)/canvas.width, y=Math.min(a.y,b.y)/canvas.height;
@@ -221,6 +339,7 @@ function commit(){
     delete saved[m.stem];   // no box = skip
   }
   persist();   // autosave to localStorage every commit — crash-safe
+  if(boxes.length){ const sv=saved[m.stem]; window._pushLabel(m.stem, sv.split, sv.lines); }
 }
 $("#nextBtn").onclick=()=>{ commit(); if(idx<misses.length-1){idx++; load();} else { alert("Reached the end. Export when ready."); } };
 $("#skipBtn").onclick=()=>{ boxes=[]; commit(); if(idx<misses.length-1){idx++; load();} };
