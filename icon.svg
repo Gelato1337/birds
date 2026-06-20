@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#3b4724"/>
+  <rect x="56" y="56" width="400" height="400" fill="none" stroke="#e9dec6" stroke-width="10"/>
+  <!-- a simple bird-track / chevron mark, field-guide ink feel -->
+  <g fill="none" stroke="#b0832f" stroke-width="22" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M256 150 L256 360"/>
+    <path d="M256 360 L180 300"/>
+    <path d="M256 360 L332 300"/>
+    <path d="M256 245 L196 200"/>
+    <path d="M256 245 L316 200"/>
+  </g>
+  <circle cx="256" cy="130" r="20" fill="#9b3b54"/>
+</svg>

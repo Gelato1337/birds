@@ -1,0 +1,19 @@
+# ---- heavy data: never upload (regenerable / huge) ----
+dataset/
+dataset.zip
+runs/
+*.cache
+*.pt
+
+# keep yolo11n.onnx (the app needs it); ignore other onnx exports
+*.onnx
+!yolo11n.onnx
+
+# ---- local junk / secrets ----
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+.DS_Store
+.env
+.env.local
+*service*key*

@@ -1,0 +1,14 @@
+{
+  "name": "Fieldmark — wildlife logbook",
+  "short_name": "Fieldmark",
+  "description": "Log Finnish birds and mammals by photo or call.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#e9dec6",
+  "theme_color": "#3b4724",
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

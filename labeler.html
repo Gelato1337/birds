@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fieldmark · box labeler</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,900&family=Inter:wght@400;500;600&display=swap');
+  :root{--paper:#e9dec6;--paper-2:#ddd0b2;--ink:#221f17;--ink-soft:#564f3f;--olive:#5b6b3a;--olive-d:#3b4724;--line:#b6a781;--accent:#9b3b54;--gold:#b0832f;--bird:#3b6e8c;--mammal:#b5612a}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--paper);height:100vh;overflow:hidden;display:flex;flex-direction:column}
+  header{padding:12px 18px;border-bottom:2px solid var(--ink);display:flex;align-items:center;justify-content:space-between;background:var(--paper-2)}
+  h1{font-family:'Fraunces',serif;font-weight:900;font-size:20px}h1 em{font-style:italic;color:var(--olive-d)}
+  .progress{font-size:12px;color:var(--ink-soft)}.progress b{font-family:'Fraunces',serif;color:var(--ink);font-size:15px}
+  .setup{padding:40px 24px;max-width:560px;margin:0 auto;text-align:center}
+  .setup h2{font-family:'Fraunces',serif;font-weight:600;font-size:22px;margin-bottom:14px}
+  .setup p{font-size:13px;color:var(--ink-soft);line-height:1.6;margin-bottom:16px}
+  .setup code{background:var(--paper-2);padding:2px 6px;border:1px solid var(--line);font-size:12px}
+  input.field{font-family:inherit;font-size:14px;padding:10px 12px;border:1.5px solid var(--ink);background:#fff;width:100%;margin-bottom:12px}
+  .btn{background:var(--olive-d);color:var(--paper);border:1.5px solid var(--ink);padding:11px 18px;cursor:pointer;font-family:'Fraunces',serif;font-weight:600;font-size:14px}
+  .btn:hover{background:var(--olive)}.btn.ghost{background:transparent;color:var(--ink)}.btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn.danger{background:var(--accent)}
+  main{flex:1;display:flex;overflow:hidden}
+  #stage{flex:1;position:relative;background:#1a1813;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  #canvas{cursor:crosshair;max-width:100%;max-height:100%;touch-action:none}
+  aside{width:230px;flex:none;border-left:2px solid var(--ink);background:var(--paper-2);padding:16px;display:flex;flex-direction:column;gap:12px;overflow-y:auto}
+  .panel{font-size:12px}.panel h3{font-family:'Fraunces',serif;font-size:13px;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;color:var(--ink-soft)}
+  .species{font-family:'Fraunces',serif;font-weight:600;font-size:17px;text-transform:capitalize;line-height:1.2}
+  .classpick{display:flex;gap:8px}
+  .classpick button{flex:1;border:1.5px solid var(--ink);background:#fff;padding:8px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+  .classpick button.on[data-c="bird"]{background:var(--bird);color:#fff;border-color:var(--bird)}
+  .classpick button.on[data-c="mammal"]{background:var(--mammal);color:#fff;border-color:var(--mammal)}
+  .boxlist{display:flex;flex-direction:column;gap:5px;max-height:160px;overflow-y:auto}
+  .boxrow{display:flex;align-items:center;gap:7px;font-size:11px;padding:5px 7px;border:1px solid var(--line);background:#fff}
+  .boxrow .sw{width:11px;height:11px;flex:none}.boxrow .x{margin-left:auto;cursor:pointer;color:var(--accent);font-weight:700}
+  .controls{margin-top:auto;display:flex;flex-direction:column;gap:8px}
+  .controls .btn{width:100%}
+  .kbd{font-size:10.5px;color:var(--ink-soft);line-height:1.7;border-top:1px solid var(--line);padding-top:10px}
+  .kbd b{font-family:monospace;background:var(--paper);border:1px solid var(--line);padding:0 4px;color:var(--ink)}
+  .empty-note{font-size:11px;color:var(--accent);font-style:italic}
+</style>
+</head>
+<body>
+<header>
+  <h1>Box <em>labeler</em></h1>
+  <div class="progress" id="progress"></div>
+</header>
+
+<div class="setup" id="setup">
+  <h2>Hand-label the misses</h2>
+  <p>Serve your project folder over http (<code>python -m http.server 8000</code>) and open this tool from there, so it can load the images.</p>
+  <p>Point it at <code>dataset/misses.json</code> (written by <code>make_boxes.py</code>). It loads each image MegaDetector couldn't box, you draw tight boxes around the animal, and it exports YOLO label files.</p>
+  <input class="field" id="missesPath" value="dataset/misses.json">
+  <button class="btn" id="loadBtn">Load misses</button>
+  <p style="margin-top:14px" id="setupErr"></p>
+</div>
+
+<main id="workspace" style="display:none">
+  <div id="stage"><canvas id="canvas"></canvas></div>
+  <aside>
+    <div class="panel">
+      <h3>Downloaded as</h3>
+      <div class="species" id="spName">—</div>
+    </div>
+    <div class="panel">
+      <h3>Box class</h3>
+      <div class="classpick">
+        <button data-c="bird" class="on">Bird</button>
+        <button data-c="mammal">Mammal</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Boxes <span id="boxCount"></span></h3>
+      <div class="boxlist" id="boxlist"></div>
+      <div class="empty-note" id="emptyNote" style="display:none">No box = image will be skipped (excluded from training).</div>
+    </div>
+    <div class="controls">
+      <button class="btn" id="nextBtn">Save &amp; next →</button>
+      <button class="btn ghost" id="skipBtn">Skip (no animal)</button>
+      <button class="btn ghost" id="prevBtn">← Back</button>
+      <button class="btn" id="exportBtn">Export all labels</button>
+      <div class="kbd">
+        <b>drag</b> draw box · <b>D</b> delete last<br>
+        <b>B</b>/<b>M</b> bird/mammal · <b>→</b> save+next<br>
+        <b>S</b> skip · <b>←</b> back · <b>E</b> export
+      </div>
+    </div>
+  </aside>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+let misses = [], idx = 0, curClass = 0;        // 0=bird,1=mammal
+const CLASSES = ["bird","mammal"];
+const COL = ["#3b6e8c","#b5612a"];
+let img = new Image(), boxes = [], saved = {}; // saved[stem] = {split, lines:[...]}
+let drawing=false, start=null, scale=1, offX=0, offY=0;
+const canvas = $("#canvas"), ctx = canvas.getContext("2d");
+
+// ---------- load ----------
+$("#loadBtn").onclick = async ()=>{
+  const path = $("#missesPath").value.trim();
+  try{
+    const r = await fetch(path);
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    misses = await r.json();
+    if(!misses.length){ $("#setupErr").textContent="misses.json is empty — nothing to label."; return; }
+
+    // restore any saved progress from a previous session (survives crashes)
+    const stored = localStorage.getItem("fieldmark_labels");
+    if(stored){ try{ saved = JSON.parse(stored); }catch{} }
+
+    // PRIORITIZE: order misses so the LEAST-labeled species come first.
+    // count how many of each species are still unlabeled, sort those species
+    // to the front so the worst-covered animals get done first.
+    const doneStems = new Set(Object.keys(saved));
+    const remaining = misses.filter(m=>!doneStems.has(m.stem));
+    const speciesRemaining = {};
+    remaining.forEach(m=>{ speciesRemaining[m.species]=(speciesRemaining[m.species]||0)+1; });
+    // more-remaining species first; within a species keep stable order.
+    misses = [...remaining].sort((a,b)=>
+      (speciesRemaining[b.species]-speciesRemaining[a.species]) ||
+      a.species.localeCompare(b.species));
+
+    const totalDone = doneStems.size;
+    $("#setup").style.display="none"; $("#workspace").style.display="flex";
+    idx=0; load();
+    if(totalDone) toastMsg(`Resumed — ${totalDone} already labeled, ${misses.length} left.`);
+  }catch(e){
+    $("#setupErr").textContent = "Couldn't load "+path+" — served over http? ("+e.message+")";
+  }
+};
+
+function toastMsg(t){ $("#progress").title=t; console.log(t); }
+function persist(){ try{ localStorage.setItem("fieldmark_labels", JSON.stringify(saved)); }catch(e){} }
+
+function load(){
+  const m = misses[idx];
+  $("#spName").textContent = m.species;
+  // default the class to whatever it was downloaded as
+  setClass(CLASSES.indexOf(m.coarse) >= 0 ? CLASSES.indexOf(m.coarse) : 0);
+  boxes = (saved[m.stem]?.boxes) ? [...saved[m.stem].boxes] : [];
+  $("#progress").innerHTML = `<b>${idx+1}</b> / ${misses.length} left &nbsp;·&nbsp; ${Object.keys(saved).length} saved &nbsp;·&nbsp; <span style="text-transform:capitalize">${m.species}</span>`;
+  img = new Image();
+  img.onload = ()=>{ fit(); draw(); };
+  img.onerror = ()=>{ ctx.fillStyle="#fff"; ctx.font="16px Inter"; fit0();
+    ctx.fillText("image not found: "+m.path, 20, 40); };
+  // path is like dataset/images/train/0000001.jpg — serve from project root
+  img.src = m.path;
+  renderBoxes();
+}
+
+function fit0(){ canvas.width = $("#stage").clientWidth; canvas.height = $("#stage").clientHeight; }
+function fit(){
+  const sw = $("#stage").clientWidth, sh = $("#stage").clientHeight;
+  scale = Math.min(sw/img.naturalWidth, sh/img.naturalHeight, 1);
+  // fall back: if container tiny, still scale down
+  if(!isFinite(scale)||scale<=0) scale = Math.min(sw/img.naturalWidth, sh/img.naturalHeight);
+  canvas.width = img.naturalWidth*scale;
+  canvas.height = img.naturalHeight*scale;
+}
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  if(img.complete && img.naturalWidth) ctx.drawImage(img,0,0,canvas.width,canvas.height);
+  boxes.forEach(b=>{
+    ctx.lineWidth=2; ctx.strokeStyle=COL[b.cls];
+    ctx.strokeRect(b.x*canvas.width, b.y*canvas.height, b.w*canvas.width, b.h*canvas.height);
+    ctx.fillStyle=COL[b.cls]; ctx.fillRect(b.x*canvas.width, b.y*canvas.height-16, 52, 16);
+    ctx.fillStyle="#fff"; ctx.font="600 11px Inter"; ctx.fillText(CLASSES[b.cls], b.x*canvas.width+4, b.y*canvas.height-4);
+  });
+  if(drawing && start && cur){
+    const x=Math.min(start.x,cur.x), y=Math.min(start.y,cur.y), w=Math.abs(cur.x-start.x), h=Math.abs(cur.y-start.y);
+    ctx.setLineDash([5,4]); ctx.strokeStyle=COL[curClass]; ctx.lineWidth=2;
+    ctx.strokeRect(x,y,w,h); ctx.setLineDash([]);
+  }
+}
+
+// ---------- drawing ----------
+let cur=null;
+function pos(e){
+  const r=canvas.getBoundingClientRect();
+  const cx=(e.touches?e.touches[0].clientX:e.clientX)-r.left;
+  const cy=(e.touches?e.touches[0].clientY:e.clientY)-r.top;
+  return {x:Math.max(0,Math.min(canvas.width,cx)), y:Math.max(0,Math.min(canvas.height,cy))};
+}
+function down(e){ e.preventDefault(); drawing=true; start=pos(e); cur=start; }
+function move(e){ if(!drawing)return; e.preventDefault(); cur=pos(e); draw(); }
+function up(e){
+  if(!drawing)return; e.preventDefault(); drawing=false;
+  const a=start, b=cur||start;
+  const x=Math.min(a.x,b.x)/canvas.width, y=Math.min(a.y,b.y)/canvas.height;
+  const w=Math.abs(b.x-a.x)/canvas.width, h=Math.abs(b.y-a.y)/canvas.height;
+  if(w>0.01 && h>0.01) boxes.push({x,y,w,h,cls:curClass});  // ignore tiny accidental clicks
+  start=cur=null; draw(); renderBoxes();
+}
+canvas.addEventListener("mousedown",down); canvas.addEventListener("mousemove",move); window.addEventListener("mouseup",up);
+canvas.addEventListener("touchstart",down,{passive:false}); canvas.addEventListener("touchmove",move,{passive:false}); canvas.addEventListener("touchend",up,{passive:false});
+
+// ---------- class + box list ----------
+document.querySelectorAll(".classpick button").forEach(b=> b.onclick=()=>setClass(CLASSES.indexOf(b.dataset.c)));
+function setClass(c){ curClass=c; document.querySelectorAll(".classpick button").forEach(b=>b.classList.toggle("on", CLASSES.indexOf(b.dataset.c)===c)); }
+function renderBoxes(){
+  const el=$("#boxlist"); el.innerHTML="";
+  $("#boxCount").textContent = boxes.length?`(${boxes.length})`:"";
+  $("#emptyNote").style.display = boxes.length?"none":"block";
+  boxes.forEach((b,i)=>{
+    const row=document.createElement("div"); row.className="boxrow";
+    row.innerHTML=`<span class="sw" style="background:${COL[b.cls]}"></span>${CLASSES[b.cls]} <span class="x" data-i="${i}">✕</span>`;
+    row.querySelector(".x").onclick=()=>{ boxes.splice(i,1); draw(); renderBoxes(); };
+    el.appendChild(row);
+  });
+}
+
+// ---------- navigation / saving ----------
+function commit(){
+  const m=misses[idx];
+  if(boxes.length){
+    const lines = boxes.map(b=>`${b.cls} ${(b.x+b.w/2).toFixed(6)} ${(b.y+b.h/2).toFixed(6)} ${b.w.toFixed(6)} ${b.h.toFixed(6)}`);
+    saved[m.stem] = {split:m.split, boxes:[...boxes], lines};
+  } else {
+    delete saved[m.stem];   // no box = skip
+  }
+  persist();   // autosave to localStorage every commit — crash-safe
+}
+$("#nextBtn").onclick=()=>{ commit(); if(idx<misses.length-1){idx++; load();} else { alert("Reached the end. Export when ready."); } };
+$("#skipBtn").onclick=()=>{ boxes=[]; commit(); if(idx<misses.length-1){idx++; load();} };
+$("#prevBtn").onclick=()=>{ commit(); if(idx>0){idx--; load();} };
+
+// ---------- export ----------
+$("#exportBtn").onclick=()=>{
+  commit();
+  // export a single JSON the merge script consumes: {stem: {split, lines}}
+  const out={}; Object.entries(saved).forEach(([stem,v])=> out[stem]={split:v.split, lines:v.lines});
+  const blob=new Blob([JSON.stringify(out,null,2)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download="hand_labels.json"; a.click();
+};
+
+// keyboard
+window.addEventListener("keydown",e=>{
+  if($("#workspace").style.display==="none")return;
+  if(e.key==="ArrowRight"){$("#nextBtn").click();}
+  else if(e.key==="ArrowLeft"){$("#prevBtn").click();}
+  else if(e.key==="s"||e.key==="S"){$("#skipBtn").click();}
+  else if(e.key==="e"||e.key==="E"){$("#exportBtn").click();}
+  else if(e.key==="b"||e.key==="B"){setClass(0);}
+  else if(e.key==="m"||e.key==="M"){setClass(1);}
+  else if(e.key==="d"||e.key==="D"){ boxes.pop(); draw(); renderBoxes(); }
+});
+window.addEventListener("resize",()=>{ if($("#workspace").style.display!=="none"&&img.naturalWidth){fit();draw();} });
+</script>
+</body>
+</html>
