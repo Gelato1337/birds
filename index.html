@@ -211,6 +211,17 @@
   #labelLink{position:fixed;top:10px;right:10px;z-index:21;font-family:'Fraunces',serif;font-weight:600;
     font-size:12px;background:var(--olive-d);color:var(--paper);text-decoration:none;padding:7px 12px;
     border:1.5px solid var(--ink)}
+  /* Ask-an-AI panel */
+  #aiPanel{position:fixed;inset:0;z-index:45;background:rgba(34,31,23,.5);display:flex;align-items:flex-end;justify-content:center}
+  .aisheet{width:100%;max-width:540px;background:var(--paper);border:2px solid var(--ink);border-bottom:0;
+    padding:20px 18px 28px;max-height:90vh;overflow-y:auto;position:relative;animation:slideup .28s cubic-bezier(.2,.8,.2,1)}
+  .aititle{font-family:'Fraunces',serif;font-weight:900;font-size:22px;padding-right:36px}
+  .aihint{font-size:12.5px;color:var(--ink-soft);margin:6px 0 12px;line-height:1.5}
+  .aistep{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--olive-d);font-weight:600;margin:16px 0 8px}
+  .airow{display:flex;gap:9px}
+  #aiPromptText,#aiJsonBox{width:100%;font-family:ui-monospace,monospace;font-size:12px;padding:10px;
+    border:1.5px solid var(--ink);background:var(--paper-2);margin-top:8px;min-height:70px;resize:vertical}
+  .aiguess{width:100%;text-align:left}
 </style>
 </head>
 <body>
@@ -333,7 +344,7 @@
 
     <input type="file" id="fileInput" accept="image/*">
     <footer>
-      Detector: <b id="modelTag">YOLO11n / COCO</b>. Swap <code>yolo11n.onnx</code> + <code>LABELS</code> for the wildlife model.
+      Detector: <b id="modelTag">Fieldmark-s · 313 Finnish species</b>.
     </footer>
   </main>
 </div>
@@ -386,6 +397,28 @@
 
 <div id="toast"></div>
 
+<!-- Ask-an-AI confirmation panel -->
+<div id="aiPanel" style="display:none">
+  <div class="aisheet">
+    <button class="dclose" id="aiClose">×</button>
+    <div class="aititle">Not sure what this is</div>
+    <p class="aihint">The detector's best guesses are below. Tap one if it's right —
+       or ask any AI (Claude, ChatGPT…) to identify it, then paste its answer back.</p>
+    <div id="aiGuesses"></div>
+    <div class="aistep">1 · Get the photo & prompt</div>
+    <div class="airow">
+      <button class="btn" id="aiSavePhoto">Save photo</button>
+      <button class="btn" id="aiCopyPrompt">Copy AI prompt</button>
+    </div>
+    <textarea id="aiPromptText" readonly style="display:none"></textarea>
+    <div class="aistep">2 · Paste the AI's JSON answer</div>
+    <textarea id="aiJsonBox" placeholder='{"species_en":"...","species_fi":"...","confidence":"high"}'></textarea>
+    <button class="btn wide" id="aiSubmitJson">Confirm &amp; log</button>
+    <button class="btn wide ghost" id="aiSkip" style="margin-top:6px">Can't tell — just log as unidentified</button>
+  </div>
+</div>
+
+
 <script type="module">
 import * as ort from 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.webgpu.min.mjs';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -402,11 +435,14 @@ const MODEL_URL = './fieldmark-s-v1.onnx';   // tracked model name; bump version
 let LABELS = [];   // filled from species.json (313 Finnish species, in class-index order)
 async function loadLabels(){
   try{
-    const r = await fetch('./species.json'); if(!r.ok) throw 0;
+    const r = await fetch('./species.json'); if(!r.ok) throw new Error('HTTP '+r.status);
     const sp = await r.json();
-    LABELS = sp.map(s => s.name);   // index === class id
+    LABELS = sp.map(s => s.name);
+    console.log('LABELS loaded:', LABELS.length, 'species. [0]=', LABELS[0]);
+    if(LABELS.length < 300) console.warn('species.json has only', LABELS.length, 'entries — expected 313');
   }catch(e){
-    console.error('could not load species.json — detections will be unlabeled', e);
+    console.error('FAILED to load species.json:', e.message);
+    setStatus('species list failed to load — labels will be wrong','err');
     LABELS = [];
   }
 }
@@ -674,11 +710,82 @@ async function detectPhoto(img){
   catch(err){ setStatus("detection failed — see console","err"); console.error(err); return; }
   const kept=nms(parseYolo(out,r,dx,dy), IOU_THRESH);
   drawDetections(kept,img);
-  const keys = kept.map(d=>LABELS[d.cls]);
   const thumb = makeThumb(img, kept);
+  // low-confidence gate: if the best detection is weak, don't commit to the
+  // guess — let the user confirm via an external AI (copy prompt + image out,
+  // paste the AI's JSON back in). They still get points once confirmed.
+  const topConf = kept.length ? Math.max(...kept.map(d=>d.score)) : 0;
+  const CONFIRM_THRESH = 0.50;
+  if(kept.length && topConf < CONFIRM_THRESH){
+    const top3 = [...kept].sort((a,b)=>b.score-a.score).slice(0,3)
+                   .map(d=>({name:LABELS[d.cls], conf:d.score}));
+    offerAIConfirm(img, thumb, top3);
+    setStatus(`unsure (${(topConf*100|0)}%) — confirm the species`,"busy");
+    return;
+  }
+  const keys = kept.map(d=>LABELS[d.cls]);
   award(keys, kept.map(d=>({key:LABELS[d.cls], conf:d.score})), thumb);
   setStatus(kept.length?`logged ${kept.length} subject${kept.length>1?'s':''}`:"nothing recognized","ok");
 }
+
+// ===== Ask-an-AI confirmation (no API key — user is the courier) =====
+let _aiPending=null;   // {img, thumb, top3}
+function offerAIConfirm(img, thumb, top3){
+  _aiPending = {img, thumb, top3};
+  $("#aiGuesses").innerHTML = top3.map(g=>
+    `<button class="btn ghost aiguess" data-sp="${esc(g.name)}" style="margin:3px 0">${g.name} · ${(g.conf*100|0)}%</button>`).join("");
+  $("#aiPanel").style.display="block";
+  // wire the quick-accept guess buttons
+  document.querySelectorAll(".aiguess").forEach(b=> b.onclick=()=>{
+    commitConfirmed(b.dataset.sp, "picked");
+  });
+}
+function buildAIPrompt(top3){
+  const list = top3.map(g=>g.name).join(", ");
+  return `You are an expert on Finnish birds and mammals. Identify the species in the attached photo (taken in Finland). A small model guessed one of: ${list}, but may be wrong — consider all Finnish species.
+
+Reply with ONLY this JSON, nothing else:
+{"species_en":"<English common name>","species_fi":"<Finnish name>","confidence":"high|medium|low","note":"<one short reason>"}`;
+}
+$("#aiCopyPrompt").onclick = async ()=>{
+  const p = buildAIPrompt(_aiPending?.top3||[]);
+  try{ await navigator.clipboard.writeText(p); toast("Prompt copied — paste it + your photo into any AI"); }
+  catch{ toast("Copy failed — select the text manually"); }
+  $("#aiPromptText").value = p; $("#aiPromptText").style.display="block";
+};
+$("#aiSavePhoto").onclick = ()=>{
+  if(!_aiPending) return;
+  const a=document.createElement("a"); a.href=_aiPending.img.src; a.download="sighting.jpg"; a.click();
+  toast("Photo saved — attach it to the AI");
+};
+$("#aiSubmitJson").onclick = ()=>{
+  let raw=$("#aiJsonBox").value.trim();
+  if(!raw){ toast("Paste the AI's JSON first"); return; }
+  // tolerate code fences / extra text — grab the first {...}
+  const m=raw.match(/\{[\s\S]*\}/); if(m) raw=m[0];
+  let obj; try{ obj=JSON.parse(raw); }catch{ toast("That's not valid JSON"); return; }
+  const sp = obj.species_en || obj.species || obj.name;
+  if(!sp){ toast("JSON missing 'species_en'"); return; }
+  // match to a known species if possible (so it joins the dex), else accept as-is
+  const known = LABELS.find(n=>n.toLowerCase()===String(sp).toLowerCase());
+  commitConfirmed(known||sp, "ai:"+(obj.confidence||"?"));
+};
+$("#aiSkip").onclick = ()=>{ // give up on species — log as coarse bird/mammal
+  closeAIPanel();
+  // coarse: use the top guess's coarse type from species.json if we can
+  award(["(unidentified)"], [{key:"(unidentified)", conf:0}], _aiPending?.thumb);
+  setStatus("logged as unidentified","ok");
+};
+function commitConfirmed(species, via){
+  const thumb=_aiPending?.thumb;
+  closeAIPanel();
+  award([species], [{key:species, conf:1, viaConfirm:via}], thumb);
+  setStatus("confirmed: "+species,"ok");
+  toast("Logged "+species);
+}
+function closeAIPanel(){ $("#aiPanel").style.display="none"; $("#aiPromptText").style.display="none";
+  $("#aiJsonBox").value=""; }
+$("#aiClose").onclick = ()=>{ closeAIPanel(); setStatus("cancelled",""); };
 
 function makeThumb(img, dets){
   const maxW=480; const r=Math.min(1, maxW/img.naturalWidth);
