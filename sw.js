@@ -1,7 +1,7 @@
 // sw.js — Fieldmark service worker: caches the app so it works OFFLINE
 // and installs to the home screen. Bump CACHE when you change files.
 
-const CACHE = 'fieldmark-v3';
+const CACHE = 'fieldmark-v5';
 const SHELL = [
   './',
   './index.html',
