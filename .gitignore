@@ -1,14 +1,17 @@
-# ---- heavy data: never upload (regenerable / huge) ----
+# local dev / pipeline scripts (kept locally, not deployed)
+dev/
+
+# heavy training data — lives on LUMI, regenerable
 dataset/
 dataset.zip
 runs/
-*.cache
 *.pt
+*.cache
 
-# keep yolo11n.onnx (the app needs it); ignore other onnx exports
+# old/extra onnx (keep only the deployed model)
+yolo11*.onnx
 
-
-# ---- local junk / secrets ----
+# local junk / secrets
 .ipynb_checkpoints/
 __pycache__/
 *.pyc
