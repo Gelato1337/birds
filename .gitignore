@@ -6,8 +6,7 @@ runs/
 *.pt
 
 # keep yolo11n.onnx (the app needs it); ignore other onnx exports
-*.onnx
-!yolo11n.onnx
+
 
 # ---- local junk / secrets ----
 .ipynb_checkpoints/
