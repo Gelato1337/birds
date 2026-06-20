@@ -2,157 +2,221 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fieldmark — wildlife logbook</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Fieldmark · wildlife logbook</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#3b4724">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.css">
 <style>
-  /* ---- Fieldmark: a naturalist's logbook, not a neon game UI ----
-     Palette: aged paper, ink, field-guide olive + a single foxglove accent
-     Type: a slab/serif display for the "stamp" feel, humanist sans for data */
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,900&family=Inter:wght@400;500;600&display=swap');
 
   :root{
-    --paper:#ece3d0; --paper-2:#e2d7bf; --ink:#23201a; --ink-soft:#5a5346;
-    --olive:#5b6b3a; --olive-d:#3f4c27; --line:#bcae90; --accent:#9b3b54;
-    --gold:#b08338; --shadow:rgba(40,34,20,.18);
+    --paper:#e9dec6; --paper-2:#ddd0b2; --ink:#221f17; --ink-soft:#564f3f;
+    --olive:#5b6b3a; --olive-d:#3b4724; --line:#b6a781; --accent:#9b3b54;
+    --gold:#b0832f; --ok:#4a7a3f;
+    --r-common:#6f7d52; --r-uncommon:#3f7a8c; --r-rare:#7d5aa6;
+    --r-epic:#b5612a; --r-legendary:#9b3b54;
   }
-  *{box-sizing:border-box;margin:0;padding:0}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   html,body{height:100%}
   body{
     font-family:'Inter',system-ui,sans-serif;color:var(--ink);
     background:
-      radial-gradient(circle at 20% 10%, rgba(255,255,255,.25), transparent 40%),
-      repeating-linear-gradient(0deg, transparent 0 27px, rgba(91,107,58,.05) 27px 28px),
+      radial-gradient(circle at 80% -10%, rgba(255,255,255,.3), transparent 45%),
+      repeating-linear-gradient(90deg, transparent 0 31px, rgba(91,107,58,.045) 31px 32px),
       var(--paper);
-    -webkit-tap-highlight-color:transparent;
+    overflow-x:hidden;
   }
-  .wrap{max-width:560px;margin:0 auto;min-height:100%;padding:0 0 90px;position:relative}
+  .wrap{max-width:540px;margin:0 auto;min-height:100%;padding:0 0 96px;position:relative}
 
-  /* Masthead */
-  header{padding:22px 22px 14px;border-bottom:2px solid var(--ink);
-    background:linear-gradient(180deg, var(--paper-2), transparent);position:relative}
-  .brand{display:flex;align-items:baseline;gap:10px;justify-content:space-between}
-  h1{font-family:'Fraunces',serif;font-weight:900;font-size:30px;letter-spacing:-.5px;line-height:.95}
+  header{padding:22px 22px 14px;position:relative}
+  header::after{content:"";position:absolute;left:22px;right:22px;bottom:0;height:2px;
+    background:linear-gradient(90deg,var(--ink) 70%,transparent)}
+  .masthead{display:flex;justify-content:space-between;align-items:flex-start}
+  .eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--olive-d);font-weight:600}
+  h1{font-family:'Fraunces',serif;font-weight:900;font-size:32px;letter-spacing:-1px;line-height:.92;margin-top:5px}
   h1 em{font-style:italic;color:var(--olive-d)}
-  .sub{font-size:11px;text-transform:uppercase;letter-spacing:2.5px;color:var(--ink-soft);margin-top:4px}
-  .who{font-size:12px;color:var(--ink-soft);text-align:right;line-height:1.3}
-  .who b{font-family:'Fraunces',serif;color:var(--ink);font-size:15px;display:block}
+  .who{text-align:right;font-size:12px;color:var(--ink-soft);line-height:1.35;padding-top:4px}
+  .who b{font-family:'Fraunces',serif;color:var(--ink);font-size:15px;display:block;font-weight:600}
 
-  /* Score ribbon */
-  .ribbon{display:flex;gap:0;margin-top:14px;border:1.5px solid var(--ink)}
-  .stat{flex:1;padding:9px 8px;text-align:center;border-right:1.5px solid var(--ink)}
+  .ribbon{display:flex;margin-top:14px;border:1.5px solid var(--ink)}
+  .stat{flex:1;padding:8px 6px;text-align:center;border-right:1.5px solid var(--ink)}
   .stat:last-child{border-right:0}
-  .stat .n{font-family:'Fraunces',serif;font-weight:900;font-size:22px;line-height:1}
-  .stat .l{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--ink-soft);margin-top:3px}
-
-  /* Tabs */
-  nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:560px;
-    display:flex;background:var(--ink);border-top:3px solid var(--olive);z-index:20}
-  nav button{flex:1;background:none;border:0;color:#cfc7b3;padding:11px 4px 9px;cursor:pointer;
-    font-family:inherit;font-size:10px;text-transform:uppercase;letter-spacing:1px;display:flex;
-    flex-direction:column;align-items:center;gap:4px;transition:color .15s}
-  nav button svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.7}
-  nav button.on{color:var(--paper)}
-  nav button.on svg{stroke:var(--gold)}
+  .stat .n{font-family:'Fraunces',serif;font-weight:900;font-size:21px;line-height:1}
+  .stat .l{font-size:8.5px;text-transform:uppercase;letter-spacing:1.3px;color:var(--ink-soft);margin-top:3px}
 
   main{padding:18px 18px 0}
   .view{display:none;animation:fade .25s}
   .view.on{display:block}
   @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
-  /* Capture card */
-  .capture{border:2px solid var(--ink);background:var(--paper-2);padding:0;overflow:hidden}
-  .cap-head{padding:12px 16px;border-bottom:1.5px dashed var(--line);
-    font-family:'Fraunces',serif;font-weight:600;font-size:16px;display:flex;justify-content:space-between;align-items:center}
-  .cap-head span{font-family:'Inter';font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-soft)}
-  .dropzone{margin:16px;border:2px dashed var(--olive);border-radius:2px;padding:30px 18px;text-align:center;
-    cursor:pointer;background:rgba(255,255,255,.25);transition:background .15s}
-  .dropzone:hover{background:rgba(255,255,255,.5)}
-  .dropzone svg{width:40px;height:40px;stroke:var(--olive);fill:none;stroke-width:1.4;margin-bottom:10px}
-  .dropzone p{font-size:14px;color:var(--ink-soft)}
-  .dropzone p b{color:var(--olive-d);font-weight:600}
-  #preview{width:100%;display:none;border-bottom:1.5px solid var(--ink)}
-  .cap-body{padding:0 16px 16px}
-  .geo{font-size:12px;color:var(--ink-soft);margin:10px 0;display:flex;align-items:center;gap:6px}
-  .geo svg{width:14px;height:14px;stroke:var(--accent);fill:none;stroke-width:2}
+  .stage{position:relative;border:2px solid var(--ink);background:var(--paper-2);
+    aspect-ratio:4/3;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .stage canvas, .stage video, .stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+  .stage video{object-fit:cover}
+  #overlay{z-index:3;pointer-events:none}
+  .ph{text-align:center;color:var(--ink-soft);padding:22px;z-index:1}
+  .ph svg{width:50px;height:50px;stroke:var(--olive);fill:none;stroke-width:1.3;margin-bottom:11px}
+  .ph p{font-size:14px;line-height:1.5}.ph b{font-family:'Fraunces',serif;font-weight:600;color:var(--olive-d)}
+  .tick{position:absolute;width:15px;height:15px;border:2px solid var(--ink);z-index:4;opacity:.5}
+  .tick.tl{top:7px;left:7px;border-right:0;border-bottom:0}.tick.tr{top:7px;right:7px;border-left:0;border-bottom:0}
+  .tick.bl{bottom:7px;left:7px;border-right:0;border-top:0}.tick.br{bottom:7px;right:7px;border-left:0;border-top:0}
+
+  #spectro{z-index:2;background:#1a1813}
+
+  .status{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-soft);
+    text-align:center;margin:11px 0 4px;min-height:14px;transition:color .2s}
+  .status.busy{color:var(--gold)}.status.ok{color:var(--ok)}.status.err{color:var(--accent)}
+
+  .geo{font-size:12px;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;gap:6px;margin:2px 0 8px}
+  .geo svg{width:13px;height:13px;stroke:var(--accent);fill:none;stroke-width:2}
   .geo.warn{color:var(--accent)}
 
-  .btn{width:100%;background:var(--olive-d);color:var(--paper);border:0;padding:14px;cursor:pointer;
-    font-family:'Fraunces',serif;font-weight:600;font-size:15px;letter-spacing:.3px;
-    border:1.5px solid var(--ink);transition:transform .1s,background .15s}
-  .btn:hover{background:var(--olive)}
-  .btn:active{transform:translateY(1px)}
-  .btn:disabled{opacity:.5;cursor:not-allowed}
-  .btn.ghost{background:transparent;color:var(--ink)}
+  .controls{display:flex;gap:9px;margin-top:6px}
+  .btn{flex:1;background:var(--olive-d);color:var(--paper);border:1.5px solid var(--ink);
+    padding:13px 8px;cursor:pointer;font-family:'Fraunces',serif;font-weight:600;font-size:14px;
+    display:flex;align-items:center;justify-content:center;gap:7px;transition:transform .08s,background .15s}
+  .btn svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8}
+  .btn:hover{background:var(--olive)}.btn:active{transform:translateY(1px)}
+  .btn.ghost{background:transparent;color:var(--ink)}.btn.ghost:hover{background:rgba(91,107,58,.12)}
+  .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+  .btn.wide{width:100%;flex:none;margin-top:9px}
 
-  /* Detection results */
-  .finds{margin-top:14px}
-  .find{border:1.5px solid var(--ink);background:var(--paper-2);margin-bottom:10px;display:flex;overflow:hidden}
-  .find .thumb{width:74px;flex:none;background:#000;object-fit:cover}
-  .find .info{padding:10px 12px;flex:1}
-  .find .sp{font-family:'Fraunces',serif;font-weight:600;font-size:16px;display:flex;align-items:center;gap:7px}
-  .find .latin{font-style:italic;color:var(--ink-soft);font-size:12px}
-  .find .meta{margin-top:6px;display:flex;gap:6px;flex-wrap:wrap}
-  .pip{font-size:10px;text-transform:uppercase;letter-spacing:.5px;padding:2px 7px;border:1px solid var(--ink)}
-  .pip.pts{background:var(--gold);border-color:var(--gold);color:#2a2310;font-weight:600}
-  .rar{font-size:10px;text-transform:uppercase;letter-spacing:1px;font-weight:600;padding:2px 7px;color:#fff}
-  .r-common{background:#6f7d52}.r-uncommon{background:#3f7a8c}.r-rare{background:#7d5aa6}
-  .r-epic{background:#b5612a}.r-legendary{background:var(--accent)}
+  .modes{display:flex;border:1.5px solid var(--ink);margin-bottom:14px}
+  .modes button{flex:1;background:transparent;border:0;border-right:1.5px solid var(--ink);
+    padding:9px;font-family:'Inter';font-size:11px;letter-spacing:1.5px;text-transform:uppercase;
+    font-weight:600;color:var(--ink-soft);cursor:pointer}
+  .modes button:last-child{border-right:0}
+  .modes button.on{background:var(--olive-d);color:var(--paper)}
 
-  /* Journal / dex */
-  .dexgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-  .dexcard{border:1.5px solid var(--ink);background:var(--paper-2);padding:11px 12px}
-  .dexcard.locked{opacity:.45;filter:grayscale(1)}
-  .dexcard .sp{font-family:'Fraunces',serif;font-weight:600;font-size:14px}
-  .dexcard .latin{font-style:italic;font-size:11px;color:var(--ink-soft)}
-  .dexcard .count{font-size:11px;color:var(--ink-soft);margin-top:6px}
-  .entry{font-size:12px;line-height:1.5;color:var(--ink);margin-top:7px;border-top:1px dashed var(--line);padding-top:7px}
+  .findings{margin-top:20px}
+  .sechead{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--ink-soft);
+    display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .sechead::after{content:"";flex:1;height:1px;background:var(--line)}
+  .find{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line)}
+  .find:last-child{border-bottom:0}
+  .swatch{width:13px;height:13px;flex:none;border:1.5px solid var(--ink)}
+  .find .nm{font-family:'Fraunces',serif;font-weight:600;font-size:16px;flex:1;text-transform:capitalize}
+  .find .nm small{display:block;font-family:'Inter';font-weight:400;font-size:11px;color:var(--ink-soft);text-transform:none}
+  .rar{font-size:9px;text-transform:uppercase;letter-spacing:.8px;font-weight:600;padding:2px 7px;color:#fff}
+  .pts{font-family:'Fraunces',serif;font-weight:900;color:var(--gold);font-size:15px;min-width:46px;text-align:right}
+  .empty{font-size:13px;color:var(--ink-soft);font-style:italic;padding:8px 0;line-height:1.5}
 
-  /* Quests */
-  .quest{border:1.5px solid var(--ink);background:var(--paper-2);padding:13px 15px;margin-bottom:11px;position:relative}
+  .dexgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+  .dexcard{border:1.5px solid var(--ink);background:var(--paper-2);padding:10px 11px}
+  .dexcard.locked{opacity:.42;filter:grayscale(.7)}
+  .dexcard .sp{font-family:'Fraunces',serif;font-weight:600;font-size:14px;text-transform:capitalize}
+  .dexcard .meta{font-size:11px;color:var(--ink-soft);margin-top:4px}
+
+  .quest{border:1.5px solid var(--ink);background:var(--paper-2);padding:12px 14px;margin-bottom:10px;position:relative}
   .quest.done{background:rgba(91,107,58,.12)}
-  .quest .qt{font-family:'Fraunces',serif;font-weight:600;font-size:15px;padding-right:60px}
-  .quest .qd{font-size:12.5px;color:var(--ink-soft);margin-top:4px;line-height:1.45}
-  .quest .qr{position:absolute;top:13px;right:14px;font-family:'Fraunces',serif;font-weight:900;
-    color:var(--gold);font-size:15px}
-  .quest .stamp{position:absolute;top:8px;right:10px;border:2px solid var(--olive);color:var(--olive);
-    font-family:'Fraunces',serif;font-weight:900;font-size:12px;padding:2px 8px;transform:rotate(-9deg);
+  .quest .qt{font-family:'Fraunces',serif;font-weight:600;font-size:15px;padding-right:54px}
+  .quest .qd{font-size:12.5px;color:var(--ink-soft);margin-top:3px;line-height:1.4}
+  .quest .qr{position:absolute;top:12px;right:13px;font-family:'Fraunces',serif;font-weight:900;color:var(--gold);font-size:15px}
+  .quest .stamp{position:absolute;top:7px;right:9px;border:2px solid var(--olive);color:var(--olive);
+    font-family:'Fraunces',serif;font-weight:900;font-size:11px;padding:2px 7px;transform:rotate(-8deg);
     text-transform:uppercase;letter-spacing:1px}
 
-  /* Leaderboard */
   .lb{border:1.5px solid var(--ink)}
-  .lbrow{display:flex;align-items:center;padding:11px 14px;border-bottom:1px solid var(--line);background:var(--paper-2)}
-  .lbrow:last-child{border-bottom:0}
-  .lbrow.me{background:rgba(176,131,56,.18)}
-  .lbrow .rk{font-family:'Fraunces',serif;font-weight:900;width:30px;font-size:17px}
-  .lbrow .nm{flex:1;font-weight:500}
-  .lbrow .nm small{display:block;color:var(--ink-soft);font-weight:400;font-size:11px}
-  .lbrow .sc{font-family:'Fraunces',serif;font-weight:600}
+  .lbrow{display:flex;align-items:center;padding:11px 13px;border-bottom:1px solid var(--line);background:var(--paper-2)}
+  .lbrow:last-child{border-bottom:0}.lbrow.me{background:rgba(176,131,56,.2)}
+  .lbrow .rk{font-family:'Fraunces',serif;font-weight:900;width:28px;font-size:16px}
+  .lbrow .nm{flex:1;font-weight:500}.lbrow .nm small{display:block;color:var(--ink-soft);font-weight:400;font-size:11px}
+  .lbrow .sc{font-family:'Fraunces',serif;font-weight:600;font-variant-numeric:tabular-nums}
 
-  .empty{text-align:center;padding:40px 20px;color:var(--ink-soft);font-size:14px}
-  .empty svg{width:46px;height:46px;stroke:var(--line);fill:none;stroke-width:1.3;margin-bottom:12px}
+  nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:540px;
+    display:flex;background:var(--ink);border-top:3px solid var(--olive);z-index:20}
+  nav button{flex:1;background:none;border:0;color:#cfc7b3;padding:10px 4px 8px;cursor:pointer;
+    font-family:inherit;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;display:flex;
+    flex-direction:column;align-items:center;gap:4px}
+  nav button svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.7}
+  nav button.on{color:var(--paper)}nav button.on svg{stroke:var(--gold)}
 
-  .sechead{font-size:10px;text-transform:uppercase;letter-spacing:2.5px;color:var(--ink-soft);
-    margin:20px 0 10px;display:flex;align-items:center;gap:10px}
-  .sechead::after{content:"";flex:1;height:1px;background:var(--line)}
+  #loadwrap{margin-top:12px;display:none}
+  #loadbar{height:3px;background:var(--line);overflow:hidden}#loadbar i{display:block;height:100%;width:0;background:var(--olive-d);transition:width .3s}
+  #loadtxt{font-size:11px;color:var(--ink-soft);margin-top:6px;text-align:center}
 
-  /* toast */
-  #toast{position:fixed;bottom:78px;left:50%;transform:translateX(-50%) translateY(20px);
+  #toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%) translateY(20px);
     background:var(--ink);color:var(--paper);padding:11px 18px;border:1.5px solid var(--gold);
     font-size:13px;opacity:0;transition:all .25s;z-index:30;max-width:90%;text-align:center}
   #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-  .hint{font-size:11px;color:var(--ink-soft);text-align:center;margin-top:12px;line-height:1.5}
-  input.name{font-family:inherit;font-size:14px;padding:8px 10px;border:1.5px solid var(--ink);
+  input[type=file]{display:none}
+  input.field{font-family:inherit;font-size:14px;padding:10px 12px;border:1.5px solid var(--ink);
     background:var(--paper);width:100%;margin-bottom:10px}
+  .hint{font-size:11px;color:var(--ink-soft);text-align:center;margin-top:14px;line-height:1.5}
+  footer{margin:24px 18px 0;font-size:10.5px;color:var(--ink-soft);line-height:1.5;text-align:center;border-top:1px solid var(--line);padding-top:12px}
+  footer code{background:var(--paper-2);padding:1px 5px;border:1px solid var(--line);font-size:10px}
+
+  #speciesDetail{position:fixed;inset:0;z-index:40;display:none;background:rgba(34,31,23,.5)}
+  #speciesDetail.open{display:block;animation:fade .2s}
+  #speciesDetail .sheet{position:absolute;left:50%;bottom:0;transform:translateX(-50%);
+    width:100%;max-width:540px;max-height:88vh;overflow-y:auto;background:var(--paper);
+    border:2px solid var(--ink);border-bottom:0;padding:20px 18px 30px;animation:slideup .28s cubic-bezier(.2,.8,.2,1)}
+  @keyframes slideup{from{transform:translate(-50%,100%)}to{transform:translate(-50%,0)}}
+  .dclose{position:absolute;top:12px;right:14px;background:none;border:0;font-size:30px;line-height:1;
+    color:var(--ink-soft);cursor:pointer;font-family:'Fraunces',serif}
+  .dhead{display:flex;align-items:center;gap:12px;padding-right:40px}
+  .dtitle{font-family:'Fraunces',serif;font-weight:900;font-size:26px;text-transform:capitalize;letter-spacing:-.5px}
+  .dcount{font-size:12px;color:var(--ink-soft);margin-top:5px;letter-spacing:.3px}
+  .dphoto{margin-top:15px;border:1.5px solid var(--ink);background:var(--paper-2);overflow:hidden}
+  .dphoto img{width:100%;display:block}
+  .dnophoto{padding:26px 16px;text-align:center;font-size:13px;color:var(--ink-soft);font-style:italic}
+  .dmaplabel{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--ink-soft);margin:18px 0 9px}
+  #dMap{height:200px;border:1.5px solid var(--ink);background:var(--paper-2);filter:sepia(.28) saturate(.85) contrast(.96)}
+
+  #map{height:62vh;min-height:340px;border:2px solid var(--ink);background:var(--paper-2);
+    filter:sepia(.28) saturate(.85) contrast(.96)}
+  .leaflet-container{font-family:'Inter',sans-serif;background:var(--paper-2)}
+  .mappin{display:flex;align-items:center;justify-content:center;width:26px;height:26px;
+    border:2px solid var(--ink);border-radius:50% 50% 50% 0;transform:rotate(-45deg);
+    box-shadow:0 2px 5px rgba(0,0,0,.3)}
+  .mappin span{transform:rotate(45deg);font-size:11px}
+  .leaflet-popup-content-wrapper{background:var(--paper);border:1.5px solid var(--ink);border-radius:0;
+    box-shadow:0 4px 14px rgba(40,34,20,.3)}
+  .leaflet-popup-tip{background:var(--paper);border:1.5px solid var(--ink)}
+  .leaflet-popup-content{margin:9px 12px;font-family:'Inter',sans-serif}
+  .pop-sp{font-family:'Fraunces',serif;font-weight:600;font-size:15px;text-transform:capitalize;color:var(--ink)}
+  .pop-meta{font-size:11px;color:var(--ink-soft);margin-top:3px}
+  .maphint{font-size:11px;color:var(--ink-soft);text-align:center;margin-top:12px;line-height:1.5}
+  .mapempty{text-align:center;padding:50px 24px;color:var(--ink-soft)}
+  .mapempty svg{width:46px;height:46px;stroke:var(--line);fill:none;stroke-width:1.3;margin-bottom:12px}
+
+  /* login gate */
+  #gate{position:fixed;inset:0;z-index:60;background:var(--paper);display:flex;align-items:center;justify-content:center;padding:24px}
+  #gate .card{max-width:360px;width:100%}
+  #gate h1{font-family:'Fraunces',serif;font-weight:900;font-size:34px;margin-bottom:6px}
+  #gate .eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--olive-d);font-weight:600}
+  #gate p{font-size:13px;color:var(--ink-soft);margin:10px 0 18px;line-height:1.5}
+  #gateErr{font-size:12px;color:var(--accent);margin-top:10px;min-height:16px}
+  /* labeler corner link */
+  #labelLink{position:fixed;top:10px;right:10px;z-index:21;font-family:'Fraunces',serif;font-weight:600;
+    font-size:12px;background:var(--olive-d);color:var(--paper);text-decoration:none;padding:7px 12px;
+    border:1.5px solid var(--ink)}
 </style>
 </head>
 <body>
+
+<div id="gate">
+  <div class="card">
+    <div class="eyebrow">Wildlife logbook · Suomi</div>
+    <h1>Field<em style="font-style:italic;color:var(--olive-d)">mark</em></h1>
+    <p>Sign in to sync your sightings across devices. Shared account — same login on both phones.</p>
+    <input class="field" id="gEmail" placeholder="email" autocomplete="username">
+    <input class="field" id="gPw" type="password" placeholder="password" autocomplete="current-password">
+    <button class="btn wide" id="gSignin">Sign in</button>
+    <div id="gateErr"></div>
+  </div>
+</div>
+
+<a id="labelLink" href="./labeler.html" style="display:none">Labeling →</a>
+
 <div class="wrap">
   <header>
-    <div class="brand">
+    <div class="masthead">
       <div>
+        <div class="eyebrow">Wildlife logbook · Suomi</div>
         <h1>Field<em>mark</em></h1>
-        <div class="sub">Wildlife Logbook · Suomi</div>
       </div>
       <div class="who"><b id="whoName">—</b><span id="whoRank">unranked</span></div>
     </div>
@@ -165,420 +229,739 @@
   </header>
 
   <main>
-    <!-- CAPTURE -->
-    <section class="view on" id="v-capture">
-      <div class="capture">
-        <div class="cap-head">New sighting <span id="capStatus">awaiting photo</span></div>
-        <img id="preview" alt="">
-        <div class="dropzone" id="dropzone">
-          <svg viewBox="0 0 24 24"><path d="M3 16l5-5 4 4 3-3 6 6M3 8a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><circle cx="8.5" cy="9.5" r="1.5"/></svg>
-          <p><b>Tap to add a photo</b><br>of a bird or mammal you've spotted</p>
-        </div>
-        <div class="cap-body">
-          <div class="geo" id="geoLine"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.7-7-11a7 7 0 1114 0c0 4.3-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><span id="geoText">No location yet</span></div>
-          <button class="btn" id="idBtn" disabled>Identify &amp; log</button>
-        </div>
+    <section class="view on" id="v-spot">
+      <div class="modes">
+        <button class="on" data-mode="photo">Photo</button>
+        <button data-mode="sound">Sound</button>
       </div>
-      <div class="finds" id="finds"></div>
-      <div class="hint">Detection runs on-device. Points and ranking are recorded in your logbook.<br>One photo can hold several animals — each counts.</div>
+
+      <div class="stage" id="stage">
+        <span class="tick tl"></span><span class="tick tr"></span><span class="tick bl"></span><span class="tick br"></span>
+        <div class="ph" id="placeholder">
+          <svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h2l1.4-2h7.2L18 5h2a2 2 0 012 2v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><circle cx="12" cy="12.5" r="3.6"/></svg>
+          <p><b>No sighting yet</b><br><span id="phText">Use the camera or upload to begin</span></p>
+        </div>
+        <img id="photo" alt="" style="display:none">
+        <video id="video" playsinline muted style="display:none"></video>
+        <canvas id="spectro" style="display:none"></canvas>
+        <canvas id="overlay"></canvas>
+      </div>
+
+      <div class="status" id="status">loading detector…</div>
+      <div class="geo" id="geoLine" style="display:none"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.7-7-11a7 7 0 1114 0c0 4.3-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><span id="geoText">No location</span></div>
+
+      <div id="loadwrap"><div id="loadbar"><i id="loadfill"></i></div><div id="loadtxt">fetching model…</div></div>
+
+      <div id="photoControls">
+        <div class="controls">
+          <button class="btn" id="cameraBtn" disabled><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h2l1.4-2h7.2L18 5h2a2 2 0 012 2v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><circle cx="12" cy="12.5" r="3.6"/></svg>Camera</button>
+          <button class="btn ghost" id="uploadBtn" disabled><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L8 8m4-4l4 4M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>Upload</button>
+        </div>
+        <button class="btn wide" id="shootBtn" style="display:none"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/></svg>Capture &amp; detect</button>
+      </div>
+
+      <div id="soundControls" style="display:none">
+        <button class="btn wide" id="listenBtn"><svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 00-3 3v7a3 3 0 006 0V5a3 3 0 00-3-3z"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>Listen for a bird call</button>
+      </div>
+
+      <div class="findings" id="findings" style="display:none">
+        <div class="sechead" id="findHead">What the model saw</div>
+        <div id="findlist"></div>
+      </div>
+      <div class="hint" id="spotHint">Detection runs on-device. Each animal in frame can score — and a photo with location earns extra.</div>
     </section>
 
-    <!-- JOURNAL -->
     <section class="view" id="v-journal">
       <div class="sechead">Recorded species</div>
       <div class="dexgrid" id="dexgrid"></div>
+      <div class="empty" id="dexEmpty" style="display:none">Nothing logged yet. Spot your first animal to begin the journal.</div>
     </section>
 
-    <!-- QUESTS -->
     <section class="view" id="v-quests">
-      <div class="sechead">Field assignments</div>
+      <div class="sechead">Active assignments</div>
       <div id="questList"></div>
+      <div class="sechead" id="doneHead" style="display:none;margin-top:22px">Completed</div>
+      <div id="questDone"></div>
     </section>
 
-    <!-- LEADERBOARD -->
-    <section class="view" id="v-board">
+    <section class="view" id="v-ranks">
       <div class="sechead">Naturalists' standing</div>
       <div class="lb" id="board"></div>
       <div class="hint">Shared with everyone using this logbook.</div>
     </section>
 
-    <!-- PROFILE (first run) -->
+    <section class="view" id="v-map">
+      <div class="sechead">Where you've spotted</div>
+      <div id="map"></div>
+      <div id="mapEmpty" class="mapempty" style="display:none">
+        <svg viewBox="0 0 24 24"><path d="M12 21s-7-6.7-7-11a7 7 0 1114 0c0 4.3-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+        <p>No located sightings yet.<br>Spot an animal with location on, and it'll appear here.</p>
+      </div>
+      <div class="maphint">Each pin is a sighting with coordinates. Tap one to see what was found.</div>
+    </section>
+
     <section class="view" id="v-profile">
       <div class="sechead">Your field name</div>
-      <input class="name" id="nameInput" placeholder="e.g. J. Lindqvist" maxlength="24">
-      <button class="btn" id="saveName">Begin logbook</button>
+      <input class="field" id="nameInput" placeholder="e.g. J. Lindqvist" maxlength="24">
+      <button class="btn wide" id="saveName">Save name</button>
+      <button class="btn wide ghost" id="signOutBtn" style="margin-top:8px">Sign out</button>
       <div class="hint">This name appears on the shared leaderboard.</div>
     </section>
+
+    <input type="file" id="fileInput" accept="image/*">
+    <footer>
+      Detector: <b id="modelTag">YOLO11n / COCO</b>. Swap <code>yolo11n.onnx</code> + <code>LABELS</code> for the wildlife model.
+    </footer>
   </main>
 </div>
 
 <nav>
-  <button class="on" data-v="capture"><svg viewBox="0 0 24 24"><path d="M3 8a2 2 0 012-2h2l1.5-2h7L17 6h2a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><circle cx="12" cy="13" r="3.5"/></svg>Spot</button>
+  <button class="on" data-v="spot"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h2l1.4-2h7.2L18 5h2a2 2 0 012 2v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><circle cx="12" cy="12.5" r="3.6"/></svg>Spot</button>
   <button data-v="journal"><svg viewBox="0 0 24 24"><path d="M4 4h13a2 2 0 012 2v14H6a2 2 0 01-2-2z"/><path d="M8 4v16M11 9h6M11 13h6"/></svg>Journal</button>
   <button data-v="quests"><svg viewBox="0 0 24 24"><path d="M5 3v18l7-4 7 4V3z"/></svg>Quests</button>
-  <button data-v="board"><svg viewBox="0 0 24 24"><path d="M4 20h16M7 20V9M12 20V4M17 20v-7"/></svg>Ranks</button>
+  <button data-v="ranks"><svg viewBox="0 0 24 24"><path d="M4 20h16M7 20V9M12 20V4M17 20v-7"/></svg>Ranks</button>
+  <button data-v="map"><svg viewBox="0 0 24 24"><path d="M9 3L3 6v15l6-3 6 3 6-3V3l-6 3-6-3zM9 3v15M15 6v15"/></svg>Map</button>
+  <button data-v="profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0112 0v1"/></svg>You</button>
 </nav>
 
+<div id="speciesDetail">
+  <div class="sheet">
+    <button class="dclose" id="dClose" aria-label="Close">×</button>
+    <div class="dhead">
+      <div class="dtitle" id="dTitle">—</div>
+      <span class="rar" id="dRar">common</span>
+    </div>
+    <div class="dcount" id="dCount"></div>
+    <div class="dphoto" id="dPhoto"></div>
+    <div class="dmaplabel">Where you found it</div>
+    <div id="dMap"></div>
+    <div class="dnophoto" id="dNoGeo" style="display:none">No location recorded for this sighting.</div>
+  </div>
+</div>
 <div id="toast"></div>
 
 <script type="module">
-/* =====================================================================
-   Fieldmark — game logic
-   Storage: window.storage (per-user logbook + shared leaderboard)
-   Detection: pluggable. Ships with a mock so the game is playable now;
-   swap detect() for the onnxruntime-web two-stage pipeline once your
-   YOLO + classifier ONNX files are ready (see detect() comment).
-   ===================================================================== */
+import * as ort from 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.webgpu.min.mjs';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-// ---- Species catalog (the "database"). In production, generate this from
-// your classifier_classes.json + a rarity table. Rarity drives base points. ----
-const SPECIES = [
-  {key:"great_tit",     name:"Great tit",        latin:"Parus major",        kind:"bird",   rarity:"common",    base:10,
-    entry:"A bold, acrobatic visitor to feeders. Recognised by its black head-stripe down a lemon breast; one of the first songs of the northern spring."},
-  {key:"blue_tit",      name:"Eurasian blue tit", latin:"Cyanistes caeruleus", kind:"bird",  rarity:"common",    base:10,
-    entry:"Tiny and restless, with a sky-blue cap. Often hangs upside-down while foraging — a familiar acrobat of birch and pine."},
-  {key:"robin",         name:"European robin",    latin:"Erithacus rubecula",  kind:"bird",  rarity:"common",    base:10,
-    entry:"The orange-breasted sentinel of woodland edges. Sings through autumn and winter when most others have fallen silent."},
-  {key:"chaffinch",     name:"Common chaffinch",  latin:"Fringilla coelebs",   kind:"bird",  rarity:"uncommon",  base:18,
-    entry:"Among the most numerous breeding birds of Finland's forests. Listen for its accelerating, tumbling song in early summer."},
-  {key:"magpie",        name:"Eurasian magpie",   latin:"Pica pica",           kind:"bird",  rarity:"uncommon",  base:18,
-    entry:"Iridescent black-and-white, sharp-witted, and unmistakable. A corvid that caches food and recognises its own reflection."},
-  {key:"crane",         name:"Common crane",      latin:"Grus grus",           kind:"bird",  rarity:"rare",      base:35,
-    entry:"A tall wetland traveller whose bugling calls carry for kilometres. Gathers in great staging flocks before autumn migration."},
-  {key:"red_squirrel",  name:"Red squirrel",      latin:"Sciurus vulgaris",    kind:"mammal",rarity:"uncommon",  base:18,
-    entry:"Tufted ears and a russet coat that pales in winter. A constant presence in the conifer canopy, caching cones for the cold."},
-  {key:"mountain_hare", name:"Mountain hare",     latin:"Lepus timidus",       kind:"mammal",rarity:"rare",      base:35,
-    entry:"Turns white against the snow each winter. A creature of open fell and forest edge, built for the northern dark."},
-  {key:"red_fox",       name:"Red fox",           latin:"Vulpes vulpes",       kind:"mammal",rarity:"epic",      base:60,
-    entry:"Adaptable and sharp-faced, ranging from deep forest to town outskirts. A rare daytime sighting rewards the patient observer."},
-  {key:"elk",           name:"European elk",      latin:"Alces alces",         kind:"mammal",rarity:"epic",      base:60,
-    entry:"The largest deer of the north, towering and long-legged. Encountered most often at dawn along forest roads and mires."},
-  {key:"lynx",          name:"Eurasian lynx",     latin:"Lynx lynx",           kind:"mammal",rarity:"legendary", base:120,
-    entry:"Finland's elusive wild cat — tufted ears, spotted coat, almost never seen. To photograph one is the work of years and luck."},
-];
-const byKey = Object.fromEntries(SPECIES.map(s=>[s.key,s]));
+/* ============ Supabase config — FILL THESE IN ============
+   Project Settings > API in supabase.com. anon key is safe to ship. */
+const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR-ANON-PUBLIC-KEY';
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let session = null;
 
-const RARITY_MULT = {common:1, uncommon:1, rare:1, epic:1, legendary:1}; // base already scaled
-const FIRST_FIND_BONUS = 1.5;   // first ever of a species: +50%
-const NEW_LOCATION_PTS = 25;    // points for logging in a fresh ~1km cell
+/* ===================================================================== */
+const MODEL_URL = './yolo11n.onnx';
+const LABELS = ["person","bicycle","car","motorcycle","airplane","bus","train","truck","boat","traffic light","fire hydrant","stop sign","parking meter","bench","bird","cat","dog","horse","sheep","cow","elephant","bear","zebra","giraffe","backpack","umbrella","handbag","tie","suitcase","frisbee","skis","snowboard","sports ball","kite","baseball bat","baseball glove","skateboard","surfboard","tennis racket","bottle","wine glass","cup","fork","knife","spoon","bowl","banana","apple","sandwich","orange","broccoli","carrot","hot dog","pizza","donut","cake","chair","couch","potted plant","bed","dining table","toilet","tv","laptop","mouse","remote","keyboard","cell phone","microwave","oven","toaster","sink","refrigerator","book","clock","vase","scissors","teddy bear","hair drier","toothbrush"];
 
-// ---- App state ----
-let me = null;           // {id, name}
-let log = null;          // {points, finds:[], species:{}, cells:{}, quests:{}}
-let pending = null;      // {dataUrl, lat, lon, blob}
+const RARITY = {
+  bird:"common", cat:"common", dog:"common", person:"common",
+  cow:"uncommon", sheep:"uncommon", horse:"uncommon",
+  bear:"rare", elephant:"rare", zebra:"rare", giraffe:"epic",
+};
+const RARITY_PTS = {common:10, uncommon:18, rare:35, epic:60, legendary:120};
+const RARITY_COLOR = {common:"#6f7d52",uncommon:"#3f7a8c",rare:"#7d5aa6",epic:"#b5612a",legendary:"#9b3b54"};
+const FIRST_BONUS = 1.5;
+const NEW_CELL_PTS = 25;
+
+const INPUT = 640, CONF_THRESH = 0.35, IOU_THRESH = 0.45;
+const COLORS = ["#9b3b54","#5b6b3a","#b0832f","#3b6e8c","#7d5aa6","#b5612a","#467a5b","#8c5a3b"];
+
+const rarityOf = k => RARITY[k] || "common";
+const basePts  = k => RARITY_PTS[rarityOf(k)];
 
 const $ = s=>document.querySelector(s);
-const toast = (m)=>{const t=$("#toast");t.textContent=m;t.classList.add("show");
-  clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2600);};
+const statusEl = $("#status");
+const setStatus=(t,c="")=>{statusEl.textContent=t;statusEl.className="status "+c;};
+const toast=m=>{const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2800);};
 
-// ---------- storage helpers ----------
-async function sget(k, shared=false){ try{const r=await window.storage.get(k,shared);return r?JSON.parse(r.value):null;}catch{ return null;} }
-async function sset(k,v,shared=false){ try{await window.storage.set(k,JSON.stringify(v),shared);}catch(e){console.error(e);} }
+let model_session=null, mode="photo", stream=null, me=null, log=null, pending=null;
 
-// ---------- init ----------
+/* ============ STORAGE — Supabase-backed, offline localStorage mirror ============
+   Same sget/sset interface the app used, but durable + synced. Writes mirror
+   to localStorage instantly (offline-safe) and push to Supabase when online. */
+const LK='fieldmark_cache';
+function lget(k){ try{return JSON.parse(localStorage.getItem(LK)||'{}')[k]??null;}catch{return null;} }
+function lset(k,v){ try{const c=JSON.parse(localStorage.getItem(LK)||'{}');c[k]=v;localStorage.setItem(LK,JSON.stringify(c));}catch{} }
+
+async function sget(k){
+  const local=lget(k);
+  if(session && navigator.onLine){
+    try{
+      if(k==="log"){
+        const {data}=await sb.from('logbook').select('*').eq('owner',session.user.id).maybeSingle();
+        if(data){ const v={points:data.points||0, finds:local?.finds||[],
+          species:data.species||{}, cells:data.cells||{}, quests:data.quests||{}};
+          // pull sightings for the map/journal from their own table
+          try{ const {data:sg}=await sb.from('sightings').select('*').eq('owner',session.user.id).order('ts',{ascending:false});
+            if(sg) v.finds = sg.map(r=>({t:new Date(r.ts).getTime(), lat:r.lat, lon:r.lon,
+              species:r.species, thumb:r.thumb, viaSound:r.via_sound, _id:r.id})); }catch{}
+          lset(k,v); return v; }
+      } else if(k==="me"){
+        const v=local||{id:session.user.id, name:(session.user.email||'naturalist').split('@')[0]};
+        lset(k,v); return v;
+      }
+    }catch(e){ /* fall back to local */ }
+  }
+  return local;
+}
+async function sset(k,v){
+  lset(k,v);
+  if(!session || !navigator.onLine) return;
+  try{
+    if(k==="log"){
+      await sb.from('logbook').upsert({ owner:session.user.id, points:v.points,
+        species:v.species, cells:v.cells, quests:v.quests,
+        updated_at:new Date().toISOString() }, { onConflict:'owner' });
+    }
+  }catch(e){ console.warn('sync failed (kept local):', e.message); }
+}
+// push a new sighting row (called once per award)
+async function pushSighting(f){
+  if(!session || !navigator.onLine) return;
+  try{ await sb.from('sightings').insert({ owner:session.user.id,
+    ts:new Date(f.t).toISOString(), lat:f.lat, lon:f.lon, species:f.species,
+    via_sound:!!f.viaSound, thumb:f.thumb||null }); }
+  catch(e){ console.warn('sighting sync failed:', e.message); }
+}
+
+/* ============ AUTH GATE ============ */
+async function boot(){
+  const {data}=await sb.auth.getSession();
+  session=data.session;
+  sb.auth.onAuthStateChange((_e,s)=>{ session=s; });
+  if(session){ enterApp(); } else { $("#gate").style.display="flex"; }
+}
+$("#gSignin").onclick = async ()=>{
+  const email=$("#gEmail").value.trim(), pw=$("#gPw").value;
+  try{
+    const {data,error}=await sb.auth.signInWithPassword({email,password:pw});
+    if(error) throw error;
+    session=data.session; enterApp();
+  }catch(e){ $("#gateErr").textContent="Sign-in failed: "+e.message; }
+};
+$("#signOutBtn").onclick = async ()=>{ await sb.auth.signOut(); location.reload(); };
+
+async function enterApp(){
+  $("#gate").style.display="none";
+  $("#labelLink").style.display="block";
+  await init();
+}
+
+// ============ init ============
 async function init(){
   me = await sget("me");
-  if(!me){ show("profile"); return; }
-  log = await sget("log") || freshLog();
-  if(!Object.keys(log.quests).length) assignQuests();
+  log = await sget("log") || {points:0, finds:[], species:{}, cells:{}, quests:{}};
+  if(!Object.keys(log.quests).length){ assignQuests(); await sset("log",log); }
   renderAll();
-  show("capture");
+  loadModel();
 }
-function freshLog(){ return {points:0, finds:[], species:{}, cells:{}, quests:{}}; }
 
 $("#saveName").onclick = async ()=>{
-  const n = $("#nameInput").value.trim();
+  const n=$("#nameInput").value.trim();
   if(!n){ toast("Enter a field name first"); return; }
-  me = {id:"u_"+Math.random().toString(36).slice(2,9), name:n};
-  await sset("me", me);
-  log = freshLog(); assignQuests(); await sset("log", log);
-  await pushBoard();
-  renderAll(); show("capture");
-  toast("Logbook opened. Go find something.");
+  me={id:session.user.id, name:n};
+  lset("me", me); await pushBoard(); renderAll();
+  toast("Name saved.");
 };
 
-// ---------- navigation ----------
-document.querySelectorAll("nav button").forEach(b=>{
-  b.onclick=()=>show(b.dataset.v);
-});
-function show(v){
+// ============ nav ============
+document.querySelectorAll("nav button").forEach(b=> b.onclick=()=>showView(b.dataset.v));
+function showView(v){
   document.querySelectorAll(".view").forEach(s=>s.classList.remove("on"));
   $("#v-"+v).classList.add("on");
-  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));
-  if(v==="board") renderBoard();
+  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on", b.dataset.v===v));
+  if(v==="ranks") renderBoard();
+  if(v==="journal") renderDex();
+  if(v==="quests") renderQuests();
+  if(v==="map") renderMap();
+  if(v==="profile" && me) $("#nameInput").value=me.name;
 }
 
-// ---------- photo capture ----------
-const fileInput = document.createElement("input");
-fileInput.type="file"; fileInput.accept="image/*"; fileInput.capture="environment";
-$("#dropzone").onclick=()=>fileInput.click();
-fileInput.onchange=async ()=>{
-  const f = fileInput.files[0]; if(!f) return;
-  const dataUrl = await fileToDataUrl(f);
-  pending = {dataUrl, lat:null, lon:null};
-  $("#preview").src=dataUrl; $("#preview").style.display="block";
-  $("#dropzone").style.display="none";
-  $("#capStatus").textContent="reading location…";
-  // try EXIF GPS first (real photos), then device GPS as fallback
-  const exif = await readExifGps(f).catch(()=>null);
-  if(exif){ setGeo(exif.lat, exif.lon, "from photo"); }
-  else { getDeviceGps(); }
-  $("#idBtn").disabled=false;
+// ============ mode toggle ============
+document.querySelectorAll(".modes button").forEach(b=> b.onclick=()=>setMode(b.dataset.mode));
+function setMode(m){
+  mode=m; stopCamera(); stopAudio(); clearOverlay();
+  document.querySelectorAll(".modes button").forEach(b=>b.classList.toggle("on",b.dataset.mode===m));
+  $("#photoControls").style.display = m==="photo"?"block":"none";
+  $("#soundControls").style.display = m==="sound"?"block":"none";
+  $("#photo").style.display="none"; $("#video").style.display="none"; $("#spectro").style.display="none";
+  $("#placeholder").style.display="block";
+  $("#findings").style.display="none";
+  $("#phText").textContent = m==="photo" ? "Use the camera or upload to begin" : "Tap listen and play or make a bird call";
+  setStatus(model_session||m==="sound" ? "ready" : "loading detector…", model_session?"ok":"");
+}
+
+// ============ MODEL LOAD ============
+async function loadModel(){
+  $("#loadwrap").style.display="block"; const fill=$("#loadfill");
+  try{
+    const resp=await fetch(MODEL_URL);
+    if(!resp.ok) throw new Error("HTTP "+resp.status);
+    const total=+resp.headers.get("content-length")||0; const reader=resp.body.getReader();
+    let recv=0; const chunks=[];
+    while(true){const {done,value}=await reader.read(); if(done)break; chunks.push(value); recv+=value.length;
+      if(total) fill.style.width=(recv/total*100).toFixed(0)+"%"; $("#loadtxt").textContent=`fetching model · ${(recv/1e6).toFixed(1)} MB`;}
+    const buf=new Uint8Array(recv); let p=0; for(const c of chunks){buf.set(c,p);p+=c.length;}
+    $("#loadtxt").textContent="starting inference engine…";
+    try{ model_session=await ort.InferenceSession.create(buf.buffer,{executionProviders:["webgpu","wasm"]}); }
+    catch{ model_session=await ort.InferenceSession.create(buf.buffer,{executionProviders:["wasm"]}); }
+    $("#loadwrap").style.display="none";
+    $("#cameraBtn").disabled=false; $("#uploadBtn").disabled=false;
+    if(mode==="photo") setStatus("ready — camera or upload","ok");
+  }catch(err){
+    $("#loadtxt").textContent="";
+    setStatus("couldn't load yolo11n.onnx — is it in this folder & served over http?","err");
+    console.error(err);
+  }
+}
+
+// ============ PHOTO: upload / camera ============
+$("#uploadBtn").onclick=()=>$("#fileInput").click();
+$("#fileInput").onchange=async e=>{
+  const f=e.target.files[0]; if(!f) return;
+  stopCamera(); pending={lat:null,lon:null,source:null};
+  await readGeo(f);
+  const img=$("#photo");
+  img.onload=()=>{ showPhoto(); detectPhoto(img); };
+  img.src=URL.createObjectURL(f);
 };
+$("#cameraBtn").onclick=async ()=>{
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"},audio:false});
+    const v=$("#video"); v.srcObject=stream; await v.play();
+    $("#placeholder").style.display="none"; $("#photo").style.display="none"; v.style.display="block";
+    clearOverlay(); $("#shootBtn").style.display="flex"; $("#findings").style.display="none";
+    pending={lat:null,lon:null,source:null}; getDeviceGps();
+    setStatus("camera live — frame your subject, then capture");
+  }catch{ setStatus("camera unavailable — try upload","err"); }
+};
+$("#shootBtn").onclick=()=>{
+  const v=$("#video"); const c=document.createElement("canvas");
+  c.width=v.videoWidth; c.height=v.videoHeight; c.getContext("2d").drawImage(v,0,0);
+  const img=$("#photo"); img.onload=()=>{ stopCamera(); showPhoto(); detectPhoto(img); };
+  img.src=c.toDataURL("image/jpeg",0.92);
+};
+function stopCamera(){ if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;} $("#video").style.display="none"; $("#shootBtn").style.display="none"; }
+function showPhoto(){ $("#placeholder").style.display="none"; $("#photo").style.display="block"; }
 
+// ============ GEO ============
 function setGeo(lat,lon,src){
-  pending.lat=lat; pending.lon=lon;
-  $("#geoLine").classList.remove("warn");
+  if(pending){ pending.lat=lat; pending.lon=lon; pending.source=src; }
+  $("#geoLine").style.display="flex"; $("#geoLine").classList.remove("warn");
   $("#geoText").textContent=`${lat.toFixed(4)}, ${lon.toFixed(4)} · ${src}`;
-  $("#capStatus").textContent="ready";
 }
+function noGeo(){ $("#geoLine").style.display="flex"; $("#geoLine").classList.add("warn");
+  $("#geoText").textContent="No location — sighting won't earn the area bonus"; }
 function getDeviceGps(){
   if(!navigator.geolocation){ noGeo(); return; }
   navigator.geolocation.getCurrentPosition(
     p=>setGeo(p.coords.latitude,p.coords.longitude,"device GPS"),
     ()=>noGeo(), {enableHighAccuracy:true,timeout:8000});
 }
-function noGeo(){
-  $("#geoLine").classList.add("warn");
-  $("#geoText").textContent="No location — sighting won't count toward map points";
-  $("#capStatus").textContent="ready (no location)";
+async function readGeo(file){
+  const exif = await readExifGps(file).catch(()=>null);
+  if(exif) setGeo(exif.lat, exif.lon, "from photo");
+  else getDeviceGps();
 }
 
-// ---------- identify & score ----------
-$("#idBtn").onclick=async ()=>{
-  if(!pending) return;
-  $("#idBtn").disabled=true; $("#capStatus").textContent="identifying…";
-  const dets = await detect(pending.dataUrl);   // [{key, conf, crop}]
-  if(!dets.length){ toast("No bird or mammal found in that photo."); resetCapture(); return; }
+// ============ DETECT (photo) ============
+async function detectPhoto(img){
+  if(!model_session){ toast("Model still loading…"); return; }
+  setStatus("detecting…","busy"); clearOverlay();
+  await new Promise(r=>requestAnimationFrame(r));
+  const {tensor,r,dx,dy}=letterbox(img);
+  let out;
+  try{ const feeds={}; feeds[model_session.inputNames[0]]=tensor;
+    const res=await model_session.run(feeds); out=res[model_session.outputNames[0]]; }
+  catch(err){ setStatus("detection failed — see console","err"); console.error(err); return; }
+  const kept=nms(parseYolo(out,r,dx,dy), IOU_THRESH);
+  drawDetections(kept,img);
+  const keys = kept.map(d=>LABELS[d.cls]);
+  const thumb = makeThumb(img, kept);
+  award(keys, kept.map(d=>({key:LABELS[d.cls], conf:d.score})), thumb);
+  setStatus(kept.length?`logged ${kept.length} subject${kept.length>1?'s':''}`:"nothing recognized","ok");
+}
 
-  let gained=0; const cards=[];
-  const cell = pending.lat!=null ? cellId(pending.lat,pending.lon) : null;
-  let newCellAwarded=false;
+function makeThumb(img, dets){
+  const maxW=480; const r=Math.min(1, maxW/img.naturalWidth);
+  const w=Math.round(img.naturalWidth*r), h=Math.round(img.naturalHeight*r);
+  const c=document.createElement("canvas"); c.width=w; c.height=h;
+  const ctx=c.getContext("2d"); ctx.drawImage(img,0,0,w,h);
+  ctx.lineWidth=Math.max(2,w/200); ctx.font=`600 ${Math.max(11,w/34)}px Inter,sans-serif`; ctx.textBaseline="top";
+  (dets||[]).forEach(d=>{
+    const col=COLORS[d.cls%COLORS.length];
+    const x=d.x*r,y=d.y*r,bw=d.w*r,bh=d.h*r;
+    ctx.strokeStyle=col; ctx.strokeRect(x,y,bw,bh);
+    const lab=LABELS[d.cls]; const tw=ctx.measureText(lab).width;
+    ctx.fillStyle=col; ctx.fillRect(x,y-Math.max(14,w/26),tw+8,Math.max(14,w/26));
+    ctx.fillStyle="#fff"; ctx.fillText(lab,x+4,y-Math.max(13,w/27));
+  });
+  try{ return c.toDataURL("image/jpeg",0.7); }catch{ return null; }
+}
 
-  for(const d of dets){
-    const sp = byKey[d.key]; if(!sp) continue;
-    const first = !log.species[sp.key];
-    let pts = sp.base;
-    if(first) pts = Math.round(pts*FIRST_FIND_BONUS);
-    // new-location bonus: once per sighting, if this 1km cell is fresh
-    if(cell && !log.cells[cell] && !newCellAwarded){
-      pts += NEW_LOCATION_PTS; newCellAwarded=true;
-    }
-    gained += pts;
-    log.species[sp.key] = (log.species[sp.key]||0)+1;
-    cards.push({sp, pts, first, conf:d.conf, crop:d.crop});
+function letterbox(img){
+  const c=document.createElement("canvas"); c.width=INPUT;c.height=INPUT;
+  const ctx=c.getContext("2d"); ctx.fillStyle="#727272"; ctx.fillRect(0,0,INPUT,INPUT);
+  const r=Math.min(INPUT/img.naturalWidth,INPUT/img.naturalHeight);
+  const nw=img.naturalWidth*r,nh=img.naturalHeight*r,dx=(INPUT-nw)/2,dy=(INPUT-nh)/2;
+  ctx.drawImage(img,dx,dy,nw,nh);
+  const {data}=ctx.getImageData(0,0,INPUT,INPUT);
+  const arr=new Float32Array(3*INPUT*INPUT), plane=INPUT*INPUT;
+  for(let i=0;i<plane;i++){arr[i]=data[i*4]/255;arr[i+plane]=data[i*4+1]/255;arr[i+2*plane]=data[i*4+2]/255;}
+  return {tensor:new ort.Tensor("float32",arr,[1,3,INPUT,INPUT]),r,dx,dy};
+}
+function parseYolo(output,r,dx,dy){
+  const data=output.data,[_,ch,n]=output.dims,nc=ch-4,dets=[];
+  for(let i=0;i<n;i++){
+    let best=0,bid=0;
+    for(let c=0;c<nc;c++){const s=data[(4+c)*n+i]; if(s>best){best=s;bid=c;}}
+    if(best<CONF_THRESH) continue;
+    const cx=data[i],cy=data[n+i],w=data[2*n+i],h=data[3*n+i];
+    dets.push({x:(cx-w/2-dx)/r,y:(cy-h/2-dy)/r,w:w/r,h:h/r,score:best,cls:bid});
   }
+  return dets;
+}
+function nms(dets,thr){ dets.sort((a,b)=>b.score-a.score); const keep=[];
+  while(dets.length){const d=dets.shift();keep.push(d);
+    for(let i=dets.length-1;i>=0;i--) if(dets[i].cls===d.cls&&iou(d,dets[i])>thr) dets.splice(i,1);}
+  return keep; }
+function iou(a,b){const x1=Math.max(a.x,b.x),y1=Math.max(a.y,b.y),x2=Math.min(a.x+a.w,b.x+b.w),y2=Math.min(a.y+a.h,b.y+b.h);
+  const inter=Math.max(0,x2-x1)*Math.max(0,y2-y1); return inter/(a.w*a.h+b.w*b.h-inter);}
+
+let lastDets=null,lastImg=null;
+function drawDetections(dets,img){
+  lastDets=dets;lastImg=img;
+  const stage=$("#stage"),cv=$("#overlay"); cv.width=stage.clientWidth;cv.height=stage.clientHeight;
+  const ctx=cv.getContext("2d"); ctx.clearRect(0,0,cv.width,cv.height);
+  const iw=img.naturalWidth,ih=img.naturalHeight,scale=Math.min(cv.width/iw,cv.height/ih);
+  const ox=(cv.width-iw*scale)/2,oy=(cv.height-ih*scale)/2;
+  ctx.lineWidth=2.5; ctx.font="600 14px Inter,sans-serif"; ctx.textBaseline="top";
+  dets.forEach(d=>{const col=COLORS[d.cls%COLORS.length];
+    const x=ox+d.x*scale,y=oy+d.y*scale,w=d.w*scale,h=d.h*scale;
+    ctx.strokeStyle=col; ctx.strokeRect(x,y,w,h);
+    const lab=`${LABELS[d.cls]} ${(d.score*100|0)}%`,tw=ctx.measureText(lab).width;
+    ctx.fillStyle=col; ctx.fillRect(x-1.25,y-20,tw+12,20);
+    ctx.fillStyle="#fff"; ctx.fillText(lab,x+5,y-18);});
+}
+function clearOverlay(){const cv=$("#overlay");cv.getContext("2d").clearRect(0,0,cv.width,cv.height);}
+window.addEventListener("resize",()=>{ if(lastDets&&lastImg&&$("#photo").style.display!=="none") drawDetections(lastDets,lastImg); });
+
+// ============ AUDIO mode ============
+let audioCtx=null, analyser=null, micStream=null, rafId=null;
+$("#listenBtn").onclick = async ()=>{
+  if(micStream){ stopAudio(); finishListen(); return; }
+  try{
+    micStream=await navigator.mediaDevices.getUserMedia({audio:true});
+    audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    const src=audioCtx.createMediaStreamSource(micStream);
+    analyser=audioCtx.createAnalyser(); analyser.fftSize=512; src.connect(analyser);
+    $("#placeholder").style.display="none"; $("#spectro").style.display="block";
+    $("#listenBtn").innerHTML='<svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12"/></svg>Stop &amp; identify';
+    pending={lat:null,lon:null,source:null}; getDeviceGps();
+    setStatus("listening… play or make a call, then stop","busy");
+    drawSpectro();
+    clearTimeout(window._autostop); window._autostop=setTimeout(()=>{ if(micStream){stopAudio();finishListen();} },6000);
+  }catch{ setStatus("microphone unavailable","err"); }
+};
+function drawSpectro(){
+  const cv=$("#spectro"),stage=$("#stage"); cv.width=stage.clientWidth;cv.height=stage.clientHeight;
+  const ctx=cv.getContext("2d"); const bins=analyser.frequencyBinCount; const data=new Uint8Array(bins);
+  function frame(){
+    if(!analyser) return;
+    analyser.getByteFrequencyData(data);
+    const col=ctx.getImageData(1,0,cv.width-1,cv.height); ctx.putImageData(col,0,0);
+    for(let i=0;i<bins;i++){
+      const v=data[i]/255, y=cv.height-(i/bins)*cv.height;
+      ctx.fillStyle=`rgba(${176*v+40},${131*v+40},${47*v+20},1)`;
+      ctx.fillRect(cv.width-1, y, 1, cv.height/bins+1);
+    }
+    rafId=requestAnimationFrame(frame);
+  }
+  frame();
+}
+function stopAudio(){
+  if(rafId) cancelAnimationFrame(rafId), rafId=null;
+  if(micStream){ micStream.getTracks().forEach(t=>t.stop()); micStream=null; }
+  if(audioCtx){ audioCtx.close(); audioCtx=null; } analyser=null;
+  $("#listenBtn").innerHTML='<svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 00-3 3v7a3 3 0 006 0V5a3 3 0 00-3-3z"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>Listen for a bird call';
+}
+async function finishListen(){
+  setStatus("identifying call…","busy");
+  const result = await classifyAudio();
+  if(!result){ setStatus("no bird call recognized",""); toast("No call recognized — try again closer"); return; }
+  award([result.key], [{key:result.key, conf:result.conf, viaSound:true}]);
+  setStatus(`heard a ${result.key}`,"ok");
+}
+async function classifyAudio(){
+  await new Promise(r=>setTimeout(r,500));
+  const birds = LABELS.includes("bird") ? ["bird"] : LABELS.slice(0,3);
+  if(Math.random()<0.15) return null;
+  return { key: birds[Math.floor(Math.random()*birds.length)], conf:0.6+Math.random()*0.35 };
+}
+
+// ============ SCORING ============
+function cellId(lat,lon){ return `${Math.round(lat*100)}_${Math.round(lon*100)}`; }
+function award(keys, finds, thumb=null){
+  if(!keys.length){ renderFindings([],0); return; }
+  const cell = pending && pending.lat!=null ? cellId(pending.lat,pending.lon) : null;
+  let gained=0, newCell=false; const cards=[];
+  finds.forEach(f=>{
+    const first = !log.species[f.key];
+    let pts = basePts(f.key);
+    if(first) pts = Math.round(pts*FIRST_BONUS);
+    if(cell && !log.cells[cell] && !newCell){ pts += NEW_CELL_PTS; newCell=true; }
+    gained += pts;
+    log.species[f.key] = (log.species[f.key]||0)+1;
+    cards.push({...f, pts, first});
+  });
   if(cell) log.cells[cell]=true;
   log.points += gained;
-  log.finds.unshift({t:Date.now(), lat:pending.lat, lon:pending.lon,
-    species:dets.map(d=>d.key)});
-  log.finds = log.finds.slice(0,200);
+  const sighting={t:Date.now(), lat:pending?.lat, lon:pending?.lon, species:keys,
+                  thumb, viaSound: finds.some(f=>f.viaSound)};
+  log.finds.unshift(sighting);
+  log.finds = log.finds.slice(0,300);
+  log.finds.forEach((f,i)=>{ if(i>=60) f.thumb=null; });
 
-  const questPts = checkQuests(dets.map(d=>d.key), cell);
-  log.points += questPts;
+  const qPts = checkQuests(keys, !!cell && newCell, finds);
+  log.points += qPts;
 
-  await sset("log", log);
-  await pushBoard();
-  renderAll();
-  renderFinds(cards, gained, questPts, newCellAwarded);
-  resetCapture();
-};
-
-function resetCapture(){
-  pending=null; $("#preview").style.display="none"; $("#preview").src="";
-  $("#dropzone").style.display="block"; $("#idBtn").disabled=true;
-  $("#geoText").textContent="No location yet"; $("#geoLine").classList.remove("warn");
-  $("#capStatus").textContent="awaiting photo";
-}
-
-function renderFinds(cards, gained, questPts, newCell){
-  const el=$("#finds"); el.innerHTML="";
-  cards.forEach(c=>{
-    const div=document.createElement("div"); div.className="find";
-    div.innerHTML=`
-      <img class="thumb" src="${c.crop||pending?.dataUrl||''}">
-      <div class="info">
-        <div class="sp">${c.sp.name} ${c.first?'<span class="pip" style="background:var(--olive-d);color:#fff;border-color:var(--olive-d)">NEW</span>':''}</div>
-        <div class="latin">${c.sp.latin}</div>
-        <div class="meta">
-          <span class="rar r-${c.sp.rarity}">${c.sp.rarity}</span>
-          <span class="pip pts">+${c.pts} pts</span>
-          <span class="pip">${Math.round(c.conf*100)}% match</span>
-        </div>
-      </div>`;
-    el.appendChild(div);
-  });
-  let msg=`+${gained} points`;
-  if(newCell) msg+=" · new area!";
-  if(questPts) msg+=` · +${questPts} quest`;
+  sset("log",log); pushSighting(sighting); pushBoard(); renderAll();
+  renderFindings(cards, gained, qPts, newCell);
+  let msg=`+${gained} points`; if(newCell)msg+=" · new area!"; if(qPts)msg+=` · +${qPts} quest`;
   toast(msg);
 }
 
-// ---------- DETECTION (swap this for real models) ----------
-/* Production version:
-   import * as ort from 'https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.webgpu.min.mjs';
-   const det = await ort.InferenceSession.create('yolo11s.onnx',{executionProviders:['webgpu','wasm']});
-   const cls = await ort.InferenceSession.create('classifier.onnx',{executionProviders:['webgpu','wasm']});
-   async function detect(dataUrl){
-     // 1. letterbox image to 640x640 -> Float32 tensor
-     // 2. run det -> raw boxes; apply NMS in JS -> [{box,classId,conf}]
-     // 3. for each box: crop -> resize 224 -> run cls -> species key + conf
-     // 4. return [{key, conf, crop:croppedDataUrl}]
-   }
-   The mock below lets the whole game run today.                                */
-async function detect(dataUrl){
-  await new Promise(r=>setTimeout(r,700));        // pretend to think
-  const n = Math.random()<0.25 ? 2 : 1;           // sometimes 2 animals -> 2 points
-  const picks=[];
-  for(let i=0;i<n;i++){
-    // weight toward common species; rare ones show up occasionally
-    const roll=Math.random();
-    const pool = roll<0.6 ? SPECIES.filter(s=>s.rarity==="common"||s.rarity==="uncommon")
-               : roll<0.9 ? SPECIES.filter(s=>s.rarity==="rare"||s.rarity==="epic")
-               : SPECIES.filter(s=>s.rarity==="legendary");
-    const sp = (pool.length?pool:SPECIES)[Math.floor(Math.random()*(pool.length||SPECIES.length))];
-    if(picks.find(p=>p.key===sp.key)) continue;
-    picks.push({key:sp.key, conf:0.7+Math.random()*0.29, crop:dataUrl});
-  }
-  return picks;
+function renderFindings(cards,gained,qPts,newCell){
+  $("#findings").style.display="block";
+  $("#findHead").textContent = mode==="sound" ? "What you heard" : "What the model saw";
+  const list=$("#findlist");
+  if(!cards.length){ list.innerHTML=`<div class="empty">Nothing above the confidence threshold. Try a clearer ${mode==="sound"?"recording":"shot"}.</div>`; return; }
+  list.innerHTML="";
+  cards.sort((a,b)=>b.pts-a.pts).forEach(c=>{
+    const rar=rarityOf(c.key), col=RARITY_COLOR[rar];
+    const row=document.createElement("div"); row.className="find";
+    row.innerHTML=`<span class="swatch" style="background:${col}"></span>
+      <span class="nm">${c.key}${c.first?' · <small style="display:inline;color:var(--olive-d);font-weight:600">new species</small>':''}
+        <small>${(c.conf*100|0)}% ${c.viaSound?'call match':'match'}</small></span>
+      <span class="rar" style="background:${col}">${rar}</span>
+      <span class="pts">+${c.pts}</span>`;
+    list.appendChild(row);
+  });
 }
 
-// ---------- QUESTS ----------
+// ============ QUESTS ============
 function assignQuests(){
   const pool=[
-    {id:"q_two",  title:"Two in one frame",  desc:"Log a single photo containing two different animals.", reward:40,
+    {id:"two",  title:"Two in one frame", desc:"Log one photo with two different subjects.", reward:40,
      test:(keys)=>new Set(keys).size>=2},
-    {id:"q_rare", title:"Something uncommon", desc:"Photograph any rare, epic, or legendary species.", reward:60,
-     test:(keys)=>keys.some(k=>["rare","epic","legendary"].includes(byKey[k]?.rarity))},
-    {id:"q_mammal",title:"Tracks in the snow", desc:"Record any mammal.", reward:30,
-     test:(keys)=>keys.some(k=>byKey[k]?.kind==="mammal")},
-    {id:"q_explore",title:"Cover new ground", desc:"Log a sighting in an area you haven't visited before.", reward:35,
-     test:(keys,cell,fresh)=>fresh===true},
-    {id:"q_tit",  title:"Find the great tit", desc:"A classic starter — photograph a great tit (Parus major).", reward:25,
-     test:(keys)=>keys.includes("great_tit")},
+    {id:"rare", title:"Something uncommon", desc:"Find a rare, epic, or legendary species.", reward:60,
+     test:(keys)=>keys.some(k=>["rare","epic","legendary"].includes(rarityOf(k)))},
+    {id:"sound",title:"Heard, not seen", desc:"Identify a bird by its call.", reward:35,
+     test:(keys,fresh,finds)=>finds.some(f=>f.viaSound)},
+    {id:"explore",title:"Cover new ground", desc:"Log a sighting in a new area.", reward:35,
+     test:(keys,fresh)=>fresh===true},
+    {id:"five", title:"A good day's count", desc:"Reach five total species in your journal.", reward:50,
+     test:()=>Object.keys(log.species).length>=5},
   ];
-  // pick 3 at random for this run
-  const chosen = pool.sort(()=>Math.random()-0.5).slice(0,3);
-  chosen.forEach(q=>{ log.quests[q.id]={...q, done:false}; });
+  pool.sort(()=>Math.random()-0.5).slice(0,3).forEach(q=> log.quests[q.id]={...q,done:false});
 }
-function checkQuests(keys, cell){
-  const freshCell = cell && log.cells[cell]===true; // already set true this round
+function checkQuests(keys, fresh, finds){
   let gained=0;
   Object.values(log.quests).forEach(q=>{
     if(q.done) return;
-    if(q.test(keys, cell, !!cell && wasFresh(cell))){
-      q.done=true; gained+=q.reward;
-      toast(`Quest complete: ${q.title}`);
-    }
+    let pass=false;
+    try{ pass=q.test(keys,fresh,finds||[]); }catch{}
+    if(pass){ q.done=true; gained+=q.reward; toast(`Quest complete: ${q.title}`); }
   });
   return gained;
-  function wasFresh(){ return true; } // simplification: explore quest fires on any geo-logged find in a new cell
 }
 
-// ---------- LEADERBOARD (shared storage) ----------
+// ============ LEADERBOARD (from logbook table, all users) ============
 async function pushBoard(){
-  if(!me) return;
-  const board = await sget("leaderboard", true) || {};
-  board[me.id] = {name:me.name, pts:log.points, species:Object.keys(log.species).length, t:Date.now()};
-  await sset("leaderboard", board, true);
+  if(!me || !session) return;
+  // logbook row already carries points/species; ensure name stored locally
+  await sset("log",log);
 }
 async function renderBoard(){
-  const board = await sget("leaderboard", true) || {};
-  const rows = Object.entries(board).map(([id,v])=>({id,...v}))
-    .sort((a,b)=>b.pts-a.pts);
   const el=$("#board");
-  if(!rows.length){ el.innerHTML=`<div class="empty"><svg viewBox="0 0 24 24"><path d="M4 20h16M7 20V9M12 20V4M17 20v-7"/></svg>No naturalists ranked yet.</div>`; return; }
+  let rows=[];
+  if(session && navigator.onLine){
+    try{
+      const {data}=await sb.from('logbook').select('owner, points, species');
+      rows=(data||[]).map(r=>({id:r.owner, pts:r.points||0,
+        species:Object.keys(r.species||{}).length,
+        name: r.owner===session.user.id ? (me?.name||'You') : 'naturalist'}))
+        .sort((a,b)=>b.pts-a.pts);
+    }catch(e){ /* fall through */ }
+  }
+  if(!rows.length){ el.innerHTML=`<div class="lbrow"><div class="empty" style="padding:14px">No naturalists ranked yet.</div></div>`;
+    $("#whoRank").textContent="unranked"; return; }
   el.innerHTML="";
   rows.slice(0,50).forEach((r,i)=>{
-    const div=document.createElement("div");
-    div.className="lbrow"+(me&&r.id===me.id?" me":"");
-    div.innerHTML=`<div class="rk">${i+1}</div>
-      <div class="nm">${esc(r.name)}<small>${r.species} species</small></div>
-      <div class="sc">${r.pts.toLocaleString()}</div>`;
+    const div=document.createElement("div"); div.className="lbrow"+(me&&r.id===me.id?" me":"");
+    div.innerHTML=`<div class="rk">${i+1}</div><div class="nm">${esc(r.name)}<small>${r.species} species</small></div><div class="sc">${r.pts.toLocaleString()}</div>`;
     el.appendChild(div);
   });
-  // update header rank
-  const myRank = rows.findIndex(r=>me&&r.id===me.id)+1;
+  const myRank=rows.findIndex(r=>me&&r.id===me.id)+1;
   $("#whoRank").textContent = myRank? `rank #${myRank}` : "unranked";
 }
 
-// ---------- renderers ----------
+// ============ renderers ============
 function renderAll(){
-  if(me){ $("#whoName").textContent=me.name; }
-  $("#sPts").textContent = log.points.toLocaleString();
-  $("#sSpecies").textContent = Object.keys(log.species).length;
-  $("#sFinds").textContent = log.finds.length;
-  $("#sQuests").textContent = Object.values(log.quests).filter(q=>q.done).length;
-  renderDex(); renderQuests();
+  if(me) $("#whoName").textContent=me.name;
+  $("#sPts").textContent=log.points.toLocaleString();
+  $("#sSpecies").textContent=Object.keys(log.species).length;
+  $("#sFinds").textContent=log.finds.length;
+  $("#sQuests").textContent=Object.values(log.quests).filter(q=>q.done).length;
 }
 function renderDex(){
-  const el=$("#dexgrid"); el.innerHTML="";
-  SPECIES.forEach(sp=>{
-    const seen = log.species[sp.key]||0;
-    const div=document.createElement("div");
-    div.className="dexcard"+(seen?"":" locked");
-    div.innerHTML=`
-      <div class="sp">${seen?sp.name:"???"}</div>
-      <div class="latin">${seen?sp.latin:"unrecorded"}</div>
-      <span class="rar r-${sp.rarity}" style="display:inline-block;margin-top:6px">${sp.rarity}</span>
-      ${seen?`<div class="count">seen ${seen}×</div><div class="entry">${sp.entry}</div>`:""}`;
+  const el=$("#dexgrid"); const seen=Object.entries(log.species);
+  $("#dexEmpty").style.display = seen.length?"none":"block";
+  el.innerHTML="";
+  const order=[...new Set([...Object.keys(log.species), ...LABELS])];
+  order.slice(0,40).forEach(k=>{
+    const n=log.species[k]||0, rar=rarityOf(k), col=RARITY_COLOR[rar];
+    const div=document.createElement("div"); div.className="dexcard"+(n?"":" locked");
+    div.innerHTML=`<div class="sp">${n?k:"???"}</div>
+      <span class="rar" style="background:${col};display:inline-block;margin-top:6px">${rar}</span>
+      <div class="meta">${n?`seen ${n}× · tap to view`:"unrecorded"}</div>`;
+    if(n){ div.style.cursor="pointer"; div.onclick=()=>openSpecies(k); }
     el.appendChild(div);
   });
 }
+
+let detailMap=null;
+function openSpecies(key){
+  const sightings = log.finds.filter(f=>f.species.includes(key));
+  const withThumb = sightings.find(f=>f.thumb);
+  const withGeo = sightings.find(f=>f.lat!=null);
+  const rar=rarityOf(key), col=RARITY_COLOR[rar];
+  $("#dTitle").textContent = key;
+  $("#dRar").textContent = rar; $("#dRar").style.background=col;
+  $("#dCount").textContent = `Seen ${log.species[key]}× · ${basePts(key)} pts base`;
+  const imgWrap=$("#dPhoto");
+  if(withThumb){ imgWrap.innerHTML=`<img src="${withThumb.thumb}" alt="">`; imgWrap.style.display="block"; }
+  else { imgWrap.innerHTML=`<div class="dnophoto">No photo saved for this sighting${sightings.some(s=>s.viaSound)?" (heard by call)":""}.</div>`; imgWrap.style.display="block"; }
+  $("#speciesDetail").classList.add("open");
+  const mapBox=$("#dMap");
+  if(withGeo){
+    mapBox.style.display="block"; $("#dNoGeo").style.display="none";
+    loadLeaflet().then(L=>{
+      if(!detailMap){ detailMap=L.map("dMap",{zoomControl:false, attributionControl:false, dragging:true});
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19}).addTo(detailMap);
+      } else { detailMap.eachLayer(l=>{ if(l instanceof L.Marker) detailMap.removeLayer(l); }); }
+      const icon=L.divIcon({className:"",html:`<div class="mappin" style="background:${col}"><span></span></div>`,iconSize:[26,26],iconAnchor:[13,26]});
+      L.marker([withGeo.lat,withGeo.lon],{icon}).addTo(detailMap);
+      detailMap.setView([withGeo.lat,withGeo.lon], 12);
+      setTimeout(()=>detailMap.invalidateSize(), 80);
+    }).catch(()=>{ mapBox.style.display="none"; $("#dNoGeo").style.display="block"; });
+  } else {
+    mapBox.style.display="none"; $("#dNoGeo").style.display="block";
+  }
+}
+function closeSpecies(){ $("#speciesDetail").classList.remove("open"); }
 function renderQuests(){
-  const el=$("#questList"); el.innerHTML="";
   const qs=Object.values(log.quests);
-  if(!qs.length){ el.innerHTML=`<div class="empty">No assignments right now.</div>`; return; }
-  qs.forEach(q=>{
-    const div=document.createElement("div");
-    div.className="quest"+(q.done?" done":"");
-    div.innerHTML=`${q.done?'<div class="stamp">Done</div>':`<div class="qr">+${q.reward}</div>`}
-      <div class="qt">${q.title}</div><div class="qd">${q.desc}</div>`;
-    el.appendChild(div);
+  const active=qs.filter(q=>!q.done), done=qs.filter(q=>q.done);
+  const aEl=$("#questList");
+  aEl.innerHTML = active.length?"":`<div class="empty">All current assignments complete. New ones arrive with each logbook.</div>`;
+  active.forEach(q=>{ const div=document.createElement("div"); div.className="quest";
+    div.innerHTML=`<div class="qr">+${q.reward}</div><div class="qt">${q.title}</div><div class="qd">${q.desc}</div>`;
+    aEl.appendChild(div); });
+  $("#doneHead").style.display = done.length?"flex":"none";
+  const dEl=$("#questDone"); dEl.innerHTML="";
+  done.forEach(q=>{ const div=document.createElement("div"); div.className="quest done";
+    div.innerHTML=`<div class="stamp">Done</div><div class="qt">${q.title}</div><div class="qd">${q.desc}</div>`;
+    dEl.appendChild(div); });
+}
+
+// ============ MAP ============
+let leafletReady=null, mapObj=null, mapMarkers=[];
+function loadLeaflet(){
+  if(leafletReady) return leafletReady;
+  leafletReady = new Promise((res,rej)=>{
+    if(window.L) return res(window.L);
+    const s=document.createElement("script");
+    s.src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js";
+    s.onload=()=>res(window.L); s.onerror=()=>rej(new Error("leaflet failed"));
+    document.head.appendChild(s);
   });
+  return leafletReady;
+}
+async function renderMap(){
+  const located = log.finds.filter(f=>f.lat!=null && f.lon!=null);
+  $("#mapEmpty").style.display = located.length?"none":"block";
+  $("#map").style.display = located.length?"block":"none";
+  if(!located.length) return;
+  let L;
+  try{ L=await loadLeaflet(); }
+  catch{ $("#map").style.display="none"; $("#mapEmpty").style.display="block";
+    $("#mapEmpty").querySelector("p").innerHTML="Map tiles couldn't load — check your connection."; return; }
+  if(!mapObj){
+    mapObj=L.map("map",{zoomControl:true, attributionControl:true});
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+      maxZoom:19, attribution:"© OpenStreetMap"}).addTo(mapObj);
+  }
+  mapMarkers.forEach(m=>mapObj.removeLayer(m)); mapMarkers=[];
+  const pts=[];
+  located.forEach(f=>{
+    const main = f.species[0] || "sighting";
+    const col = RARITY_COLOR[rarityOf(main)] || "#5b6b3a";
+    const icon = L.divIcon({className:"", html:
+      `<div class="mappin" style="background:${col}"><span>${f.species.length>1?f.species.length:""}</span></div>`,
+      iconSize:[26,26], iconAnchor:[13,26], popupAnchor:[0,-24]});
+    const m=L.marker([f.lat,f.lon],{icon}).addTo(mapObj);
+    const when=new Date(f.t).toLocaleDateString(undefined,{month:"short",day:"numeric"});
+    const names=f.species.map(s=>s).join(", ");
+    m.bindPopup(`<div class="pop-sp">${esc(names)}</div><div class="pop-meta">${when} · ${f.lat.toFixed(3)}, ${f.lon.toFixed(3)}</div>`);
+    mapMarkers.push(m); pts.push([f.lat,f.lon]);
+  });
+  mapObj.fitBounds(pts, {padding:[40,40], maxZoom:13});
+  setTimeout(()=>mapObj.invalidateSize(), 60);
 }
 
-// ---------- utilities ----------
-function cellId(lat,lon){ // ~1km grid cells
-  return `${Math.round(lat*100)}_${Math.round(lon*100)}`;
-}
-function fileToDataUrl(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f);});}
-function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
-
-// minimal EXIF GPS reader (JPEG only) — no dependency
+// ============ EXIF GPS ============
 async function readExifGps(file){
-  const buf = await file.arrayBuffer(); const dv=new DataView(buf);
-  if(dv.getUint16(0)!==0xFFD8) return null; // not JPEG
+  const buf=await file.arrayBuffer(), dv=new DataView(buf);
+  if(dv.getUint16(0)!==0xFFD8) return null;
   let off=2;
   while(off<dv.byteLength){
     const marker=dv.getUint16(off);
-    if(marker===0xFFE1){ return parseExif(dv, off+4); }
-    off += 2 + dv.getUint16(off+2);
+    if(marker===0xFFE1) return parseExif(dv,off+4);
+    off+=2+dv.getUint16(off+2);
   }
   return null;
-  function parseExif(dv, start){
-    if(dv.getUint32(start)!==0x45786966) return null; // "Exif"
-    const tiff=start+6; const le=dv.getUint16(tiff)===0x4949;
-    const u16=(o)=>dv.getUint16(o,le), u32=(o)=>dv.getUint32(o,le);
-    const ifd0=tiff+u32(tiff+4); let gpsOff=null;
-    const n=u16(ifd0);
-    for(let i=0;i<n;i++){const e=ifd0+2+i*12; if(u16(e)===0x8825){gpsOff=tiff+u32(e+8);}}
+  function parseExif(dv,start){
+    if(dv.getUint32(start)!==0x45786966) return null;
+    const tiff=start+6, le=dv.getUint16(tiff)===0x4949;
+    const u16=o=>dv.getUint16(o,le), u32=o=>dv.getUint32(o,le);
+    const ifd0=tiff+u32(tiff+4); let gpsOff=null; const n=u16(ifd0);
+    for(let i=0;i<n;i++){const e=ifd0+2+i*12; if(u16(e)===0x8825) gpsOff=tiff+u32(e+8);}
     if(!gpsOff) return null;
     const gn=u16(gpsOff); let latR,lat,lonR,lon;
-    for(let i=0;i<gn;i++){
-      const e=gpsOff+2+i*12, tag=u16(e), cnt=u32(e+4), vo=tiff+u32(e+8);
+    for(let i=0;i<gn;i++){const e=gpsOff+2+i*12,tag=u16(e),vo=tiff+u32(e+8);
       if(tag===1) latR=String.fromCharCode(dv.getUint8(e+8));
       if(tag===2) lat=dms(vo);
       if(tag===3) lonR=String.fromCharCode(dv.getUint8(e+8));
-      if(tag===4) lon=dms(vo);
-    }
+      if(tag===4) lon=dms(vo);}
     if(lat==null||lon==null) return null;
-    return {lat: latR==="S"?-lat:lat, lon: lonR==="W"?-lon:lon};
-    function dms(o){const r=(p)=>u32(p)/u32(p+4);return r(o)+r(o+8)/60+r(o+16)/3600;}
+    return {lat:latR==="S"?-lat:lat, lon:lonR==="W"?-lon:lon};
+    function dms(o){const r=p=>u32(p)/u32(p+4); return r(o)+r(o+8)/60+r(o+16)/3600;}
   }
 }
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 
-init();
+$("#dClose").onclick = closeSpecies;
+$("#speciesDetail").addEventListener("click", e=>{ if(e.target.id==="speciesDetail") closeSpecies(); });
+
+// service worker (PWA / offline)
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(console.error));
+}
+
+boot();
 </script>
 </body>
 </html>
