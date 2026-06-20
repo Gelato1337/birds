@@ -44,7 +44,26 @@
 <header>
   <h1>Box <em>labeler</em></h1>
   <div class="progress" id="progress"></div>
+  <div style="display:flex;gap:8px">
+    <button class="btn ghost" id="reviewBtn" style="padding:6px 12px;font-size:12px">Review labels</button>
+    <a class="btn" href="./index.html" style="padding:6px 12px;font-size:12px;text-decoration:none;display:flex;align-items:center">← App</a>
+  </div>
 </header>
+
+<!-- review gallery overlay -->
+<div id="review" style="display:none;position:fixed;inset:0;z-index:50;background:var(--paper);overflow-y:auto;padding:16px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+    <h2 style="font-family:'Fraunces',serif;font-weight:900;font-size:22px">Your labels</h2>
+    <button class="btn ghost" id="reviewClose" style="padding:6px 12px">Close</button>
+  </div>
+  <div id="reviewFilters" style="display:flex;gap:8px;margin-bottom:12px;font-size:12px">
+    <button class="btn ghost rf on" data-f="all" style="padding:6px 10px">All</button>
+    <button class="btn ghost rf" data-f="boxed" style="padding:6px 10px">Boxed</button>
+    <button class="btn ghost rf" data-f="noise" style="padding:6px 10px">Noise</button>
+  </div>
+  <div id="reviewStats" style="font-size:12px;color:var(--ink-soft);margin-bottom:12px"></div>
+  <div id="reviewGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px"></div>
+</div>
 
 <div class="setup" id="setup">
   <h2>Hand-label the misses</h2>
@@ -380,6 +399,76 @@ window.addEventListener("keydown",e=>{
   else if(e.key==="d"||e.key==="D"){ boxes.pop(); draw(); renderBoxes(); }
 });
 window.addEventListener("resize",()=>{ if($("#workspace").style.display!=="none"&&img.naturalWidth){fit();draw();} });
+
+// ---------- REVIEW gallery: see all labels, assess quality, re-open to fix ----------
+let reviewFilter="all", reviewRows=[];
+$("#reviewBtn").onclick = openReview;
+$("#reviewClose").onclick = ()=>{ $("#review").style.display="none"; };
+document.querySelectorAll(".rf").forEach(b=> b.onclick=()=>{
+  reviewFilter=b.dataset.f;
+  document.querySelectorAll(".rf").forEach(x=>x.classList.toggle("on",x===b));
+  renderReview();
+});
+async function openReview(){
+  $("#review").style.display="block";
+  $("#reviewGrid").innerHTML="<p style='color:var(--ink-soft)'>loading…</p>";
+  try{
+    const {data,error}=await window._sb.from('labels').select('stem,split,lines,updated_at').order('updated_at',{ascending:false});
+    if(error) throw error;
+    reviewRows=data||[];
+  }catch(e){ $("#reviewGrid").innerHTML="<p style='color:var(--accent)'>couldn't load: "+e.message+"</p>"; return; }
+  renderReview();
+}
+function renderReview(){
+  const base = window._imgBase || "";
+  const boxed = reviewRows.filter(r=>r.lines && r.lines.length);
+  const noise = reviewRows.filter(r=>!r.lines || !r.lines.length);
+  $("#reviewStats").textContent = `${reviewRows.length} labeled · ${boxed.length} with boxes · ${noise.length} marked noise`;
+  let rows = reviewFilter==="boxed"?boxed : reviewFilter==="noise"?noise : reviewRows;
+  const grid=$("#reviewGrid"); grid.innerHTML="";
+  rows.slice(0,400).forEach(r=>{
+    const cell=document.createElement("div");
+    cell.style.cssText="border:1.5px solid var(--ink);background:var(--paper-2);cursor:pointer;position:relative";
+    const isNoise=!r.lines||!r.lines.length;
+    cell.innerHTML = `<div style="position:relative">
+        <img src="${base}${r.stem}.jpg" loading="lazy" style="width:100%;display:block;aspect-ratio:1;object-fit:cover"
+             onerror="this.style.opacity=.2">
+        <canvas class="rvov" data-lines='${JSON.stringify(r.lines||[])}' style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+      </div>
+      <div style="font-size:10px;padding:3px 5px;color:${isNoise?'var(--accent)':'var(--ink-soft)'}">
+        ${isNoise?'NOISE':r.lines.length+' box'+(r.lines.length>1?'es':'')}</div>`;
+    cell.onclick = ()=> reopenForEdit(r);
+    grid.appendChild(cell);
+    // draw boxes on the mini canvas once the image lays out
+    const im=cell.querySelector("img"), cv=cell.querySelector(".rvov");
+    im.addEventListener("load",()=>{
+      cv.width=im.clientWidth; cv.height=im.clientHeight;
+      const ctx=cv.getContext("2d"); (r.lines||[]).forEach(l=>{
+        const [c,cx,cy,w,h]=l.split(" ").map(Number);
+        ctx.lineWidth=2; ctx.strokeStyle=COL[c]||"#9b3b54";
+        ctx.strokeRect((cx-w/2)*cv.width,(cy-h/2)*cv.height,w*cv.width,h*cv.height);
+      });
+    });
+  });
+  if(!rows.length) grid.innerHTML="<p style='color:var(--ink-soft)'>none in this filter.</p>";
+}
+// clicking a reviewed label jumps the labeler to that image so you can fix it
+function reopenForEdit(r){
+  $("#review").style.display="none";
+  // ensure it's in the current misses list; if not, inject it
+  let i = misses.findIndex(m=>m.stem===r.stem);
+  if(i<0){
+    misses.unshift({stem:r.stem, file:r.stem+".jpg", split:r.split,
+      species:"(re-edit)", coarse:"bird", path:(window._imgBase||"")+r.stem+".jpg"});
+    i=0;
+  }
+  // preload its existing boxes so they're editable, not blank
+  saved[r.stem] = saved[r.stem] || {split:r.split, lines:r.lines||[],
+    boxes:(r.lines||[]).map(l=>{const[c,cx,cy,w,h]=l.split(" ").map(Number);
+      return {cls:c,x:cx-w/2,y:cy-h/2,w,h};})};
+  idx=i; load();
+}
+
 </script>
 </body>
 </html>

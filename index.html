@@ -158,6 +158,24 @@
     color:var(--ink-soft);cursor:pointer;font-family:'Fraunces',serif}
   .dhead{display:flex;align-items:center;gap:12px;padding-right:40px}
   .dtitle{font-family:'Fraunces',serif;font-weight:900;font-size:26px;text-transform:capitalize;letter-spacing:-.5px}
+  .dsci{font-style:italic;font-size:13px;color:var(--ink-soft);margin-top:2px}
+  .dfi{font-size:13px;color:var(--olive-d);font-weight:600;margin-top:1px}
+  .dstats{display:flex;border:1.5px solid var(--ink);margin-top:14px}
+  .dstat{flex:1;padding:9px 6px;text-align:center;border-right:1.5px solid var(--ink)}
+  .dstat:last-child{border-right:0}
+  .dsl{font-size:8.5px;text-transform:uppercase;letter-spacing:1.2px;color:var(--ink-soft)}
+  .dsv{font-family:'Fraunces',serif;font-weight:600;font-size:15px;margin-top:3px}
+  .dsummary{margin-top:15px;font-size:14px;line-height:1.55;color:var(--ink)}
+  .ddrop{width:100%;margin-top:16px;background:var(--olive-d);color:var(--paper);border:1.5px solid var(--ink);
+    padding:12px 14px;cursor:pointer;font-family:'Fraunces',serif;font-weight:600;font-size:14px;
+    display:flex;justify-content:space-between;align-items:center}
+  .ddarrow{transition:transform .2s}
+  .ddrop.open .ddarrow{transform:rotate(180deg)}
+  .ddbody{border:1.5px solid var(--ink);border-top:0;padding:4px 14px 6px}
+  .ddrow{padding:11px 0;border-bottom:1px dashed var(--line)}
+  .ddrow:last-child{border-bottom:0}
+  .ddlabel{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--ink-soft);margin-bottom:3px}
+  .ddtext{font-size:13.5px;line-height:1.5}
   .dcount{font-size:12px;color:var(--ink-soft);margin-top:5px;letter-spacing:.3px}
   .dphoto{margin-top:15px;border:1.5px solid var(--ink);background:var(--paper-2);overflow:hidden}
   .dphoto img{width:100%;display:block}
@@ -258,6 +276,11 @@
           <button class="btn ghost" id="uploadBtn" disabled><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L8 8m4-4l4 4M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>Upload</button>
         </div>
         <button class="btn wide" id="shootBtn" style="display:none"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/></svg>Capture &amp; detect</button>
+        <div id="zoomWrap" style="display:none;margin-top:8px;align-items:center;gap:10px">
+          <span style="font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:1px">Zoom</span>
+          <input type="range" id="zoomSlider" min="1" max="5" step="0.1" value="1" style="flex:1">
+          <span id="zoomVal" style="font-size:12px;font-family:'Fraunces',serif;min-width:32px">1.0×</span>
+        </div>
       </div>
 
       <div id="soundControls" style="display:none">
@@ -328,16 +351,39 @@
   <div class="sheet">
     <button class="dclose" id="dClose" aria-label="Close">×</button>
     <div class="dhead">
-      <div class="dtitle" id="dTitle">—</div>
+      <div>
+        <div class="dtitle" id="dTitle">—</div>
+        <div class="dsci" id="dSci"></div>
+        <div class="dfi" id="dFi"></div>
+      </div>
       <span class="rar" id="dRar">common</span>
     </div>
     <div class="dcount" id="dCount"></div>
+
+    <!-- size stats row: length/wingspan/weight -->
+    <div class="dstats" id="dStats" style="display:none">
+      <div class="dstat"><div class="dsl">Length</div><div class="dsv" id="dLen">—</div></div>
+      <div class="dstat"><div class="dsl">Wingspan</div><div class="dsv" id="dWing">—</div></div>
+      <div class="dstat"><div class="dsl">Weight</div><div class="dsv" id="dWeight">—</div></div>
+    </div>
+
     <div class="dphoto" id="dPhoto"></div>
+
+    <!-- the one thing that's unique / memorable, always visible -->
+    <div class="dsummary" id="dSummary" style="display:none"></div>
+
+    <!-- everything else, collapsed by default -->
+    <button class="ddrop" id="dDropBtn" style="display:none">
+      <span>More about this species</span><span class="ddarrow">▾</span>
+    </button>
+    <div class="ddbody" id="dDropBody" style="display:none"></div>
+
     <div class="dmaplabel">Where you found it</div>
     <div id="dMap"></div>
     <div class="dnophoto" id="dNoGeo" style="display:none">No location recorded for this sighting.</div>
   </div>
 </div>
+
 <div id="toast"></div>
 
 <script type="module">
@@ -346,9 +392,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 /* ============ Supabase config — FILL THESE IN ============
    Project Settings > API in supabase.com. anon key is safe to ship. */
-const SUPABASE_URL = 'https://ljuendcuoruxorjdcdmu.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_ZPJYzhstIt9ccIv-vm7Mhg_pMssWP18';
-
+const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR-ANON-PUBLIC-KEY';
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let session = null;
 
@@ -365,6 +410,7 @@ const RARITY_PTS = {common:10, uncommon:18, rare:35, epic:60, legendary:120};
 const RARITY_COLOR = {common:"#6f7d52",uncommon:"#3f7a8c",rare:"#7d5aa6",epic:"#b5612a",legendary:"#9b3b54"};
 const FIRST_BONUS = 1.5;
 const NEW_CELL_PTS = 25;
+const FRESH_BONUS = 10;   // photo taken within a few minutes (in-the-field)
 
 const INPUT = 640, CONF_THRESH = 0.35, IOU_THRESH = 0.45;
 const COLORS = ["#9b3b54","#5b6b3a","#b0832f","#3b6e8c","#7d5aa6","#b5612a","#467a5b","#8c5a3b"];
@@ -534,17 +580,35 @@ $("#cameraBtn").onclick=async ()=>{
     const v=$("#video"); v.srcObject=stream; await v.play();
     $("#placeholder").style.display="none"; $("#photo").style.display="none"; v.style.display="block";
     clearOverlay(); $("#shootBtn").style.display="flex"; $("#findings").style.display="none";
-    pending={lat:null,lon:null,source:null}; getDeviceGps();
+    pending={lat:null,lon:null,source:null,fromCamera:true}; getDeviceGps();
     setStatus("camera live — frame your subject, then capture");
+    setupZoom();
   }catch{ setStatus("camera unavailable — try upload","err"); }
 };
+// zoom: only works where the browser exposes it (Android Chrome usually;
+// iOS Safari typically does NOT — slider stays hidden there).
+function setupZoom(){
+  const track = stream && stream.getVideoTracks()[0];
+  const caps = track && track.getCapabilities ? track.getCapabilities() : {};
+  const wrap=$("#zoomWrap"), sl=$("#zoomSlider"), val=$("#zoomVal");
+  if(caps && caps.zoom){
+    sl.min=caps.zoom.min; sl.max=caps.zoom.max; sl.step=caps.zoom.step||0.1;
+    sl.value=track.getSettings().zoom||caps.zoom.min;
+    val.textContent=(+sl.value).toFixed(1)+"×";
+    wrap.style.display="flex";
+    sl.oninput=async ()=>{ val.textContent=(+sl.value).toFixed(1)+"×";
+      try{ await track.applyConstraints({advanced:[{zoom:+sl.value}]}); }catch{} };
+  } else {
+    wrap.style.display="none";   // unsupported (e.g. iPhone) — hidden, no broken slider
+  }
+}
 $("#shootBtn").onclick=()=>{
   const v=$("#video"); const c=document.createElement("canvas");
   c.width=v.videoWidth; c.height=v.videoHeight; c.getContext("2d").drawImage(v,0,0);
   const img=$("#photo"); img.onload=()=>{ stopCamera(); showPhoto(); detectPhoto(img); };
   img.src=c.toDataURL("image/jpeg",0.92);
 };
-function stopCamera(){ if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;} $("#video").style.display="none"; $("#shootBtn").style.display="none"; }
+function stopCamera(){ if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;} $("#video").style.display="none"; $("#shootBtn").style.display="none"; $("#zoomWrap").style.display="none"; }
 function showPhoto(){ $("#placeholder").style.display="none"; $("#photo").style.display="block"; }
 
 // ============ GEO ============
@@ -565,6 +629,20 @@ async function readGeo(file){
   const exif = await readExifGps(file).catch(()=>null);
   if(exif) setGeo(exif.lat, exif.lon, "from photo");
   else getDeviceGps();
+  // freshness: was the photo TAKEN within the last few minutes?
+  const taken = await readExifDate(file).catch(()=>null);
+  const FRESH_MIN = 4;
+  if(pending){
+    if(taken){
+      const ageMin = (Date.now() - taken) / 60000;
+      pending.fresh = ageMin <= FRESH_MIN;
+      pending.fromLibrary = ageMin > FRESH_MIN;
+    } else {
+      // no timestamp in the file (screenshot, stripped EXIF). Don't punish,
+      // but can't grant the freshness bonus either.
+      pending.fresh = false; pending.fromLibrary = false;
+    }
+  }
 }
 
 // ============ DETECT (photo) ============
@@ -718,9 +796,13 @@ function award(keys, finds, thumb=null){
     cards.push({...f, pts, first});
   });
   if(cell) log.cells[cell]=true;
+  // freshness: camera shots are always "now"; uploads depend on EXIF age.
+  const isFresh = pending && (pending.fromCamera || pending.fresh);
+  if(isFresh){ gained += FRESH_BONUS; }
   log.points += gained;
   const sighting={t:Date.now(), lat:pending?.lat, lon:pending?.lon, species:keys,
-                  thumb, viaSound: finds.some(f=>f.viaSound)};
+                  thumb, viaSound: finds.some(f=>f.viaSound),
+                  fresh:!!isFresh, fromLibrary: pending?.fromLibrary||false};
   log.finds.unshift(sighting);
   log.finds = log.finds.slice(0,300);
   log.finds.forEach((f,i)=>{ if(i>=60) f.thumb=null; });
@@ -730,7 +812,9 @@ function award(keys, finds, thumb=null){
 
   sset("log",log); pushSighting(sighting); pushBoard(); renderAll();
   renderFindings(cards, gained, qPts, newCell);
-  let msg=`+${gained} points`; if(newCell)msg+=" · new area!"; if(qPts)msg+=` · +${qPts} quest`;
+  let msg=`+${gained} points`; if(newCell)msg+=" · new area!";
+  if(isFresh)msg+=" · fresh +"+FRESH_BONUS; if(pending?.fromLibrary)msg+=" · from library";
+  if(qPts)msg+=` · +${qPts} quest`;
   toast(msg);
 }
 
@@ -842,6 +926,7 @@ function openSpecies(key){
   $("#dTitle").textContent = key;
   $("#dRar").textContent = rar; $("#dRar").style.background=col;
   $("#dCount").textContent = `Seen ${log.species[key]}× · ${basePts(key)} pts base`;
+  populateWiki(key);
   const imgWrap=$("#dPhoto");
   if(withThumb){ imgWrap.innerHTML=`<img src="${withThumb.thumb}" alt="">`; imgWrap.style.display="block"; }
   else { imgWrap.innerHTML=`<div class="dnophoto">No photo saved for this sighting${sightings.some(s=>s.viaSound)?" (heard by call)":""}.</div>`; imgWrap.style.display="block"; }
@@ -863,6 +948,75 @@ function openSpecies(key){
   }
 }
 function closeSpecies(){ $("#speciesDetail").classList.remove("open"); }
+
+// ============ WIKI (species profiles) ============
+let WIKI=null, wikiByName=null;
+async function loadWiki(){
+  if(WIKI) return WIKI;
+  try{
+    const r=await fetch("./wiki_all.json"); if(!r.ok) throw 0;
+    WIKI=await r.json();
+    // index by both en and fi common name, lowercased, for lookup
+    wikiByName={};
+    WIKI.forEach(w=>{
+      [w.name_en, w.name_fi, w.name].forEach(n=>{ if(n) wikiByName[n.toLowerCase()]=w; });
+    });
+  }catch{ WIKI=[]; wikiByName={}; }
+  return WIKI;
+}
+async function populateWiki(key){
+  await loadWiki();
+  const w = wikiByName ? wikiByName[key.toLowerCase()] : null;
+  // names
+  $("#dSci").textContent = w?.sci || "";
+  $("#dFi").textContent  = w?.name_fi && w.name_fi.toLowerCase()!==key.toLowerCase() ? w.name_fi : "";
+  // size stats
+  const size = w?.size || {};
+  const len = size.length || size.wingspan_or_length || "—";
+  const wing= size.wingspan || "—";
+  const wt  = size.weight || "—";
+  if(w && (len!=="—"||wing!=="—"||wt!=="—")){
+    $("#dStats").style.display="flex";
+    $("#dLen").textContent=len; $("#dWing").textContent=wing; $("#dWeight").textContent=wt;
+  } else $("#dStats").style.display="none";
+  // unique summary (always visible)
+  const sum = w?.summary?.en || w?.summary || w?.summary_2s || w?.extract || "";
+  if(sum){ $("#dSummary").style.display="block"; $("#dSummary").textContent = sum; }
+  else $("#dSummary").style.display="none";
+  // everything else -> dropdown
+  buildDropdown(w);
+}
+function buildDropdown(w){
+  const btn=$("#dDropBtn"), body=$("#dDropBody");
+  if(!w){ btn.style.display="none"; body.style.display="none"; return; }
+  const rows=[];
+  const add=(label,val)=>{ if(val && String(val).trim() && val!=="null") rows.push([label,val]); };
+  const pick=f=> (f && (f.en||f)) || "";
+  add("Field marks", pick(w.field_marks));
+  add("Lookalikes", pick(w.lookalikes));
+  add("Diet", pick(w.diet));
+  add("Foraging", pick(w.foraging));
+  add("Visits feeders", w.visits_feeders);
+  add("Movement", w.movement_status);
+  add("Migration timing", pick(w.migration_timing));
+  add("Best months", Array.isArray(w.best_months)? w.best_months.join(", ") : w.best_months);
+  add("Active", w.active_period);
+  add("Nesting", pick(w.nesting));
+  add("Breeding season", w.breeding_season);
+  add("Weather behaviour", pick(w.weather_behavior));
+  add("Conservation", w.conservation_status);
+  add("Lifespan", w.lifespan);
+  if(!rows.length){ btn.style.display="none"; body.style.display="none"; return; }
+  btn.style.display="flex";
+  body.innerHTML = rows.map(([l,v])=>`<div class="ddrow"><div class="ddlabel">${l}</div><div class="ddtext">${esc(String(v))}</div></div>`).join("");
+  // start collapsed each open
+  btn.classList.remove("open"); body.style.display="none";
+}
+$("#dDropBtn").onclick = ()=>{
+  const open=$("#dDropBtn").classList.toggle("open");
+  $("#dDropBody").style.display = open?"block":"none";
+};
+
 function renderQuests(){
   const qs=Object.values(log.quests);
   const active=qs.filter(q=>!q.done), done=qs.filter(q=>q.done);
@@ -951,6 +1105,34 @@ async function readExifGps(file){
     return {lat:latR==="S"?-lat:lat, lon:lonR==="W"?-lon:lon};
     function dms(o){const r=p=>u32(p)/u32(p+4); return r(o)+r(o+8)/60+r(o+16)/3600;}
   }
+}
+// read EXIF DateTimeOriginal (tag 0x9003) -> ms epoch, or null
+async function readExifDate(file){
+  const buf=await file.arrayBuffer(), dv=new DataView(buf);
+  if(dv.getUint16(0)!==0xFFD8) return null;
+  let off=2;
+  while(off<dv.byteLength){
+    if(dv.getUint16(off)===0xFFE1){
+      const start=off+4;
+      if(dv.getUint32(start)!==0x45786966) return null;
+      const tiff=start+6, le=dv.getUint16(tiff)===0x4949;
+      const u16=o=>dv.getUint16(o,le), u32=o=>dv.getUint32(o,le);
+      const ifd0=tiff+u32(tiff+4); const n=u16(ifd0); let exifOff=null;
+      for(let i=0;i<n;i++){const e=ifd0+2+i*12; if(u16(e)===0x8769) exifOff=tiff+u32(e+8);}
+      if(!exifOff) return null;
+      const en=u16(exifOff);
+      for(let i=0;i<en;i++){const e=exifOff+2+i*12;
+        if(u16(e)===0x9003){               // DateTimeOriginal, ASCII "YYYY:MM:DD HH:MM:SS"
+          const vo=tiff+u32(e+8); let s="";
+          for(let k=0;k<19;k++) s+=String.fromCharCode(dv.getUint8(vo+k));
+          const m=s.match(/(\d{4}):(\d{2}):(\d{2}) (\d{2}):(\d{2}):(\d{2})/);
+          if(m) return new Date(+m[1],+m[2]-1,+m[3],+m[4],+m[5],+m[6]).getTime();
+        }}
+      return null;
+    }
+    off+=2+dv.getUint16(off+2);
+  }
+  return null;
 }
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 
