@@ -434,7 +434,7 @@ const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let session = null;
 
 /* ===================================================================== */
-const MODEL_URL = './fieldmark-s-v1.onnx';   // tracked model name; bump version on retrain
+const MODEL_URL = './fieldmark-s-v2.onnx';   // tracked model name; bump version on retrain
 let LABELS = [];   // filled from species.json (313 Finnish species, in class-index order)
 async function loadLabels(){
   try{
@@ -1282,13 +1282,14 @@ async function populateWiki(key){
   // size stats — data may give separate length/wingspan, or one combined string
   const size = w?.size || {};
   let len = size.length || "", wing = size.wingspan || "", wt = size.weight || "—";
-  if(!len && !wing && size.wingspan_or_length){
-    // combined like "50–65 cm length, 81–98 cm wingspan" — split on the comma
-    const s = size.wingspan_or_length;
-    const lm = s.match(/([\d.,–-]+\s*cm)\s*(?:length)?/i);
-    const wm = s.match(/([\d.,–-]+\s*cm)\s*wingspan/i);
-    if(wm){ wing = wm[1]; len = lm && lm[1]!==wm[1] ? lm[1] : ""; }
-    else { len = s; }   // couldn't parse — show whole thing as length
+  const combined = size.wingspan_or_length || (typeof size === "string" ? size : "");
+  if(!len && !wing && combined){
+    // handles "wingspan 70-82 cm" OR "70-82 cm wingspan", with ; or , separators
+    let m = combined.match(/wingspan[:\s]*([\d.,\u2013-]+\s*cm)/i) || combined.match(/([\d.,\u2013-]+\s*cm)\s*wingspan/i);
+    if(m) wing = m[1];
+    let lm = combined.match(/length[:\s]*([\d.,\u2013-]+\s*cm)/i) || combined.match(/([\d.,\u2013-]+\s*cm)\s*length/i);
+    if(lm) len = lm[1];
+    else { const all=[...combined.matchAll(/([\d.,\u2013-]+\s*cm)/gi)].map(x=>x[1]); len = all.find(v=>v!==wing) || all[0] || ""; }
   }
   if(w && (len||wing||wt!=="—")){
     $("#dStats").style.display="flex";
