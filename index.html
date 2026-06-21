@@ -283,7 +283,8 @@
 
       <div id="photoControls">
         <div class="controls">
-          <button class="btn" id="cameraBtn" disabled><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h2l1.4-2h7.2L18 5h2a2 2 0 012 2v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><circle cx="12" cy="12.5" r="3.6"/></svg>Camera</button>
+          <button class="btn" id="cameraBtn" disabled><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h2l1.4-2h7.2L18 5h2a2 2 0 012 2v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><circle cx="12" cy="12.5" r="3.6"/></svg>Quick cam</button>
+          <button class="btn ghost" id="nativeCamBtn" disabled><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h2l1.4-2h7.2L18 5h2a2 2 0 012 2v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><circle cx="12" cy="12.5" r="3.6"/><path d="M19 7l2-2"/></svg>Device cam</button>
           <button class="btn ghost" id="uploadBtn" disabled><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L8 8m4-4l4 4M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>Upload</button>
         </div>
         <button class="btn wide" id="shootBtn" style="display:none"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/></svg>Capture &amp; detect</button>
@@ -339,10 +340,12 @@
       <input class="field" id="nameInput" placeholder="e.g. J. Lindqvist" maxlength="24">
       <button class="btn wide" id="saveName">Save name</button>
       <button class="btn wide ghost" id="signOutBtn" style="margin-top:8px">Sign out</button>
+      <button class="btn wide ghost" id="deleteDataBtn" style="margin-top:8px;color:var(--accent);border-color:var(--accent)">Delete all my data</button>
       <div class="hint">This name appears on the shared leaderboard.</div>
     </section>
 
     <input type="file" id="fileInput" accept="image/*">
+    <input type="file" id="nativeCamInput" accept="image/*" capture="environment">
     <footer>
       Detector: <b id="modelTag">Fieldmark-s · 313 Finnish species</b>.
     </footer>
@@ -452,11 +455,40 @@ const RARITY = {
   cow:"uncommon", sheep:"uncommon", horse:"uncommon",
   bear:"rare", elephant:"rare", zebra:"rare", giraffe:"epic",
 };
-const RARITY_PTS = {common:10, uncommon:18, rare:35, epic:60, legendary:120};
+let RARITY_PTS = {common:10, uncommon:18, rare:35, epic:60, legendary:120};
 const RARITY_COLOR = {common:"#6f7d52",uncommon:"#3f7a8c",rare:"#7d5aa6",epic:"#b5612a",legendary:"#9b3b54"};
-const FIRST_BONUS = 1.5;
-const NEW_CELL_PTS = 25;
-const FRESH_BONUS = 10;   // photo taken within a few minutes (in-the-field)
+let FIRST_BONUS = 1.5;
+let NEW_CELL_PTS = 25;
+let FRESH_BONUS = 10;
+let FRESH_WINDOW_MIN = 4;
+let FLOCK_DECAY = 0.6, FLOCK_MAX = 25;
+let CONFIRM_THRESH = 0.50, REJECT_THRESH = 0.15;
+let MSG = {};               // messages from content.json
+let CONTENT = null;         // full content.json
+let QUEST_POOL = [];        // quest definitions from content
+let RANKS = [];
+
+// load editable game content (points, quests, messages). Falls back to the
+// hardcoded defaults above if the file is missing.
+async function loadContent(){
+  try{
+    const r = await fetch('./content.json'); if(!r.ok) throw new Error('HTTP '+r.status);
+    CONTENT = await r.json();
+    const s = CONTENT.scoring||{};
+    if(s.rarity_points) RARITY_PTS = s.rarity_points;
+    if(s.first_of_species_multiplier) FIRST_BONUS = s.first_of_species_multiplier;
+    if(s.new_area_bonus!=null) NEW_CELL_PTS = s.new_area_bonus;
+    if(s.fresh_capture_bonus!=null) FRESH_BONUS = s.fresh_capture_bonus;
+    if(s.fresh_window_minutes!=null) FRESH_WINDOW_MIN = s.fresh_window_minutes;
+    if(s.flock){ FLOCK_DECAY = s.flock.decay??0.6; FLOCK_MAX = s.flock.max_counted??25; }
+    if(s.low_confidence_threshold!=null) CONFIRM_THRESH = s.low_confidence_threshold;
+    if(s.reject_threshold!=null) REJECT_THRESH = s.reject_threshold;
+    MSG = CONTENT.messages||{};
+    QUEST_POOL = CONTENT.quests||[];
+    RANKS = CONTENT.ranks||[];
+    console.log('content.json loaded');
+  }catch(e){ console.warn('content.json not loaded, using defaults:', e.message); }
+}
 
 const INPUT = 640, CONF_THRESH = 0.35, IOU_THRESH = 0.45;
 const COLORS = ["#9b3b54","#5b6b3a","#b0832f","#3b6e8c","#7d5aa6","#b5612a","#467a5b","#8c5a3b"];
@@ -506,7 +538,7 @@ async function sset(k,v){
   try{
     if(k==="log"){
       await sb.from('logbook').upsert({ owner:session.user.id, points:v.points,
-        species:v.species, cells:v.cells, quests:v.quests,
+        species:v.species, cells:v.cells, quests:v.quests, name:(me?.name||null),
         updated_at:new Date().toISOString() }, { onConflict:'owner' });
     }
   }catch(e){ console.warn('sync failed (kept local):', e.message); }
@@ -541,6 +573,27 @@ $("#signOutBtn").onclick = async ()=>{
   try{ Object.keys(localStorage).filter(k=>k.startsWith('fieldmark_cache')).forEach(k=>localStorage.removeItem(k)); }catch{}
   location.reload();
 };
+$("#deleteDataBtn").onclick = async ()=>{
+  const typed = prompt(
+    "This permanently deletes ALL your sightings, points and journal. This cannot be undone.\n\n" +
+    "Type  delete  to confirm:");
+  if(typed === null) return;                       // cancelled
+  if(typed.trim().toLowerCase() !== "delete"){
+    toast("Not deleted — you didn't type 'delete'.");
+    return;
+  }
+  try{
+    if(session && navigator.onLine){
+      await sb.from('sightings').delete().eq('owner', session.user.id);
+      await sb.from('logbook').delete().eq('owner', session.user.id);
+    }
+    Object.keys(localStorage).filter(k=>k.startsWith('fieldmark_cache')).forEach(k=>localStorage.removeItem(k));
+    log = {points:0, finds:[], species:{}, cells:{}, quests:{}};
+    assignQuests(); await sset("log",log);
+    renderAll(); toast("All your data deleted.");
+    showView("spot");
+  }catch(e){ toast("Delete failed: "+e.message); }
+};
 
 async function enterApp(){
   $("#gate").style.display="none";
@@ -554,6 +607,7 @@ async function init(){
   log = await sget("log") || {points:0, finds:[], species:{}, cells:{}, quests:{}};
   if(!Object.keys(log.quests).length){ assignQuests(); await sset("log",log); }
   renderAll();
+  await loadContent();
   await loadLabels();
   loadModel();
 }
@@ -608,7 +662,7 @@ async function loadModel(){
     try{ model_session=await ort.InferenceSession.create(buf.buffer,{executionProviders:["webgpu","wasm"]}); }
     catch{ model_session=await ort.InferenceSession.create(buf.buffer,{executionProviders:["wasm"]}); }
     $("#loadwrap").style.display="none";
-    $("#cameraBtn").disabled=false; $("#uploadBtn").disabled=false;
+    $("#cameraBtn").disabled=false; $("#uploadBtn").disabled=false; $("#nativeCamBtn").disabled=false;
     if(mode==="photo") setStatus("ready — camera or upload","ok");
   }catch(err){
     $("#loadtxt").textContent="";
@@ -619,14 +673,17 @@ async function loadModel(){
 
 // ============ PHOTO: upload / camera ============
 $("#uploadBtn").onclick=()=>$("#fileInput").click();
-$("#fileInput").onchange=async e=>{
-  const f=e.target.files[0]; if(!f) return;
+$("#nativeCamBtn").onclick=()=>$("#nativeCamInput").click();
+async function handlePickedFile(f){
+  if(!f) return;
   stopCamera(); pending={lat:null,lon:null,source:null};
   await readGeo(f);
   const img=$("#photo");
   img.onload=()=>{ showPhoto(); detectPhoto(img); };
   img.src=URL.createObjectURL(f);
-};
+}
+$("#fileInput").onchange=e=>handlePickedFile(e.target.files[0]);
+$("#nativeCamInput").onchange=e=>handlePickedFile(e.target.files[0]);
 $("#cameraBtn").onclick=async ()=>{
   try{
     stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"},audio:false});
@@ -678,23 +735,46 @@ function getDeviceGps(){
     p=>setGeo(p.coords.latitude,p.coords.longitude,"device GPS"),
     ()=>noGeo(), {enableHighAccuracy:true,timeout:8000});
 }
+function currentPosition(){
+  return new Promise(res=>{
+    if(!navigator.geolocation) return res(null);
+    navigator.geolocation.getCurrentPosition(
+      p=>res({lat:p.coords.latitude, lon:p.coords.longitude}),
+      ()=>res(null), {enableHighAccuracy:true, timeout:8000});
+  });
+}
+// distance between two lat/lon in km (haversine)
+function distKm(a,b){
+  const R=6371, toR=x=>x*Math.PI/180;
+  const dLat=toR(b.lat-a.lat), dLon=toR(b.lon-a.lon);
+  const s=Math.sin(dLat/2)**2 + Math.cos(toR(a.lat))*Math.cos(toR(b.lat))*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.sqrt(s));
+}
+const MAX_AWAY_KM = 5;   // photo taken farther than this from where you are now = no points
 async function readGeo(file){
   const exif = await readExifGps(file).catch(()=>null);
-  if(exif) setGeo(exif.lat, exif.lon, "from photo");
-  else getDeviceGps();
-  // freshness: was the photo TAKEN within the last few minutes?
+  const here = await currentPosition();
+  // decide which location to record + whether it's legit "here"
+  if(exif){
+    setGeo(exif.lat, exif.lon, "from photo");
+    if(here){
+      const d = distKm(exif, here);
+      if(pending){ pending.awayKm = d; pending.elsewhere = d > MAX_AWAY_KM; }
+    }
+  } else if(here){
+    setGeo(here.lat, here.lon, "device GPS");
+    if(pending){ pending.awayKm = 0; pending.elsewhere = false; }
+  } else {
+    noGeo();
+  }
+  // freshness from EXIF timestamp
   const taken = await readExifDate(file).catch(()=>null);
-  const FRESH_MIN = 4;
   if(pending){
     if(taken){
       const ageMin = (Date.now() - taken) / 60000;
-      pending.fresh = ageMin <= FRESH_MIN;
-      pending.fromLibrary = ageMin > FRESH_MIN;
-    } else {
-      // no timestamp in the file (screenshot, stripped EXIF). Don't punish,
-      // but can't grant the freshness bonus either.
-      pending.fresh = false; pending.fromLibrary = false;
-    }
+      pending.fresh = ageMin <= FRESH_WINDOW_MIN;
+      pending.fromLibrary = ageMin > FRESH_WINDOW_MIN;
+    } else { pending.fresh=false; pending.fromLibrary=false; }
   }
 }
 
@@ -711,21 +791,39 @@ async function detectPhoto(img){
   const kept=nms(parseYolo(out,r,dx,dy), IOU_THRESH);
   drawDetections(kept,img);
   const thumb = makeThumb(img, kept);
-  // low-confidence gate: if the best detection is weak, don't commit to the
-  // guess — let the user confirm via an external AI (copy prompt + image out,
-  // paste the AI's JSON back in). They still get points once confirmed.
   const topConf = kept.length ? Math.max(...kept.map(d=>d.score)) : 0;
-  const CONFIRM_THRESH = 0.50;
-  if(kept.length && topConf < CONFIRM_THRESH){
+
+  // nothing, or everything is junk-confidence -> not wildlife, don't log
+  if(!kept.length || topConf < REJECT_THRESH){
+    setStatus(MSG.not_wildlife || "That doesn't look like wildlife","err");
+    toast(MSG.not_wildlife || "Not wildlife — no points");
+    $("#findings").style.display="none";
+    return;
+  }
+  // low confidence -> ask the user / external AI to confirm
+  if(topConf < CONFIRM_THRESH){
     const top3 = [...kept].sort((a,b)=>b.score-a.score).slice(0,3)
                    .map(d=>({name:LABELS[d.cls], conf:d.score}));
     offerAIConfirm(img, thumb, top3);
     setStatus(`unsure (${(topConf*100|0)}%) — confirm the species`,"busy");
     return;
   }
-  const keys = kept.map(d=>LABELS[d.cls]);
-  award(keys, kept.map(d=>({key:LABELS[d.cls], conf:d.score})), thumb);
-  setStatus(kept.length?`logged ${kept.length} subject${kept.length>1?'s':''}`:"nothing recognized","ok");
+  // confident: keep only known species (in species.json/LABELS); drop unknowns
+  const knownDets = kept.filter(d => LABELS[d.cls]);
+  if(!knownDets.length){
+    setStatus(MSG.unknown_species || "Not in the field guide","err");
+    toast(MSG.unknown_species || "Unknown species — not logged");
+    return;
+  }
+  // flock counting: group by species, count individuals
+  const bySpecies = {};
+  knownDets.forEach(d=>{ const k=LABELS[d.cls];
+    (bySpecies[k]=bySpecies[k]||[]).push(d.score); });
+  const finds = Object.entries(bySpecies).map(([key,scores])=>({
+    key, conf:Math.max(...scores), count:scores.length }));
+  award(finds.map(f=>f.key), finds, thumb);
+  const total = knownDets.length;
+  setStatus(`logged ${total} animal${total>1?'s':''}`,"ok");
 }
 
 // ===== Ask-an-AI confirmation (no API key — user is the courier) =====
@@ -753,25 +851,50 @@ $("#aiCopyPrompt").onclick = async ()=>{
   catch{ toast("Copy failed — select the text manually"); }
   $("#aiPromptText").value = p; $("#aiPromptText").style.display="block";
 };
-$("#aiSavePhoto").onclick = ()=>{
+$("#aiSavePhoto").onclick = async ()=>{
   if(!_aiPending) return;
+  // prefer the native share sheet (lets iOS "Save Image" to Photos);
+  // fall back to download (lands in Files on iOS).
+  try{
+    const blob = await (await fetch(_aiPending.img.src)).blob();
+    const file = new File([blob], "sighting.jpg", {type:"image/jpeg"});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file], title:"Fieldmark sighting"});
+      return;
+    }
+  }catch(e){ /* user cancelled or unsupported — fall through to download */ }
   const a=document.createElement("a"); a.href=_aiPending.img.src; a.download="sighting.jpg"; a.click();
   toast("Photo saved — attach it to the AI");
 };
+// bulletproof JSON extraction from whatever an AI pasted back
+function extractJson(raw){
+  if(!raw) return null;
+  let s = raw.trim();
+  // normalize smart/curly quotes -> straight
+  s = s.replace(/[\u201C\u201D\u201E\u201F\u2033\u2036]/g,'"')
+       .replace(/[\u2018\u2019\u201A\u201B\u2032\u2035]/g,"'");
+  // strip markdown code fences
+  s = s.replace(/```(?:json)?/gi,'').trim();
+  // grab the outermost {...}
+  const start = s.indexOf('{'), end = s.lastIndexOf('}');
+  if(start<0 || end<0 || end<start) return null;
+  s = s.slice(start, end+1);
+  // remove trailing commas before } or ]
+  s = s.replace(/,(\s*[}\]])/g,'$1');
+  try{ return JSON.parse(s); }catch{ return null; }
+}
 $("#aiSubmitJson").onclick = ()=>{
-  let raw=$("#aiJsonBox").value.trim();
-  if(!raw){ toast("Paste the AI's JSON first"); return; }
-  // normalize smart/curly quotes -> straight quotes (phones & some AIs use these)
-  raw = raw.replace(/[\u201C\u201D\u201E\u201F\u2033\u2036]/g,'"')
-           .replace(/[\u2018\u2019\u201A\u201B\u2032\u2035]/g,"'");
-  // tolerate code fences / extra text — grab the first {...}
-  const m=raw.match(/\{[\s\S]*\}/); if(m) raw=m[0];
-  let obj; try{ obj=JSON.parse(raw); }catch{ toast("That's not valid JSON"); return; }
-  const sp = obj.species_en || obj.species || obj.name;
-  if(!sp){ toast("JSON missing 'species_en'"); return; }
-  // match to a known species if possible (so it joins the dex), else accept as-is
+  const obj = extractJson($("#aiJsonBox").value);
+  if(!obj){ toast("Couldn't read that as JSON — paste the AI's answer again"); return; }
+  const sp = obj.species_en || obj.species || obj.name || obj.species_fi;
+  if(!sp){ toast("JSON missing a species name"); return; }
+  // only log species that exist in our Finnish field guide
   const known = LABELS.find(n=>n.toLowerCase()===String(sp).toLowerCase());
-  commitConfirmed(known||sp, "ai:"+(obj.confidence||"?"));
+  if(!known){
+    toast(MSG.unknown_species || "That species isn't in the field guide — not logged");
+    return;
+  }
+  commitConfirmed(known, "ai:"+(obj.confidence||"?"));
 };
 $("#aiSkip").onclick = ()=>{ // give up on species — log as coarse bird/mammal
   closeAIPanel();
@@ -911,38 +1034,91 @@ async function classifyAudio(){
 function cellId(lat,lon){ return `${Math.round(lat*100)}_${Math.round(lon*100)}`; }
 function award(keys, finds, thumb=null){
   if(!keys.length){ renderFindings([],0); return; }
+  // photo taken somewhere far from where you are now -> log it, but no points
+  const elsewhere = pending && pending.elsewhere === true;
   const cell = pending && pending.lat!=null ? cellId(pending.lat,pending.lon) : null;
   let gained=0, newCell=false; const cards=[];
   finds.forEach(f=>{
     const first = !log.species[f.key];
-    let pts = basePts(f.key);
+    const base = basePts(f.key);
+    const count = Math.min(f.count||1, FLOCK_MAX);
+    let pts = 0;
+    for(let i=0;i<count;i++) pts += base * Math.pow(FLOCK_DECAY, i);
+    pts = Math.round(pts);
     if(first) pts = Math.round(pts*FIRST_BONUS);
     if(cell && !log.cells[cell] && !newCell){ pts += NEW_CELL_PTS; newCell=true; }
+    if(elsewhere) pts = 0;                 // logged for the journal, but earns nothing
     gained += pts;
     log.species[f.key] = (log.species[f.key]||0)+1;
-    cards.push({...f, pts, first});
+    cards.push({...f, pts, first, count});
   });
   if(cell) log.cells[cell]=true;
   // freshness: camera shots are always "now"; uploads depend on EXIF age.
-  const isFresh = pending && (pending.fromCamera || pending.fresh);
+  // none of the bonuses apply if the photo was taken elsewhere.
+  const isFresh = !elsewhere && pending && (pending.fromCamera || pending.fresh);
   if(isFresh){ gained += FRESH_BONUS; }
   log.points += gained;
   const sighting={t:Date.now(), lat:pending?.lat, lon:pending?.lon, species:keys,
                   thumb, viaSound: finds.some(f=>f.viaSound),
-                  fresh:!!isFresh, fromLibrary: pending?.fromLibrary||false};
+                  fresh:!!isFresh, fromLibrary: pending?.fromLibrary||false,
+                  elsewhere:!!elsewhere};
   log.finds.unshift(sighting);
   log.finds = log.finds.slice(0,300);
   log.finds.forEach((f,i)=>{ if(i>=60) f.thumb=null; });
 
-  const qPts = checkQuests(keys, !!cell && newCell, finds);
+  // co-op + quests only count for on-location sightings
+  const qPts = elsewhere ? 0 : checkQuests(keys, !!cell && newCell, finds);
   log.points += qPts;
 
   sset("log",log); pushSighting(sighting); pushBoard(); renderAll();
+  if(!elsewhere) checkCoop(keys, sighting);   // co-op "same bird together" check
   renderFindings(cards, gained, qPts, newCell);
-  let msg=`+${gained} points`; if(newCell)msg+=" · new area!";
-  if(isFresh)msg+=" · fresh +"+FRESH_BONUS; if(pending?.fromLibrary)msg+=" · from library";
-  if(qPts)msg+=` · +${qPts} quest`;
+  let msg;
+  if(elsewhere){ msg = `logged (taken ~${Math.round(pending.awayKm)} km away — no points)`; }
+  else {
+    msg=`+${gained} points`; if(newCell)msg+=" · new area!";
+    if(isFresh)msg+=" · fresh +"+FRESH_BONUS; if(pending?.fromLibrary)msg+=" · from library";
+    if(qPts)msg+=` · +${qPts} quest`;
+  }
   toast(msg);
+}
+
+// ============ CO-OP: same bird, together ============
+// When you log a species, check if another user logged the SAME species
+// nearby within the time window. If so, you claim a co-op bonus. (Each user
+// claims their own side when they log, so both get it without cross-writes.)
+const _coopClaimed = new Set();   // sighting signatures already rewarded this session
+async function checkCoop(keys, sighting){
+  const cfg = (CONTENT && CONTENT.scoring && CONTENT.scoring.coop) || null;
+  if(!cfg || !session || !navigator.onLine) return;
+  if(sighting.lat==null || sighting.lon==null) return;   // need location to pair
+  const windowMs = (cfg.window_min||5)*60000;
+  const since = new Date(Date.now()-windowMs).toISOString();
+  try{
+    // recent sightings by OTHER users
+    const {data, error} = await sb.from('sightings')
+      .select('owner, ts, lat, lon, species')
+      .gte('ts', since)
+      .neq('owner', session.user.id);
+    if(error || !data) return;
+    for(const r of data){
+      if(r.lat==null || r.lon==null) continue;
+      const sharesSpecies = (r.species||[]).some(s=>keys.includes(s));
+      if(!sharesSpecies) continue;
+      const d = distKm({lat:r.lat,lon:r.lon}, {lat:sighting.lat,lon:sighting.lon});
+      if(d <= (cfg.coop_km||0.5)){
+        const sig = r.owner+"|"+r.ts;
+        if(_coopClaimed.has(sig)) continue;
+        _coopClaimed.add(sig);
+        log.points += (cfg.bonus||50);
+        // mark the coop quest done if present
+        Object.values(log.quests).forEach(q=>{ if(q.type==="coop" && !q.done){ q.done=true; } });
+        await sset("log",log); await pushBoard(); renderAll();
+        toast(`Co-op! Same species as another spotter · +${cfg.bonus||50}`);
+        return;
+      }
+    }
+  }catch(e){ /* coop is best-effort */ }
 }
 
 function renderFindings(cards,gained,qPts,newCell){
@@ -955,7 +1131,7 @@ function renderFindings(cards,gained,qPts,newCell){
     const rar=rarityOf(c.key), col=RARITY_COLOR[rar];
     const row=document.createElement("div"); row.className="find";
     row.innerHTML=`<span class="swatch" style="background:${col}"></span>
-      <span class="nm">${c.key}${c.first?' · <small style="display:inline;color:var(--olive-d);font-weight:600">new species</small>':''}
+      <span class="nm">${c.key}${c.count>1?` ·<small style="display:inline;color:var(--olive-d);font-weight:600"> ×${c.count}</small>`:''}${c.first?' · <small style="display:inline;color:var(--olive-d);font-weight:600">new species</small>':''}
         <small>${(c.conf*100|0)}% ${c.viaSound?'call match':'match'}</small></span>
       <span class="rar" style="background:${col}">${rar}</span>
       <span class="pts">+${c.pts}</span>`;
@@ -963,28 +1139,34 @@ function renderFindings(cards,gained,qPts,newCell){
   });
 }
 
-// ============ QUESTS ============
+// ============ QUESTS (defined in content.json, type-based) ============
+function questTest(q, keys, fresh, finds){
+  switch(q.type){
+    case "multi_species": return new Set(keys).size>=2;
+    case "rarity": return keys.some(k=>["rare","epic","legendary"].includes(rarityOf(k)));
+    case "new_area": return fresh===true;
+    case "total_species": return Object.keys(log.species).length>=(q.target||5);
+    case "flock": return (finds||[]).some(f=>(f.count||1)>=(q.target||4));
+    case "group": return keys.some(k => (q.match||[]).some(m => k.toLowerCase().includes(m.toLowerCase())));
+    case "sound": return (finds||[]).some(f=>f.viaSound);
+    default: return false;
+  }
+}
 function assignQuests(){
-  const pool=[
-    {id:"two",  title:"Two in one frame", desc:"Log one photo with two different subjects.", reward:40,
-     test:(keys)=>new Set(keys).size>=2},
-    {id:"rare", title:"Something uncommon", desc:"Find a rare, epic, or legendary species.", reward:60,
-     test:(keys)=>keys.some(k=>["rare","epic","legendary"].includes(rarityOf(k)))},
-    {id:"sound",title:"Heard, not seen", desc:"Identify a bird by its call.", reward:35,
-     test:(keys,fresh,finds)=>finds.some(f=>f.viaSound)},
-    {id:"explore",title:"Cover new ground", desc:"Log a sighting in a new area.", reward:35,
-     test:(keys,fresh)=>fresh===true},
-    {id:"five", title:"A good day's count", desc:"Reach five total species in your journal.", reward:50,
-     test:()=>Object.keys(log.species).length>=5},
+  const pool = (QUEST_POOL && QUEST_POOL.length) ? QUEST_POOL : [
+    {id:"two",title:"Two in one frame",desc:"Log two different species.",reward:40,type:"multi_species"},
+    {id:"rare",title:"Something uncommon",desc:"Find a rare species.",reward:60,type:"rarity"},
+    {id:"five",title:"A good day's count",desc:"Reach five species.",reward:50,type:"total_species",target:5},
   ];
-  pool.sort(()=>Math.random()-0.5).slice(0,3).forEach(q=> log.quests[q.id]={...q,done:false});
+  const n = (CONTENT && CONTENT.quests_per_user) || 3;
+  [...pool].sort(()=>Math.random()-0.5).slice(0,n).forEach(q=> log.quests[q.id]={...q,done:false});
 }
 function checkQuests(keys, fresh, finds){
   let gained=0;
   Object.values(log.quests).forEach(q=>{
     if(q.done) return;
     let pass=false;
-    try{ pass=q.test(keys,fresh,finds||[]); }catch{}
+    try{ pass=questTest(q,keys,fresh,finds||[]); }catch{}
     if(pass){ q.done=true; gained+=q.reward; toast(`Quest complete: ${q.title}`); }
   });
   return gained;
@@ -1001,10 +1183,10 @@ async function renderBoard(){
   let rows=[];
   if(session && navigator.onLine){
     try{
-      const {data}=await sb.from('logbook').select('owner, points, species');
+      const {data}=await sb.from('logbook').select('owner, points, species, name');
       rows=(data||[]).map(r=>({id:r.owner, pts:r.points||0,
         species:Object.keys(r.species||{}).length,
-        name: r.owner===session.user.id ? (me?.name||'You') : 'naturalist'}))
+        name: r.owner===session.user.id ? (me?.name||'You') : (r.name||'naturalist')}))
         .sort((a,b)=>b.pts-a.pts);
     }catch(e){ /* fall through */ }
   }

@@ -1,58 +1,51 @@
-// sw.js — Fieldmark service worker: caches the app so it works OFFLINE
-// and installs to the home screen. Bump CACHE when you change files.
+// Fieldmark service worker — network-first for code, cache-first for big assets.
+// You should NOT need to bump this version for normal code changes anymore:
+// HTML/JS/JSON are fetched fresh from the network when online, so deploys show
+// up immediately. The cache is only a fallback for offline use.
+const CACHE = 'fieldmark-runtime';
 
-const CACHE = 'fieldmark-v5';
-const SHELL = [
-  './',
-  './index.html',
-  './fieldmark-sync.js',
-  './manifest.webmanifest',
-  './icon.svg',
-  './yolo11n.onnx',          // the detector model (added once trained)
-];
+// big, rarely-changing assets worth caching aggressively (cache-first)
+const STATIC = ['./fieldmark-s-v1.onnx', './icon.svg', './manifest.webmanifest'];
 
-// install: pre-cache the app shell
-self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE).then((c) => c.addAll(
-      // addAll fails the whole install if one file 404s; cache individually
-      // so a missing yolo11n.onnx (before training done) doesn't break install
-      SHELL.map((u) => u)
-    ).catch(() => {}))
-  );
-  self.skipWaiting();
+self.addEventListener('install', e => {
+  self.skipWaiting();   // activate new SW immediately
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(STATIC).catch(()=>{})));
 });
 
-// activate: drop old caches
-self.addEventListener('activate', (e) => {
+self.addEventListener('activate', e => {
+  // drop any old caches from the previous versioned scheme
   e.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))
-    )
+    caches.keys().then(keys => Promise.all(
+      keys.filter(k => k !== CACHE).map(k => caches.delete(k))
+    )).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-// fetch strategy:
-//  - Supabase / API calls: always go to network (never cache user data)
-//  - everything else (app shell, model, fonts): cache-first, fall back to net
-self.addEventListener('fetch', (e) => {
+self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
-  // never cache Supabase or other API traffic
-  if (url.hostname.includes('supabase') || url.pathname.includes('/rest/') ||
-      url.pathname.includes('/auth/')) {
-    return; // let it hit the network normally
+  // never touch Supabase or other cross-origin APIs
+  if (url.origin !== location.origin) return;
+
+  const isStatic = STATIC.some(s => url.pathname.endsWith(s.replace('./','')));
+
+  if (isStatic) {
+    // cache-first for the model/icons (big, stable)
+    e.respondWith(
+      caches.match(e.request).then(hit => hit || fetch(e.request).then(res => {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, copy));
+        return res;
+      }))
+    );
+  } else {
+    // network-first for everything else (HTML, JS, JSON) — always fresh online,
+    // cached copy only if offline.
+    e.respondWith(
+      fetch(e.request).then(res => {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, copy));
+        return res;
+      }).catch(() => caches.match(e.request))
+    );
   }
-  e.respondWith(
-    caches.match(e.request).then((cached) =>
-      cached || fetch(e.request).then((resp) => {
-        // cache successful GETs of static assets for next time (offline)
-        if (e.request.method === 'GET' && resp.ok) {
-          const copy = resp.clone();
-          caches.open(CACHE).then((c) => c.put(e.request, copy));
-        }
-        return resp;
-      }).catch(() => cached)
-    )
-  );
 });

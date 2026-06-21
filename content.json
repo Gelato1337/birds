@@ -1,0 +1,143 @@
+{
+  "_comment": "Editable game content. Change points, quests, messages here — no code edit needed. Reload the app to pick up changes.",
+  "scoring": {
+    "rarity_points": {
+      "common": 10,
+      "uncommon": 18,
+      "rare": 35,
+      "epic": 60,
+      "legendary": 120
+    },
+    "first_of_species_multiplier": 1.5,
+    "new_area_bonus": 25,
+    "fresh_capture_bonus": 10,
+    "fresh_window_minutes": 4,
+    "flock": {
+      "_comment": "Multiple individuals of the same species in one photo. Each extra animal is worth less than the last (diminishing), but more animals always beats fewer. base * sum of (decay^i) for i=0..n-1.",
+      "decay": 0.85,
+      "max_counted": 25
+    },
+    "low_confidence_threshold": 0.5,
+    "reject_threshold": 0.15,
+    "coop": {
+      "_comment": "Two users logging the SAME species within window_min and coop_km both get bonus.",
+      "window_min": 5,
+      "coop_km": 0.5,
+      "bonus": 50
+    }
+  },
+  "messages": {
+    "not_wildlife": "Hmm — that doesn't look like Finnish wildlife. No points for that one!",
+    "low_conf": "Not sure what that is — confirm the species to log it.",
+    "fresh": "Fresh from the field! +{n} bonus.",
+    "from_library": "Logged from your library (no freshness bonus).",
+    "new_area": "First sighting in this area — bonus!",
+    "unknown_species": "That species isn't in the Finnish field guide yet, so it won't be added to your journal."
+  },
+  "quests": [
+    {
+      "id": "two",
+      "title": "Two in one frame",
+      "desc": "Log one photo with two different species.",
+      "reward": 40,
+      "type": "multi_species"
+    },
+    {
+      "id": "rare",
+      "title": "Something uncommon",
+      "desc": "Find a rare, epic, or legendary species.",
+      "reward": 60,
+      "type": "rarity"
+    },
+    {
+      "id": "explore",
+      "title": "Cover new ground",
+      "desc": "Log a sighting in a new area.",
+      "reward": 35,
+      "type": "new_area"
+    },
+    {
+      "id": "five",
+      "title": "A good day's count",
+      "desc": "Reach five total species in your journal.",
+      "reward": 50,
+      "type": "total_species",
+      "target": 5
+    },
+    {
+      "id": "flock",
+      "title": "Birds of a feather",
+      "desc": "Photograph a flock — 4+ of one species at once.",
+      "reward": 45,
+      "type": "flock",
+      "target": 4
+    },
+    {
+      "id": "ten",
+      "title": "Field naturalist",
+      "desc": "Reach ten total species.",
+      "reward": 80,
+      "type": "total_species",
+      "target": 10
+    },
+    {
+      "id": "owl",
+      "title": "Night watch",
+      "desc": "Spot any owl.",
+      "reward": 70,
+      "type": "group",
+      "match": [
+        "Owl"
+      ]
+    },
+    {
+      "id": "raptor",
+      "title": "Sharp eyes",
+      "desc": "Spot a bird of prey (hawk, eagle, harrier, falcon).",
+      "reward": 65,
+      "type": "group",
+      "match": [
+        "Hawk",
+        "Eagle",
+        "Harrier",
+        "Falcon",
+        "Buzzard",
+        "Kite",
+        "Kestrel",
+        "Goshawk",
+        "Sparrowhawk",
+        "Osprey"
+      ]
+    },
+    {
+      "id": "coop",
+      "title": "Better together",
+      "desc": "You and another spotter log the same species within 5 min, same place.",
+      "reward": 0,
+      "type": "coop"
+    }
+  ],
+  "quests_per_user": 3,
+  "ranks": [
+    {
+      "min": 0,
+      "title": "Novice spotter"
+    },
+    {
+      "min": 150,
+      "title": "Field observer"
+    },
+    {
+      "min": 400,
+      "title": "Naturalist"
+    },
+    {
+      "min": 900,
+      "title": "Seasoned naturalist"
+    },
+    {
+      "min": 1800,
+      "title": "Master of the field"
+    }
+  ]
+}
