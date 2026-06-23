@@ -21,7 +21,7 @@
     "reject_threshold": 0.15,
     "coop": {
       "_comment": "Two users logging the SAME species within window_min and coop_km both get bonus.",
-      "window_min": 5,
+      "window_min": 10,
       "coop_km": 0.5,
       "bonus": 50
     }
@@ -34,32 +34,48 @@
     "new_area": "First sighting in this area — bonus!",
     "unknown_species": "That species isn't in the Finnish field guide yet, so it won't be added to your journal."
   },
+  "messages_fi": {
+    "not_wildlife": "Hmm — tämä ei näytä suomalaiselta luonnoneläimeltä. Ei pisteitä tästä!",
+    "low_conf": "En ole varma mikä tämä on — vahvista laji kirjataksesi sen.",
+    "fresh": "Tuoreeltaan kentältä! +{n} bonus.",
+    "from_library": "Kirjattu kirjastostasi (ei tuoreusbonusta).",
+    "new_area": "Ensimmäinen havainto tällä alueella — bonus!",
+    "unknown_species": "Tätä lajia ei vielä ole suomalaisessa lajiluettelossa, joten sitä ei lisätä päiväkirjaasi."
+  },
   "quests": [
     {
       "id": "two",
       "title": "Two in one frame",
+      "title_fi": "Kaksi samassa kuvassa",
       "desc": "Log one photo with two different species.",
+      "desc_fi": "Kirjaa yksi kuva, jossa on kaksi eri lajia.",
       "reward": 40,
       "type": "multi_species"
     },
     {
       "id": "rare",
       "title": "Something uncommon",
+      "title_fi": "Jotain harvinaista",
       "desc": "Find a rare, epic, or legendary species.",
+      "desc_fi": "Löydä harvinainen, eeppinen tai legendaarinen laji.",
       "reward": 60,
       "type": "rarity"
     },
     {
       "id": "explore",
       "title": "Cover new ground",
+      "title_fi": "Uutta maaperää",
       "desc": "Log a sighting in a new area.",
+      "desc_fi": "Kirjaa havainto uudella alueella.",
       "reward": 35,
       "type": "new_area"
     },
     {
       "id": "five",
       "title": "A good day's count",
+      "title_fi": "Hyvän päivän saalis",
       "desc": "Reach five total species in your journal.",
+      "desc_fi": "Saavuta viisi lajia päiväkirjaasi.",
       "reward": 50,
       "type": "total_species",
       "target": 5
@@ -67,7 +83,9 @@
     {
       "id": "flock",
       "title": "Birds of a feather",
+      "title_fi": "Samaa sulkaa",
       "desc": "Photograph a flock — 4+ of one species at once.",
+      "desc_fi": "Kuvaa parvi — 4+ saman lajin yksilöä kerralla.",
       "reward": 45,
       "type": "flock",
       "target": 4
@@ -75,7 +93,9 @@
     {
       "id": "ten",
       "title": "Field naturalist",
+      "title_fi": "Kenttätutkija",
       "desc": "Reach ten total species.",
+      "desc_fi": "Saavuta kymmenen lajia yhteensä.",
       "reward": 80,
       "type": "total_species",
       "target": 10
@@ -83,7 +103,9 @@
     {
       "id": "owl",
       "title": "Night watch",
+      "title_fi": "Yövartio",
       "desc": "Spot any owl.",
+      "desc_fi": "Havaitse mikä tahansa pöllö.",
       "reward": 70,
       "type": "group",
       "match": [
@@ -93,7 +115,9 @@
     {
       "id": "raptor",
       "title": "Sharp eyes",
+      "title_fi": "Tarkat silmät",
       "desc": "Spot a bird of prey (hawk, eagle, harrier, falcon).",
+      "desc_fi": "Havaitse petolintu (haukka, kotka, suohaukka, jalohaukka).",
       "reward": 65,
       "type": "group",
       "match": [
@@ -112,9 +136,72 @@
     {
       "id": "coop",
       "title": "Better together",
+      "title_fi": "Yhdessä parempi",
       "desc": "You and another spotter log the same species within 5 min, same place.",
+      "desc_fi": "Sinä ja toinen havaitsija kirjaatte saman lajin 5 minuutin sisällä samassa paikassa.",
       "reward": 0,
       "type": "coop"
+    },
+    {
+      "id": "heard",
+      "title": "Heard, not seen",
+      "title_fi": "Kuultu, ei nähty",
+      "desc": "Identify a bird by its call that you haven't photographed.",
+      "desc_fi": "Tunnista linnun laulusta laji, jota et ole valokuvannut.",
+      "reward": 45,
+      "type": "heard_unseen"
+    },
+    {
+      "id": "first",
+      "title": "First bird",
+      "title_fi": "Ensimmäinen lintu",
+      "desc": "Log your very first species.",
+      "desc_fi": "Kirjaa ensimmäinen lajisi.",
+      "reward": 20,
+      "type": "total_species",
+      "target": 1
+    },
+    {
+      "id": "sound",
+      "title": "Birdsong ID",
+      "title_fi": "Linnunlaulu",
+      "desc": "Identify a bird by its call.",
+      "desc_fi": "Tunnista lintu sen äänestä.",
+      "reward": 40,
+      "type": "sound"
+    },
+    {
+      "id": "chorus",
+      "title": "Dawn chorus",
+      "title_fi": "Aamukuoro",
+      "desc": "Identify 5 different birds by call.",
+      "desc_fi": "Tunnista 5 eri lintua äänestä.",
+      "reward": 120,
+      "type": "sound_count",
+      "target": 5,
+      "requires": 4
+    },
+    {
+      "id": "expert",
+      "title": "Seasoned eye",
+      "title_fi": "Kokenut silmä",
+      "desc": "Reach 25 species.",
+      "desc_fi": "Saavuta 25 lajia.",
+      "reward": 150,
+      "type": "total_species",
+      "target": 25,
+      "requires": 4
+    },
+    {
+      "id": "master",
+      "title": "Field master",
+      "title_fi": "Kenttämestari",
+      "desc": "Reach 50 species.",
+      "desc_fi": "Saavuta 50 lajia.",
+      "reward": 250,
+      "type": "total_species",
+      "target": 50,
+      "requires": 4
     }
   ],
   "quests_per_user": 3,

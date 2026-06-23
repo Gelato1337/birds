@@ -101,6 +101,15 @@
   .rar{font-size:9px;text-transform:uppercase;letter-spacing:.8px;font-weight:600;padding:2px 7px;color:#fff}
   .pts{font-family:'Fraunces',serif;font-weight:900;color:var(--gold);font-size:15px;min-width:46px;text-align:right}
   .empty{font-size:13px;color:var(--ink-soft);font-style:italic;padding:8px 0;line-height:1.5}
+  .rfind{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px dashed var(--line)}
+  .rfind:last-child{border-bottom:0}
+  .rfind .rthumb{width:42px;height:42px;flex:none;border:1.5px solid var(--ink);background:var(--paper-2);object-fit:cover}
+  .rfind .rph{width:42px;height:42px;flex:none;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--line)}
+  .rfind .rph svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.5}
+  .rfind .rnm{flex:1;font-family:'Fraunces',serif;font-weight:600;font-size:15px;text-transform:capitalize;line-height:1.2}
+  .rfind .rnm small{display:block;font-family:'Inter';font-weight:400;font-size:11px;color:var(--ink-soft);text-transform:none;margin-top:1px}
+  .rfind .rwho{font-size:10px;text-transform:uppercase;letter-spacing:.6px;font-weight:600;padding:2px 7px;color:#fff;background:var(--olive-d);white-space:nowrap}
+  .rfind .rwho.mine{background:var(--gold)}
 
   .dexgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
   .dexcard{border:1.5px solid var(--ink);background:var(--paper-2);padding:10px 11px}
@@ -110,6 +119,7 @@
 
   .quest{border:1.5px solid var(--ink);background:var(--paper-2);padding:12px 14px;margin-bottom:10px;position:relative}
   .quest.done{background:rgba(91,107,58,.12)}
+  .quest.locked{opacity:.5}.quest.locked .qr{color:var(--ink-soft);font-size:14px}
   .quest .qt{font-family:'Fraunces',serif;font-weight:600;font-size:15px;padding-right:54px}
   .quest .qd{font-size:12.5px;color:var(--ink-soft);margin-top:3px;line-height:1.4}
   .quest .qr{position:absolute;top:12px;right:13px;font-family:'Fraunces',serif;font-weight:900;color:var(--gold);font-size:15px}
@@ -238,7 +248,6 @@
   </div>
 </div>
 
-<a id="labelLink" href="./labeler.html" style="display:none">Labeling →</a>
 
 <div class="wrap">
   <header>
@@ -296,7 +305,10 @@
       </div>
 
       <div id="soundControls" style="display:none">
-        <button class="btn wide" id="listenBtn"><svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 00-3 3v7a3 3 0 006 0V5a3 3 0 00-3-3z"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>Listen for a bird call</button>
+        <div class="controls">
+          <button class="btn" id="recBtn"><svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 00-3 3v7a3 3 0 006 0V5a3 3 0 00-3-3z"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>Record</button>
+          <button class="btn ghost" id="audioUploadBtn"><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L8 8m4-4l4 4M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>Upload audio/video</button>
+        </div>
       </div>
 
       <div class="findings" id="findings" style="display:none">
@@ -304,10 +316,21 @@
         <div id="findlist"></div>
       </div>
       <div class="hint" id="spotHint">Detection runs on-device. Each animal in frame can score — and a photo with location earns extra.</div>
+
+      <div class="findings" id="recent" style="margin-top:24px">
+        <div class="sechead" id="recentHead">Recent findings</div>
+        <div id="recentList"></div>
+      </div>
     </section>
 
     <section class="view" id="v-journal">
-      <div class="sechead">Recorded species</div>
+      <div class="sechead" id="journalHead">Recorded species</div>
+      <div class="modes" id="dexSortBar" style="margin-bottom:14px">
+        <button class="on" data-sort="recent">Last seen</button>
+        <button data-sort="new">Newest</button>
+        <button data-sort="alpha">A–Z</button>
+        <button data-sort="rarity">Rarity</button>
+      </div>
       <div class="dexgrid" id="dexgrid"></div>
       <div class="empty" id="dexEmpty" style="display:none">Nothing logged yet. Spot your first animal to begin the journal.</div>
     </section>
@@ -336,16 +359,26 @@
     </section>
 
     <section class="view" id="v-profile">
-      <div class="sechead">Your field name</div>
+      <div class="sechead" id="profileLangHead">Language / Kieli</div>
+      <div class="modes" id="langToggle" style="margin-bottom:18px">
+        <button data-lang="fi">Suomi</button>
+        <button data-lang="en">English</button>
+      </div>
+      <div class="sechead" id="profileNameHead">Your field name</div>
       <input class="field" id="nameInput" placeholder="e.g. J. Lindqvist" maxlength="24">
       <button class="btn wide" id="saveName">Save name</button>
+      <div class="hint" id="profileNameHint">This name appears on the shared leaderboard.</div>
+
+      <div class="sechead" id="profileToolsHead" style="margin-top:22px">Tools</div>
+      <button class="btn wide ghost" id="recalcBtn">Recalculate points &amp; stats</button>
+      <a class="btn wide ghost" id="labelerProfileLink" href="./labeler.html" style="margin-top:8px;text-decoration:none">Labeling →</a>
       <button class="btn wide ghost" id="signOutBtn" style="margin-top:8px">Sign out</button>
       <button class="btn wide ghost" id="deleteDataBtn" style="margin-top:8px;color:var(--accent);border-color:var(--accent)">Delete all my data</button>
-      <div class="hint">This name appears on the shared leaderboard.</div>
     </section>
 
     <input type="file" id="fileInput" accept="image/*">
     <input type="file" id="nativeCamInput" accept="image/*" capture="environment">
+    <input type="file" id="audioInput" accept="audio/*,video/*">
     <footer>
       Detector: <b id="modelTag">Fieldmark-s · 313 Finnish species</b>.
     </footer>
@@ -392,7 +425,7 @@
     </button>
     <div class="ddbody" id="dDropBody" style="display:none"></div>
 
-    <div class="dmaplabel">Where you found it</div>
+    <div class="dmaplabel" id="dMaplabel">Where you found it</div>
     <div id="dMap"></div>
     <div class="dnophoto" id="dNoGeo" style="display:none">No location recorded for this sighting.</div>
   </div>
@@ -436,11 +469,16 @@ let session = null;
 /* ===================================================================== */
 const MODEL_URL = './fieldmark-s-v2.onnx';   // tracked model name; bump version on retrain
 let LABELS = [];   // filled from species.json (313 Finnish species, in class-index order)
+let FI_NAMES = {}; // english-name(lowercased) -> finnish name, from species.json
+let SPECIES_RARITY = {}; // english-name(lowercased) -> rarity tier, from species.json
 async function loadLabels(){
   try{
     const r = await fetch('./species.json'); if(!r.ok) throw new Error('HTTP '+r.status);
     const sp = await r.json();
     LABELS = sp.map(s => s.name);
+    FI_NAMES = {}; SPECIES_RARITY = {};
+    sp.forEach(s=>{ if(s.name_fi) FI_NAMES[s.name.toLowerCase()] = s.name_fi;
+      if(s.rarity) SPECIES_RARITY[s.name.toLowerCase()] = s.rarity; });
     console.log('LABELS loaded:', LABELS.length, 'species. [0]=', LABELS[0]);
     if(LABELS.length < 300) console.warn('species.json has only', LABELS.length, 'entries — expected 313');
   }catch(e){
@@ -448,6 +486,235 @@ async function loadLabels(){
     setStatus('species list failed to load — labels will be wrong','err');
     LABELS = [];
   }
+}
+
+/* ============ i18n — Finnish (default) / English toggle ============ */
+let LANG = (()=>{ try{ return localStorage.getItem('fieldmark_lang') || 'fi'; }catch{ return 'fi'; } })();
+const I18N = {
+  fi:{
+    eyebrow:"Luontopäiväkirja · Suomi",
+    nav_spot:"Havainto", nav_journal:"Päiväkirja", nav_quests:"Tehtävät",
+    nav_ranks:"Sijoitus", nav_map:"Kartta", nav_profile:"Sinä",
+    stat_points:"Pisteet", stat_species:"Lajit", stat_finds:"Havainnot", stat_quests:"Tehtävät",
+    mode_photo:"Kuva", mode_sound:"Ääni",
+    ph_title:"Ei vielä havaintoa", ph_photo:"Aloita kameralla tai lataamalla kuva",
+    ph_sound:"Äänitä tai lataa ääni/video tunnistaaksesi lajin",
+    btn_quickcam:"Pikakamera", btn_devicecam:"Laitekamera", btn_upload:"Lataa",
+    btn_capture:"Ota kuva & tunnista", btn_listen:"Kuuntele linnunlaulua",
+    btn_stop_listen:"Lopeta & tunnista",
+    sound_soon:"Linnunlaulun tunnistus tulossa pian.",
+    sound_rec:"Äänitä", sound_stop:"Lopeta", sound_upload:"Lataa ääni/video",
+    sound_loading:"ladataan äänimallia…", sound_loadfail:"äänimallin lataus epäonnistui",
+    sound_analyzing:"tunnistetaan ääntä…", sound_recording:"äänitetään… (n. 6 s)",
+    sound_locating:"haetaan sijaintia…",
+    sound_none:"ei tunnistettua lintua", sound_decodefail:"ääntä ei voitu lukea",
+    sound_micfail:"mikrofoni ei käytettävissä",
+    zoom:"Zoom", recent_head:"Viimeisimmät havainnot", recent_empty:"Ei vielä havaintoja. Tee ensimmäinen löytösi!",
+    findings_seen:"Mitä malli näki", findings_heard:"Mitä kuulit",
+    spot_hint:"Tunnistus tapahtuu laitteessa. Jokainen ruudussa näkyvä eläin tuo pisteitä — ja sijaintitieto antaa lisäpisteitä.",
+    journal_head:"Kirjatut lajit", journal_empty:"Ei vielä merkintöjä. Havaitse ensimmäinen eläin aloittaaksesi.",
+    journal_loadmore:"Näytä lisää", journal_locked:"ei vielä havaittu", journal_unrecorded:"???",
+    journal_seen:n=>`havaittu ${n}×`, journal_tap:"napauta avataksesi",
+    journal_lastseen:d=>`viimeksi ${d}`, journal_alsohas:"myös toisella",
+    quests_active:"Aktiiviset tehtävät", quests_done_head:"Suoritetut",
+    quests_empty:"Kaikki tehtävät suoritettu. Uusia tulee jokaisen päiväkirjan myötä.",
+    quest_done_stamp:"Valmis",
+    ranks_head:"Luonnontutkijoiden sijoitus", ranks_hint:"Jaettu kaikkien tämän päiväkirjan käyttäjien kesken.",
+    ranks_empty:"Ei vielä sijoitettuja tutkijoita.", ranks_species:n=>`${n} lajia`,
+    ranks_finds:n=>`${n} havaintoa`,
+    map_head:"Missä olet havainnut", map_empty:"Ei vielä paikannettuja havaintoja.<br>Havaitse eläin sijainti päällä, niin se näkyy täällä.",
+    map_hint:"Jokainen nasta on havainto koordinaatteineen. Napauta nähdäksesi mitä löytyi.",
+    profile_name_head:"Kenttänimesi", profile_name_ph:"esim. J. Lindqvist",
+    profile_save:"Tallenna nimi", profile_signout:"Kirjaudu ulos", profile_delete:"Poista kaikki tietoni",
+    profile_name_hint:"Tämä nimi näkyy jaetussa sijoituslistassa.",
+    profile_lang_head:"Kieli / Language",
+    profile_tools_head:"Työkalut", profile_recalc:"Laske pisteet ja tilastot uudelleen",
+    recalc_done:"Pisteet ja tilastot laskettu havaintojen mukaan.",
+    journal_sort:"Järjestä", sort_recent:"Viimeksi nähty", sort_new:"Uusin laji",
+    sort_alpha:"Aakkosjärjestys", sort_rarity:"Harvinaisuus",
+    detail_seen:(n,p)=>`Havaittu ${n}× · ${p} peruspistettä`,
+    detail_more:"Lisää tästä lajista", detail_nophoto:"Ei tallennettua kuvaa tästä havainnosta",
+    detail_heard:" (kuultu äänestä)", detail_where:"Missä löysit sen",
+    detail_nogeo:"Ei tallennettua sijaintia tälle havainnolle.",
+    gate_tagline:"Kirjaudu synkronoidaksesi havaintosi laitteiden välillä.",
+    gate_email:"sähköposti", gate_pw:"salasana", gate_signin:"Kirjaudu sisään",
+    gate_fail:"Kirjautuminen epäonnistui: ",
+    label_link:"Merkintä →",
+    toast_namefirst:"Anna ensin kenttänimi", toast_namesaved:"Nimi tallennettu.",
+    toast_modelloading:"Malli latautuu vielä…",
+    status_loading:"ladataan tunnistinta…", status_ready:"valmis", status_ready_cam:"valmis — kamera tai lataus",
+    status_detecting:"tunnistetaan…", status_camlive:"kamera käynnissä — rajaa kohde ja ota kuva",
+    status_listening:"kuunnellaan… toista tai matki kutsua, lopeta sitten",
+    status_identifying:"tunnistetaan ääntä…",
+    delete_confirm:"Tämä poistaa pysyvästi KAIKKI havaintosi, pisteesi ja päiväkirjasi. Tätä ei voi perua.\n\nKirjoita  poista  vahvistaaksesi:",
+    delete_word:"poista",
+    delete_notword:"Ei poistettu — et kirjoittanut 'poista'.",
+    delete_done:"Kaikki tietosi poistettu.",
+    found_pts:n=>`+${n} pistettä`, found_repeat:"jo päiväkirjassa — ei uusia pisteitä",
+    found_newarea:" · uusi alue!", found_fresh:n=>` · tuore +${n}`,
+    found_library:" · kirjastosta", found_quest:n=>` · +${n} tehtävä`,
+    found_elsewhere:km=>`kirjattu (otettu ~${km} km päässä — ei pisteitä)`,
+    new_species:"uusi laji", match:"osuma", call_match:"ääniosuma",
+    coop:n=>`Yhteistyö! Sama laji toisen havaitsijan kanssa · +${n}`,
+    quest_complete:t=>`Tehtävä suoritettu: ${t}`,
+    not_recognized:"Ei tunnistettua linnunlaulua", no_call:"Ei tunnistettu kutsua — yritä lähempänä",
+    unrecognized_status:"linnunlaulua ei tunnistettu",
+    not_wildlife:"Tämä ei näytä luonnoneläimeltä — ei pisteitä",
+    unsure:p=>`epävarma (${p} %) — vahvista laji`,
+    unknown_species:"Ei lajiluettelossa — ei kirjattu",
+    logged:n=>`kirjattu ${n} eläin${n>1?'tä':''}`,
+    heard:k=>`kuultiin: ${k}`, confirmed:k=>`vahvistettu: ${k}`, logged_one:k=>`kirjattu ${k}`,
+    logged_unident:"kirjattu tunnistamattomana", cancelled:"peruutettu",
+    not_in_guide:"Tätä lajia ei ole lajiluettelossa — ei kirjattu",
+    prompt_copied:"Kehote kopioitu — liitä se + kuvasi mihin tahansa tekoälyyn",
+    copy_failed:"Kopiointi epäonnistui — valitse teksti käsin",
+    photo_saved:"Kuva tallennettu — liitä se tekoälyyn",
+    json_unreadable:"JSON ei luettu — liitä tekoälyn vastaus uudelleen",
+    json_nospecies:"JSON:sta puuttuu lajin nimi",
+    ai_unsure_title:"Ei varmuutta mikä tämä on",
+  },
+  en:{
+    eyebrow:"Wildlife logbook · Suomi",
+    nav_spot:"Spot", nav_journal:"Journal", nav_quests:"Quests",
+    nav_ranks:"Ranks", nav_map:"Map", nav_profile:"You",
+    stat_points:"Points", stat_species:"Species", stat_finds:"Sightings", stat_quests:"Quests",
+    mode_photo:"Photo", mode_sound:"Sound",
+    ph_title:"No sighting yet", ph_photo:"Use the camera or upload to begin",
+    ph_sound:"Record a call, or upload audio/video, to identify",
+    btn_quickcam:"Quick cam", btn_devicecam:"Device cam", btn_upload:"Upload",
+    btn_capture:"Capture & detect", btn_listen:"Listen for a bird call",
+    btn_stop_listen:"Stop & identify",
+    sound_soon:"Bird-call identification coming soon.",
+    sound_rec:"Record", sound_stop:"Stop", sound_upload:"Upload audio/video",
+    sound_loading:"loading audio model…", sound_loadfail:"audio model failed to load",
+    sound_analyzing:"identifying call…", sound_recording:"recording… (~6s)",
+    sound_locating:"getting location…",
+    sound_none:"no bird recognized", sound_decodefail:"couldn't read the audio",
+    sound_micfail:"microphone unavailable",
+    zoom:"Zoom", recent_head:"Recent findings", recent_empty:"No findings yet. Make your first spot!",
+    findings_seen:"What the model saw", findings_heard:"What you heard",
+    spot_hint:"Detection runs on-device. Each animal in frame can score — and a photo with location earns extra.",
+    journal_head:"Recorded species", journal_empty:"Nothing logged yet. Spot your first animal to begin the journal.",
+    journal_loadmore:"Show more", journal_locked:"unrecorded", journal_unrecorded:"???",
+    journal_seen:n=>`seen ${n}×`, journal_tap:"tap to view",
+    journal_lastseen:d=>`last ${d}`, journal_alsohas:"also by partner",
+    quests_active:"Active assignments", quests_done_head:"Completed",
+    quests_empty:"All current assignments complete. New ones arrive with each logbook.",
+    quest_done_stamp:"Done",
+    ranks_head:"Naturalists' standing", ranks_hint:"Shared with everyone using this logbook.",
+    ranks_empty:"No naturalists ranked yet.", ranks_species:n=>`${n} species`,
+    ranks_finds:n=>`${n} sightings`,
+    map_head:"Where you've spotted", map_empty:"No located sightings yet.<br>Spot an animal with location on, and it'll appear here.",
+    map_hint:"Each pin is a sighting with coordinates. Tap one to see what was found.",
+    profile_name_head:"Your field name", profile_name_ph:"e.g. J. Lindqvist",
+    profile_save:"Save name", profile_signout:"Sign out", profile_delete:"Delete all my data",
+    profile_name_hint:"This name appears on the shared leaderboard.",
+    profile_lang_head:"Language / Kieli",
+    profile_tools_head:"Tools", profile_recalc:"Recalculate points & stats",
+    recalc_done:"Points and stats recalculated from your findings.",
+    journal_sort:"Sort", sort_recent:"Last seen", sort_new:"Newest species",
+    sort_alpha:"Alphabetical", sort_rarity:"Rarity",
+    detail_seen:(n,p)=>`Seen ${n}× · ${p} pts base`,
+    detail_more:"More about this species", detail_nophoto:"No photo saved for this sighting",
+    detail_heard:" (heard by call)", detail_where:"Where you found it",
+    detail_nogeo:"No location recorded for this sighting.",
+    gate_tagline:"Sign in to sync your sightings across devices.",
+    gate_email:"email", gate_pw:"password", gate_signin:"Sign in",
+    gate_fail:"Sign-in failed: ",
+    label_link:"Labeling →",
+    toast_namefirst:"Enter a field name first", toast_namesaved:"Name saved.",
+    toast_modelloading:"Model still loading…",
+    status_loading:"loading detector…", status_ready:"ready", status_ready_cam:"ready — camera or upload",
+    status_detecting:"detecting…", status_camlive:"camera live — frame your subject, then capture",
+    status_listening:"listening… play or make a call, then stop",
+    status_identifying:"identifying call…",
+    delete_confirm:"This permanently deletes ALL your sightings, points and journal. This cannot be undone.\n\nType  delete  to confirm:",
+    delete_word:"delete",
+    delete_notword:"Not deleted — you didn't type 'delete'.",
+    delete_done:"All your data deleted.",
+    found_pts:n=>`+${n} points`, found_repeat:"already in your journal — no new points",
+    found_newarea:" · new area!", found_fresh:n=>` · fresh +${n}`,
+    found_library:" · from library", found_quest:n=>` · +${n} quest`,
+    found_elsewhere:km=>`logged (taken ~${km} km away — no points)`,
+    new_species:"new species", match:"match", call_match:"call match",
+    coop:n=>`Co-op! Same species as another spotter · +${n}`,
+    quest_complete:t=>`Quest complete: ${t}`,
+    not_recognized:"No bird call recognized", no_call:"No call recognized — try again closer",
+    unrecognized_status:"no bird call recognized",
+    not_wildlife:"That doesn't look like wildlife — no points",
+    unsure:p=>`unsure (${p}%) — confirm the species`,
+    unknown_species:"Not in the field guide — not logged",
+    logged:n=>`logged ${n} animal${n>1?'s':''}`,
+    heard:k=>`heard a ${k}`, confirmed:k=>`confirmed: ${k}`, logged_one:k=>`Logged ${k}`,
+    logged_unident:"logged as unidentified", cancelled:"cancelled",
+    not_in_guide:"That species isn't in the field guide — not logged",
+    prompt_copied:"Prompt copied — paste it + your photo into any AI",
+    copy_failed:"Copy failed — select the text manually",
+    photo_saved:"Photo saved — attach it to the AI",
+    json_unreadable:"Couldn't read that as JSON — paste the AI's answer again",
+    json_nospecies:"JSON missing a species name",
+    ai_unsure_title:"Not sure what this is",
+  }
+};
+// editable content.json messages win when present; otherwise the i18n table
+function mmsg(key, ...args){
+  if(LANG==='fi' && MSG_FI[key]) return MSG_FI[key];
+  if(LANG==='en' && MSG[key]) return MSG[key];
+  return t(key, ...args);
+}
+function t(key, ...args){
+  const tab = I18N[LANG] || I18N.fi;
+  let v = tab[key]; if(v==null) v = (I18N.en[key]!=null ? I18N.en[key] : key);
+  return typeof v === 'function' ? v(...args) : v;
+}
+// species display name: storage keys stay English; only the shown text changes
+function dn(key){
+  if(LANG==='fi'){ const fi = FI_NAMES[String(key).toLowerCase()]; if(fi) return fi; }
+  return key;
+}
+const RAR_NAMES={
+  fi:{common:"yleinen",uncommon:"melko harvinainen",rare:"harvinainen",epic:"eeppinen",legendary:"legendaarinen"},
+  en:{common:"common",uncommon:"uncommon",rare:"rare",epic:"epic",legendary:"legendary"}
+};
+function rarName(r){ return (RAR_NAMES[LANG]||RAR_NAMES.en)[r]||r; }
+const SIZE_LABELS={ fi:["Pituus","Siipiväli","Paino"], en:["Length","Wingspan","Weight"] };
+const WIKI_LABELS={
+  fi:{field_marks:"Tuntomerkit",lookalikes:"Sekaannuslajit",diet:"Ravinto",foraging:"Ruokailu",
+    visits_feeders:"Käy ruokinnalla",movement:"Liikkuvuus",migration:"Muuton ajoitus",
+    best_months:"Parhaat kuukaudet",active:"Aktiivinen",nesting:"Pesintä",breeding:"Pesimäkausi",
+    weather:"Sääkäyttäytyminen",conservation:"Suojelutilanne",lifespan:"Elinikä"},
+  en:{field_marks:"Field marks",lookalikes:"Lookalikes",diet:"Diet",foraging:"Foraging",
+    visits_feeders:"Visits feeders",movement:"Movement",migration:"Migration timing",
+    best_months:"Best months",active:"Active",nesting:"Nesting",breeding:"Breeding season",
+    weather:"Weather behaviour",conservation:"Conservation",lifespan:"Lifespan"}
+};
+const wlab=k=>(WIKI_LABELS[LANG]||WIKI_LABELS.en)[k];
+// short controlled-vocabulary fields aren't translated in the data — map them here
+const FI_ENUM={
+  visits_feeders:{sometimes:"joskus",yes:"kyllä",no:"ei"},
+  movement_status:{"partial migrant":"osittaismuuttaja","full migrant":"muuttolintu",
+    irruptive:"vaelluslintu",nomadic:"paikkaa vaihtava",resident:"paikkalintu"},
+  active_period:{crepuscular:"hämäräaktiivinen",varies:"vaihtelee",diurnal:"päiväaktiivinen",nocturnal:"yöaktiivinen"}
+};
+const FI_MONTHS={Jan:"tammi",Feb:"helmi",Mar:"maalis",Apr:"huhti",May:"touko",Jun:"kesä",
+  Jul:"heinä",Aug:"elo",Sep:"syys",Oct:"loka",Nov:"marras",Dec:"joulu"};
+// localize a short field value into Finnish (enum lookup + month/word substitution)
+function lval(field, raw){
+  if(LANG!=='fi' || raw==null) return raw;
+  const enum_=FI_ENUM[field];
+  if(enum_ && enum_[String(raw).toLowerCase()]) return enum_[String(raw).toLowerCase()];
+  const sub=s=>String(s)
+    .replace(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/g,m=>FI_MONTHS[m]||m)
+    .replace(/\bTypically\b/gi,"yleensä")
+    .replace(/\bup to\b/gi,"jopa")
+    .replace(/\bmax\b/gi,"enint.")
+    .replace(/\byears?\b/gi,"v").replace(/\byrs?\b/gi,"v")
+    .replace(/\bmonths?\b/gi,"kk").replace(/\bweeks?\b/gi,"vko").replace(/\bdays?\b/gi,"pv")
+    .replace(/\bPups born\b/gi,"poikaset syntyvät").replace(/\bCubs born\b/gi,"pennut syntyvät")
+    .replace(/\bin the den\b/gi,"pesässä")
+    .replace(/\bdeclining\b/gi,"taantuva").replace(/\bstable\b/gi,"vakaa")
+    .replace(/\bintroduced\b/gi,"vieraslaji");
+  return Array.isArray(raw) ? raw.map(sub) : sub(raw);
 }
 
 const RARITY = {
@@ -463,7 +730,8 @@ let FRESH_BONUS = 10;
 let FRESH_WINDOW_MIN = 4;
 let FLOCK_DECAY = 0.6, FLOCK_MAX = 25;
 let CONFIRM_THRESH = 0.50, REJECT_THRESH = 0.15;
-let MSG = {};               // messages from content.json
+let MSG = {};               // messages from content.json (English)
+let MSG_FI = {};            // messages_fi from content.json (Finnish)
 let CONTENT = null;         // full content.json
 let QUEST_POOL = [];        // quest definitions from content
 let RANKS = [];
@@ -484,6 +752,7 @@ async function loadContent(){
     if(s.low_confidence_threshold!=null) CONFIRM_THRESH = s.low_confidence_threshold;
     if(s.reject_threshold!=null) REJECT_THRESH = s.reject_threshold;
     MSG = CONTENT.messages||{};
+    MSG_FI = CONTENT.messages_fi||{};
     QUEST_POOL = CONTENT.quests||[];
     RANKS = CONTENT.ranks||[];
     console.log('content.json loaded');
@@ -493,8 +762,12 @@ async function loadContent(){
 const INPUT = 640, CONF_THRESH = 0.35, IOU_THRESH = 0.45;
 const COLORS = ["#9b3b54","#5b6b3a","#b0832f","#3b6e8c","#7d5aa6","#b5612a","#467a5b","#8c5a3b"];
 
-const rarityOf = k => RARITY[k] || "common";
-const basePts  = k => RARITY_PTS[rarityOf(k)];
+const rarityOf = k => SPECIES_RARITY[String(k).toLowerCase()] || RARITY[k] || "common";
+// scoring: must mirror the DB (rarity_points table in dev/db_points.sql). The DB
+// is the source of truth; these are used only for the offline fallback + display.
+const DISCOVER = {common:20, uncommon:35, rare:60, epic:100, legendary:200};
+const REPEAT   = {common:5,  uncommon:8,  rare:12, epic:20,  legendary:40};
+const basePts  = k => DISCOVER[rarityOf(k)] || 20;   // headline value of a species
 
 const $ = s=>document.querySelector(s);
 const statusEl = $("#status");
@@ -518,7 +791,8 @@ async function sget(k){
       if(k==="log"){
         const {data}=await sb.from('logbook').select('*').eq('owner',session.user.id).maybeSingle();
         if(data){ const v={points:data.points||0, finds:local?.finds||[],
-          species:data.species||{}, cells:data.cells||{}, quests:data.quests||{}};
+          species:data.species||{}, cells:data.cells||{}, quests:data.quests||{},
+          bonusPoints:(data.bonus_points!=null?data.bonus_points:undefined)};
           // pull sightings for the map/journal from their own table
           try{ const {data:sg}=await sb.from('sightings').select('*').eq('owner',session.user.id).order('ts',{ascending:false});
             if(sg) v.finds = sg.map(r=>({t:new Date(r.ts).getTime(), lat:r.lat, lon:r.lon,
@@ -539,6 +813,7 @@ async function sset(k,v){
     if(k==="log"){
       await sb.from('logbook').upsert({ owner:session.user.id, points:v.points,
         species:v.species, cells:v.cells, quests:v.quests, name:(me?.name||null),
+        finds:(v.finds?.length||0), bonus_points:(v.bonusPoints||0),
         updated_at:new Date().toISOString() }, { onConflict:'owner' });
     }
   }catch(e){ console.warn('sync failed (kept local):', e.message); }
@@ -554,6 +829,7 @@ async function pushSighting(f){
 
 /* ============ AUTH GATE ============ */
 async function boot(){
+  applyStaticI18n();   // localize the gate before sign-in
   const {data}=await sb.auth.getSession();
   session=data.session;
   sb.auth.onAuthStateChange((_e,s)=>{ session=s; });
@@ -565,7 +841,7 @@ $("#gSignin").onclick = async ()=>{
     const {data,error}=await sb.auth.signInWithPassword({email,password:pw});
     if(error) throw error;
     session=data.session; enterApp();
-  }catch(e){ $("#gateErr").textContent="Sign-in failed: "+e.message; }
+  }catch(e){ $("#gateErr").textContent=t("gate_fail")+e.message; }
 };
 $("#signOutBtn").onclick = async ()=>{
   await sb.auth.signOut();
@@ -574,12 +850,10 @@ $("#signOutBtn").onclick = async ()=>{
   location.reload();
 };
 $("#deleteDataBtn").onclick = async ()=>{
-  const typed = prompt(
-    "This permanently deletes ALL your sightings, points and journal. This cannot be undone.\n\n" +
-    "Type  delete  to confirm:");
+  const typed = prompt(t("delete_confirm"));
   if(typed === null) return;                       // cancelled
-  if(typed.trim().toLowerCase() !== "delete"){
-    toast("Not deleted — you didn't type 'delete'.");
+  if(typed.trim().toLowerCase() !== t("delete_word") && typed.trim().toLowerCase() !== "delete"){
+    toast(t("delete_notword"));
     return;
   }
   try{
@@ -588,16 +862,20 @@ $("#deleteDataBtn").onclick = async ()=>{
       await sb.from('logbook').delete().eq('owner', session.user.id);
     }
     Object.keys(localStorage).filter(k=>k.startsWith('fieldmark_cache')).forEach(k=>localStorage.removeItem(k));
-    log = {points:0, finds:[], species:{}, cells:{}, quests:{}};
-    assignQuests(); await sset("log",log);
-    renderAll(); toast("All your data deleted.");
+    // wipe everything: points, bonus points, sightings, journal, areas, quests
+    log = {points:0, bonusPoints:0, finds:[], species:{}, cells:{}, quests:{}};
+    dexLimit = 40;
+    OWNER_NAMES={}; PARTNER_SPECIES={}; PARTNER_FINDS_TOTAL=0;
+    grantUnlocked(); await sset("log",log);
+    // refresh every view so nothing stale (e.g. old person/car) lingers
+    renderAll(); renderRecent(); renderDex(); renderQuests();
+    toast(t("delete_done"));
     showView("spot");
-  }catch(e){ toast("Delete failed: "+e.message); }
+  }catch(e){ toast((LANG==='fi'?"Poisto epäonnistui: ":"Delete failed: ")+e.message); }
 };
 
 async function enterApp(){
   $("#gate").style.display="none";
-  $("#labelLink").style.display="block";
   await init();
 }
 
@@ -605,19 +883,37 @@ async function enterApp(){
 async function init(){
   me = await sget("me");
   log = await sget("log") || {points:0, finds:[], species:{}, cells:{}, quests:{}};
-  if(!Object.keys(log.quests).length){ assignQuests(); await sset("log",log); }
+  applyStaticI18n();
   renderAll();
-  await loadContent();
+  await loadContent();    // populates QUEST_POOL BEFORE we (re)assign quests
+  // drop stale quests whose type the current code can't complete (e.g. an old
+  // "heard, not seen" that would never fulfill), then ensure an active set.
+  const KNOWN_Q=new Set(["multi_species","rarity","new_area","total_species","flock","group","sound","sound_count","heard_unseen","coop"]);
+  let qChanged=false;
+  for(const id in log.quests){ if(!KNOWN_Q.has(log.quests[id].type)){ delete log.quests[id]; qChanged=true; } }
+  if(grantUnlocked()) qChanged=true;   // mission board: grant all currently-unlocked quests
+  if(qChanged) await sset("log",log);
   await loadLabels();
+  await cleanJunkSpecies();   // now that LABELS exist, drop non-species junk (person/car…)
+  recomputeSpeciesFromFinds();// species map + counts derive from actual sightings
+  // quest/co-op rewards (added to the DB-computed entry points)
+  if(log.bonusPoints==null){
+    log.bonusPoints = Object.values(log.quests||{}).filter(q=>q.done).reduce((a,q)=>a+(q.reward||0),0);
+  }
+  await syncMyStats();        // points from the DB view (source of truth)
+  await sset("log",log);
+  applyStaticI18n();          // re-apply now that species/labels exist
+  renderAll();
+  renderRecent();
   loadModel();
 }
 
 $("#saveName").onclick = async ()=>{
   const n=$("#nameInput").value.trim();
-  if(!n){ toast("Enter a field name first"); return; }
+  if(!n){ toast(t("toast_namefirst")); return; }
   me={id:session.user.id, name:n};
   lset("me", me); await pushBoard(); renderAll();
-  toast("Name saved.");
+  toast(t("toast_namesaved"));
 };
 
 // ============ nav ============
@@ -626,12 +922,27 @@ function showView(v){
   document.querySelectorAll(".view").forEach(s=>s.classList.remove("on"));
   $("#v-"+v).classList.add("on");
   document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on", b.dataset.v===v));
+  if(v==="spot") renderRecent();
   if(v==="ranks") renderBoard();
   if(v==="journal") renderDex();
   if(v==="quests") renderQuests();
   if(v==="map") renderMap();
   if(v==="profile" && me) $("#nameInput").value=me.name;
 }
+
+// keep the SHARED views fresh — a partner's new sightings/stats should appear
+// without re-opening the tab. Refresh the recent feed + leaderboard on focus /
+// tab-visible / reconnect, and poll lightly while you're sitting on them.
+function refreshLive(){
+  if(!session || !navigator.onLine) return;
+  const cur=document.querySelector("nav button.on")?.dataset.v;
+  if(cur==="spot") renderRecent();
+  if(cur==="ranks") renderBoard();
+}
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden) refreshLive(); });
+window.addEventListener("focus", refreshLive);
+window.addEventListener("online", refreshLive);
+setInterval(refreshLive, 20000);
 
 // ============ mode toggle ============
 document.querySelectorAll(".modes button").forEach(b=> b.onclick=()=>setMode(b.dataset.mode));
@@ -643,8 +954,8 @@ function setMode(m){
   $("#photo").style.display="none"; $("#video").style.display="none"; $("#spectro").style.display="none";
   $("#placeholder").style.display="block";
   $("#findings").style.display="none";
-  $("#phText").textContent = m==="photo" ? "Use the camera or upload to begin" : "Tap listen and play or make a bird call";
-  setStatus(model_session||m==="sound" ? "ready" : "loading detector…", model_session?"ok":"");
+  $("#phText").textContent = m==="photo" ? t("ph_photo") : t("ph_sound");
+  setStatus(model_session||m==="sound" ? t("status_ready") : t("status_loading"), model_session?"ok":"");
 }
 
 // ============ MODEL LOAD ============
@@ -663,10 +974,10 @@ async function loadModel(){
     catch{ model_session=await ort.InferenceSession.create(buf.buffer,{executionProviders:["wasm"]}); }
     $("#loadwrap").style.display="none";
     $("#cameraBtn").disabled=false; $("#uploadBtn").disabled=false; $("#nativeCamBtn").disabled=false;
-    if(mode==="photo") setStatus("ready — camera or upload","ok");
+    if(mode==="photo") setStatus(t("status_ready_cam"),"ok");
   }catch(err){
     $("#loadtxt").textContent="";
-    setStatus("couldn't load yolo11n.onnx — is it in this folder & served over http?","err");
+    setStatus(LANG==='fi'?"mallia ei voitu ladata — onko tiedosto kansiossa ja palvellaanko http:n yli?":"couldn't load the model — is it in this folder & served over http?","err");
     console.error(err);
   }
 }
@@ -691,9 +1002,9 @@ $("#cameraBtn").onclick=async ()=>{
     $("#placeholder").style.display="none"; $("#photo").style.display="none"; v.style.display="block";
     clearOverlay(); $("#shootBtn").style.display="flex"; $("#findings").style.display="none";
     pending={lat:null,lon:null,source:null,fromCamera:true}; getDeviceGps();
-    setStatus("camera live — frame your subject, then capture");
+    setStatus(t("status_camlive"));
     setupZoom();
-  }catch{ setStatus("camera unavailable — try upload","err"); }
+  }catch{ setStatus(LANG==='fi'?"kamera ei käytettävissä — kokeile latausta":"camera unavailable — try upload","err"); }
 };
 // zoom: only works where the browser exposes it (Android Chrome usually;
 // iOS Safari typically does NOT — slider stays hidden there).
@@ -738,10 +1049,22 @@ function getDeviceGps(){
 function currentPosition(){
   return new Promise(res=>{
     if(!navigator.geolocation) return res(null);
-    navigator.geolocation.getCurrentPosition(
-      p=>res({lat:p.coords.latitude, lon:p.coords.longitude}),
-      ()=>res(null), {enableHighAccuracy:true, timeout:8000});
+    const ok=p=>res({lat:p.coords.latitude, lon:p.coords.longitude});
+    // high accuracy first; if it errors/times out (common on desktop/indoors),
+    // retry low-accuracy (wifi/IP) which is faster and usually succeeds.
+    navigator.geolocation.getCurrentPosition(ok,
+      ()=>navigator.geolocation.getCurrentPosition(ok, ()=>res(null),
+            {enableHighAccuracy:false, timeout:10000, maximumAge:300000}),
+      {enableHighAccuracy:true, timeout:7000, maximumAge:60000});
   });
+}
+// resolve location BEFORE a sound capture (audio rarely carries GPS, so we use the
+// device). Awaits the prompt so the sighting is geotagged like a photo.
+async function ensureGps(){
+  pending={lat:null,lon:null,source:null};
+  setStatus(t("sound_locating"),"busy");
+  const pos=await currentPosition();
+  if(pos) setGeo(pos.lat,pos.lon,"device GPS"); else noGeo();
 }
 // distance between two lat/lon in km (haversine)
 function distKm(a,b){
@@ -780,8 +1103,8 @@ async function readGeo(file){
 
 // ============ DETECT (photo) ============
 async function detectPhoto(img){
-  if(!model_session){ toast("Model still loading…"); return; }
-  setStatus("detecting…","busy"); clearOverlay();
+  if(!model_session){ toast(t("toast_modelloading")); return; }
+  setStatus(t("status_detecting"),"busy"); clearOverlay();
   await new Promise(r=>requestAnimationFrame(r));
   const {tensor,r,dx,dy}=letterbox(img);
   let out;
@@ -795,8 +1118,8 @@ async function detectPhoto(img){
 
   // nothing, or everything is junk-confidence -> not wildlife, don't log
   if(!kept.length || topConf < REJECT_THRESH){
-    setStatus(MSG.not_wildlife || "That doesn't look like wildlife","err");
-    toast(MSG.not_wildlife || "Not wildlife — no points");
+    setStatus(mmsg("not_wildlife"),"err");
+    toast(mmsg("not_wildlife"));
     $("#findings").style.display="none";
     return;
   }
@@ -805,14 +1128,14 @@ async function detectPhoto(img){
     const top3 = [...kept].sort((a,b)=>b.score-a.score).slice(0,3)
                    .map(d=>({name:LABELS[d.cls], conf:d.score}));
     offerAIConfirm(img, thumb, top3);
-    setStatus(`unsure (${(topConf*100|0)}%) — confirm the species`,"busy");
+    setStatus(t("unsure", (topConf*100|0)),"busy");
     return;
   }
   // confident: keep only known species (in species.json/LABELS); drop unknowns
   const knownDets = kept.filter(d => LABELS[d.cls]);
   if(!knownDets.length){
-    setStatus(MSG.unknown_species || "Not in the field guide","err");
-    toast(MSG.unknown_species || "Unknown species — not logged");
+    setStatus(mmsg("unknown_species"),"err");
+    toast(mmsg("unknown_species"));
     return;
   }
   // flock counting: group by species, count individuals
@@ -823,7 +1146,7 @@ async function detectPhoto(img){
     key, conf:Math.max(...scores), count:scores.length }));
   award(finds.map(f=>f.key), finds, thumb);
   const total = knownDets.length;
-  setStatus(`logged ${total} animal${total>1?'s':''}`,"ok");
+  setStatus(t("logged", total),"ok");
 }
 
 // ===== Ask-an-AI confirmation (no API key — user is the courier) =====
@@ -831,7 +1154,7 @@ let _aiPending=null;   // {img, thumb, top3}
 function offerAIConfirm(img, thumb, top3){
   _aiPending = {img, thumb, top3};
   $("#aiGuesses").innerHTML = top3.map(g=>
-    `<button class="btn ghost aiguess" data-sp="${esc(g.name)}" style="margin:3px 0">${g.name} · ${(g.conf*100|0)}%</button>`).join("");
+    `<button class="btn ghost aiguess" data-sp="${esc(g.name)}" style="margin:3px 0">${esc(dn(g.name))} · ${(g.conf*100|0)}%</button>`).join("");
   $("#aiPanel").style.display="block";
   // wire the quick-accept guess buttons
   document.querySelectorAll(".aiguess").forEach(b=> b.onclick=()=>{
@@ -847,8 +1170,8 @@ Reply with ONLY this JSON, nothing else:
 }
 $("#aiCopyPrompt").onclick = async ()=>{
   const p = buildAIPrompt(_aiPending?.top3||[]);
-  try{ await navigator.clipboard.writeText(p); toast("Prompt copied — paste it + your photo into any AI"); }
-  catch{ toast("Copy failed — select the text manually"); }
+  try{ await navigator.clipboard.writeText(p); toast(t("prompt_copied")); }
+  catch{ toast(t("copy_failed")); }
   $("#aiPromptText").value = p; $("#aiPromptText").style.display="block";
 };
 $("#aiSavePhoto").onclick = async ()=>{
@@ -864,7 +1187,7 @@ $("#aiSavePhoto").onclick = async ()=>{
     }
   }catch(e){ /* user cancelled or unsupported — fall through to download */ }
   const a=document.createElement("a"); a.href=_aiPending.img.src; a.download="sighting.jpg"; a.click();
-  toast("Photo saved — attach it to the AI");
+  toast(t("photo_saved"));
 };
 // bulletproof JSON extraction from whatever an AI pasted back
 function extractJson(raw){
@@ -885,13 +1208,16 @@ function extractJson(raw){
 }
 $("#aiSubmitJson").onclick = ()=>{
   const obj = extractJson($("#aiJsonBox").value);
-  if(!obj){ toast("Couldn't read that as JSON — paste the AI's answer again"); return; }
+  if(!obj){ toast(t("json_unreadable")); return; }
   const sp = obj.species_en || obj.species || obj.name || obj.species_fi;
-  if(!sp){ toast("JSON missing a species name"); return; }
-  // only log species that exist in our Finnish field guide
-  const known = LABELS.find(n=>n.toLowerCase()===String(sp).toLowerCase());
+  if(!sp){ toast(t("json_nospecies")); return; }
+  // accept either the English or Finnish name the AI returned
+  const spl = String(sp).toLowerCase();
+  let known = LABELS.find(n=>n.toLowerCase()===spl);
+  if(!known){ const en = Object.keys(FI_NAMES).find(k=>FI_NAMES[k].toLowerCase()===spl);
+    if(en) known = LABELS.find(n=>n.toLowerCase()===en); }
   if(!known){
-    toast(MSG.unknown_species || "That species isn't in the field guide — not logged");
+    toast(mmsg("unknown_species"));
     return;
   }
   commitConfirmed(known, "ai:"+(obj.confidence||"?"));
@@ -900,18 +1226,18 @@ $("#aiSkip").onclick = ()=>{ // give up on species — log as coarse bird/mammal
   closeAIPanel();
   // coarse: use the top guess's coarse type from species.json if we can
   award(["(unidentified)"], [{key:"(unidentified)", conf:0}], _aiPending?.thumb);
-  setStatus("logged as unidentified","ok");
+  setStatus(t("logged_unident"),"ok");
 };
 function commitConfirmed(species, via){
   const thumb=_aiPending?.thumb;
   closeAIPanel();
   award([species], [{key:species, conf:1, viaConfirm:via}], thumb);
-  setStatus("confirmed: "+species,"ok");
-  toast("Logged "+species);
+  setStatus(t("confirmed", dn(species)),"ok");
+  toast(t("logged_one", dn(species)));
 }
 function closeAIPanel(){ $("#aiPanel").style.display="none"; $("#aiPromptText").style.display="none";
   $("#aiJsonBox").value=""; }
-$("#aiClose").onclick = ()=>{ closeAIPanel(); setStatus("cancelled",""); };
+$("#aiClose").onclick = ()=>{ closeAIPanel(); setStatus(t("cancelled"),""); };
 
 function makeThumb(img, dets){
   const maxW=480; const r=Math.min(1, maxW/img.naturalWidth);
@@ -977,62 +1303,116 @@ function drawDetections(dets,img){
 function clearOverlay(){const cv=$("#overlay");cv.getContext("2d").clearRect(0,0,cv.width,cv.height);}
 window.addEventListener("resize",()=>{ if(lastDets&&lastImg&&$("#photo").style.display!=="none") drawDetections(lastDets,lastImg); });
 
-// ============ AUDIO mode ============
-let audioCtx=null, analyser=null, micStream=null, rafId=null;
-$("#listenBtn").onclick = async ()=>{
-  if(micStream){ stopAudio(); finishListen(); return; }
+// ============ AUDIO mode — real bird-call ID via BirdNET (onnxruntime-web) ============
+// BirdNET GLOBAL 6K v2.4 (ONNX): input [1,144000] = 3s @ 48kHz mono raw waveform;
+// output 6522 logits -> sigmoid. birdnet_map.json maps its classes to our 313.
+let bn_session=null, bn_map=null, recRec=null, recChunks=[], recStream=null;
+const BN_URL='./birdnet.onnx', BN_WIN=144000, BN_SR=48000, BN_CONF=0.5, REC_MS=6000;
+
+async function bnLoad(){
+  if(bn_session) return true;
   try{
-    micStream=await navigator.mediaDevices.getUserMedia({audio:true});
-    audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-    const src=audioCtx.createMediaStreamSource(micStream);
-    analyser=audioCtx.createAnalyser(); analyser.fftSize=512; src.connect(analyser);
-    $("#placeholder").style.display="none"; $("#spectro").style.display="block";
-    $("#listenBtn").innerHTML='<svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12"/></svg>Stop &amp; identify';
-    pending={lat:null,lon:null,source:null}; getDeviceGps();
-    setStatus("listening… play or make a call, then stop","busy");
-    drawSpectro();
-    clearTimeout(window._autostop); window._autostop=setTimeout(()=>{ if(micStream){stopAudio();finishListen();} },6000);
-  }catch{ setStatus("microphone unavailable","err"); }
-};
-function drawSpectro(){
-  const cv=$("#spectro"),stage=$("#stage"); cv.width=stage.clientWidth;cv.height=stage.clientHeight;
-  const ctx=cv.getContext("2d"); const bins=analyser.frequencyBinCount; const data=new Uint8Array(bins);
-  function frame(){
-    if(!analyser) return;
-    analyser.getByteFrequencyData(data);
-    const col=ctx.getImageData(1,0,cv.width-1,cv.height); ctx.putImageData(col,0,0);
-    for(let i=0;i<bins;i++){
-      const v=data[i]/255, y=cv.height-(i/bins)*cv.height;
-      ctx.fillStyle=`rgba(${176*v+40},${131*v+40},${47*v+20},1)`;
-      ctx.fillRect(cv.width-1, y, 1, cv.height/bins+1);
-    }
-    rafId=requestAnimationFrame(frame);
+    setStatus(t("sound_loading"),"busy");
+    bn_map = await (await fetch('./birdnet_map.json')).json();          // {classIdx: ourSpeciesName}
+    const buf=new Uint8Array(await (await fetch(BN_URL)).arrayBuffer());
+    try{ bn_session=await ort.InferenceSession.create(buf.buffer,{executionProviders:["webgpu","wasm"]}); }
+    catch{ bn_session=await ort.InferenceSession.create(buf.buffer,{executionProviders:["wasm"]}); }
+    return true;
+  }catch(e){ setStatus(t("sound_loadfail"),"err"); return false; }
+}
+// decode any audio OR video file/blob to 48kHz mono Float32 (extracts the audio track)
+async function decodeMono48k(arrayBuf, blob){
+  // fast path: decodeAudioData handles wav/mp3/ogg/flac/webm everywhere.
+  try{
+    const ac=new (window.AudioContext||window.webkitAudioContext)();
+    const decoded=await ac.decodeAudioData(arrayBuf); ac.close();
+    const off=new OfflineAudioContext(1, Math.max(1,Math.ceil(decoded.duration*BN_SR)), BN_SR);
+    const src=off.createBufferSource(); src.buffer=decoded; src.connect(off.destination); src.start();
+    return (await off.startRendering()).getChannelData(0);
+  }catch(e){
+    // fallback for formats/containers decodeAudioData can't handle (m4a/AAC, video):
+    // play it (muted) through Web Audio at 48k and capture the PCM. Real-time.
+    return decodeViaElement(blob);
   }
-  frame();
 }
-function stopAudio(){
-  if(rafId) cancelAnimationFrame(rafId), rafId=null;
-  if(micStream){ micStream.getTracks().forEach(t=>t.stop()); micStream=null; }
-  if(audioCtx){ audioCtx.close(); audioCtx=null; } analyser=null;
-  $("#listenBtn").innerHTML='<svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 00-3 3v7a3 3 0 006 0V5a3 3 0 00-3-3z"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>Listen for a bird call';
+function decodeViaElement(blob){
+  return new Promise((resolve,reject)=>{
+    const el=document.createElement((blob.type||'').startsWith('video')?'video':'audio');
+    el.src=URL.createObjectURL(blob); el.muted=true; el.playsInline=true;
+    const ac=new (window.AudioContext||window.webkitAudioContext)({sampleRate:BN_SR});
+    let node; try{ node=ac.createMediaElementSource(el); }catch(err){ reject(err); return; }
+    const gain=ac.createGain(); gain.gain.value=0;            // keep it silent
+    const sp=ac.createScriptProcessor(4096,1,1), chunks=[];
+    sp.onaudioprocess=ev=>chunks.push(new Float32Array(ev.inputBuffer.getChannelData(0)));
+    node.connect(sp); sp.connect(gain); gain.connect(ac.destination);
+    el.onended=()=>{ try{sp.disconnect();node.disconnect();gain.disconnect();ac.close();}catch(_){}
+      URL.revokeObjectURL(el.src);
+      const len=chunks.reduce((a,c)=>a+c.length,0), out=new Float32Array(len); let o=0;
+      for(const c of chunks){ out.set(c,o); o+=c.length; } resolve(out); };
+    el.onerror=()=>{ try{ac.close();}catch(_){} reject(new Error('media decode failed')); };
+    el.play().catch(reject);
+  });
 }
-async function finishListen(){
-  setStatus("identifying call…","busy");
-  const result = await classifyAudio();
-  if(!result){ setStatus("no bird call recognized",""); toast("No call recognized — try again closer"); return; }
-  award([result.key], [{key:result.key, conf:result.conf, viaSound:true}]);
-  setStatus(`heard a ${result.key}`,"ok");
+const sigmoid=x=>1/(1+Math.exp(-x));
+// run BirdNET over the audio in 3s windows; return best of OUR species (or null)
+async function bnAnalyze(samples){
+  const best={};
+  const n=Math.min(20, Math.max(1, Math.ceil(samples.length/BN_WIN)));   // cap ~60s to bound runtime
+  for(let w=0; w<n; w++){
+    const chunk=new Float32Array(BN_WIN);
+    chunk.set(samples.subarray(w*BN_WIN, w*BN_WIN+BN_WIN));
+    const out=await bn_session.run({INPUT:new ort.Tensor('float32',chunk,[1,BN_WIN])});
+    const logits=out[Object.keys(out)[0]].data;
+    for(const idx in bn_map){ const c=sigmoid(logits[idx]), nm=bn_map[idx];
+      if(c>(best[nm]||0)) best[nm]=c; }
+  }
+  let key=null,conf=0; for(const nm in best){ if(best[nm]>conf){conf=best[nm];key=nm;} }
+  return (key && conf>=BN_CONF) ? {key,conf} : null;
 }
-async function classifyAudio(){
-  await new Promise(r=>setTimeout(r,500));
-  const birds = LABELS.includes("bird") ? ["bird"] : LABELS.slice(0,3);
-  if(Math.random()<0.15) return null;
-  return { key: birds[Math.floor(Math.random()*birds.length)], conf:0.6+Math.random()*0.35 };
+async function analyzeAudioBlob(blob){
+  if(!await bnLoad()) return;
+  setStatus(t("sound_analyzing"),"busy");
+  try{
+    const res=await bnAnalyze(await decodeMono48k(await blob.arrayBuffer(), blob));
+    if(!res){ setStatus(t("sound_none"),""); toast(t("sound_none")); return; }
+    await award([res.key], [{key:res.key, conf:res.conf, viaSound:true}]);
+    setStatus(t("heard", dn(res.key)),"ok");
+  }catch(e){ setStatus(t("sound_decodefail"),"err"); }
 }
+// upload an audio OR video file from the device
+$("#audioUploadBtn").onclick=()=>$("#audioInput").click();
+$("#audioInput").onchange=async e=>{ const f=e.target.files[0]; if(!f) return;
+  await ensureGps();                                  // ask GPS first, then identify
+  $("#placeholder").style.display="block";
+  await analyzeAudioBlob(f); e.target.value=""; };
+// live record (auto-stops after REC_MS, or tap again to stop early) then analyze
+$("#recBtn").onclick=async ()=>{
+  if(recRec){ stopRec(); return; }
+  await ensureGps();                                  // ask GPS first, then record
+  try{
+    recStream=await navigator.mediaDevices.getUserMedia({audio:true});
+    recChunks=[]; recRec=new MediaRecorder(recStream);
+    recRec.ondataavailable=ev=>{ if(ev.data.size) recChunks.push(ev.data); };
+    recRec.onstop=async ()=>{
+      const blob=new Blob(recChunks,{type:recRec&&recRec.mimeType||'audio/webm'});
+      if(recStream){ recStream.getTracks().forEach(t=>t.stop()); recStream=null; } recRec=null;
+      setRecBtn(false); await analyzeAudioBlob(blob);
+    };
+    recRec.start(); setRecBtn(true); setStatus(t("sound_recording"),"busy");
+    clearTimeout(window._recstop); window._recstop=setTimeout(()=>{ if(recRec) stopRec(); }, REC_MS);
+  }catch{ setStatus(t("sound_micfail"),"err"); }
+};
+function stopRec(){ clearTimeout(window._recstop); if(recRec && recRec.state!=='inactive') recRec.stop(); }
+function setRecBtn(on){ const b=$("#recBtn"); if(!b) return;
+  b.innerHTML=(on
+    ? '<svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12"/></svg>'+t("sound_stop")
+    : '<svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 00-3 3v7a3 3 0 006 0V5a3 3 0 00-3-3z"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>'+t("sound_rec")); }
+// called by setMode when leaving sound mode
+function stopAudio(){ stopRec(); if(recStream){ recStream.getTracks().forEach(t=>t.stop()); recStream=null; } }
 
 // ============ SCORING ============
 function cellId(lat,lon){ return `${Math.round(lat*100)}_${Math.round(lon*100)}`; }
-function award(keys, finds, thumb=null){
+async function award(keys, finds, thumb=null){
   if(!keys.length){ renderFindings([],0); return; }
   // photo taken somewhere far from where you are now -> log it, but no points
   const elsewhere = pending && pending.elsewhere === true;
@@ -1040,24 +1420,18 @@ function award(keys, finds, thumb=null){
   let gained=0, newCell=false; const cards=[];
   finds.forEach(f=>{
     const first = !log.species[f.key];
-    const base = basePts(f.key);
+    const rar = rarityOf(f.key);
     const count = Math.min(f.count||1, FLOCK_MAX);
-    let pts = 0;
-    for(let i=0;i<count;i++) pts += base * Math.pow(FLOCK_DECAY, i);
-    pts = Math.round(pts);
-    if(first) pts = Math.round(pts*FIRST_BONUS);
-    if(cell && !log.cells[cell] && !newCell){ pts += NEW_CELL_PTS; newCell=true; }
-    if(elsewhere) pts = 0;                 // logged for the journal, but earns nothing
+    // first time you record a species scores DISCOVER, later sightings score REPEAT
+    const pts = elsewhere ? 0 : (first ? (DISCOVER[rar]||20) : (REPEAT[rar]||5));
     gained += pts;
     log.species[f.key] = (log.species[f.key]||0)+1;
     cards.push({...f, pts, first, count});
   });
+  // track first-visit to a 1km cell (used by the "new area" quest, not for points)
+  if(cell && !log.cells[cell]) newCell=true;
   if(cell) log.cells[cell]=true;
-  // freshness: camera shots are always "now"; uploads depend on EXIF age.
-  // none of the bonuses apply if the photo was taken elsewhere.
   const isFresh = !elsewhere && pending && (pending.fromCamera || pending.fresh);
-  if(isFresh){ gained += FRESH_BONUS; }
-  log.points += gained;
   const sighting={t:Date.now(), lat:pending?.lat, lon:pending?.lon, species:keys,
                   thumb, viaSound: finds.some(f=>f.viaSound),
                   fresh:!!isFresh, fromLibrary: pending?.fromLibrary||false,
@@ -1066,19 +1440,23 @@ function award(keys, finds, thumb=null){
   log.finds = log.finds.slice(0,300);
   log.finds.forEach((f,i)=>{ if(i>=60) f.thumb=null; });
 
-  // co-op + quests only count for on-location sightings
+  // co-op + quests only count for on-location sightings; their rewards are
+  // bonus points added on top of the DB-computed entry points.
   const qPts = elsewhere ? 0 : checkQuests(keys, !!cell && newCell, finds);
-  log.points += qPts;
-
-  sset("log",log); pushSighting(sighting); pushBoard(); renderAll();
+  log.bonusPoints = (log.bonusPoints||0) + qPts;
+  recomputePoints();                 // optimistic local total for instant feedback
+  renderAll(); renderRecent();
+  await pushSighting(sighting);      // write the row first, so the view sees it
+  await syncMyStats();               // then read the authoritative total from the DB
+  sset("log",log); pushBoard();
   if(!elsewhere) checkCoop(keys, sighting);   // co-op "same bird together" check
+  renderAll(); renderRecent();
   renderFindings(cards, gained, qPts, newCell);
   let msg;
-  if(elsewhere){ msg = `logged (taken ~${Math.round(pending.awayKm)} km away — no points)`; }
+  if(elsewhere){ msg = t("found_elsewhere", Math.round(pending.awayKm)); }
   else {
-    msg=`+${gained} points`; if(newCell)msg+=" · new area!";
-    if(isFresh)msg+=" · fresh +"+FRESH_BONUS; if(pending?.fromLibrary)msg+=" · from library";
-    if(qPts)msg+=` · +${qPts} quest`;
+    msg = gained>0 ? t("found_pts", gained) : t("found_repeat");
+    if(qPts)msg+=t("found_quest", qPts);
   }
   toast(msg);
 }
@@ -1110,11 +1488,12 @@ async function checkCoop(keys, sighting){
         const sig = r.owner+"|"+r.ts;
         if(_coopClaimed.has(sig)) continue;
         _coopClaimed.add(sig);
-        log.points += (cfg.bonus||50);
+        log.bonusPoints = (log.bonusPoints||0) + (cfg.bonus||50);
         // mark the coop quest done if present
         Object.values(log.quests).forEach(q=>{ if(q.type==="coop" && !q.done){ q.done=true; } });
+        recomputePoints();
         await sset("log",log); await pushBoard(); renderAll();
-        toast(`Co-op! Same species as another spotter · +${cfg.bonus||50}`);
+        toast(t("coop", cfg.bonus||50));
         return;
       }
     }
@@ -1123,17 +1502,17 @@ async function checkCoop(keys, sighting){
 
 function renderFindings(cards,gained,qPts,newCell){
   $("#findings").style.display="block";
-  $("#findHead").textContent = mode==="sound" ? "What you heard" : "What the model saw";
+  $("#findHead").textContent = mode==="sound" ? t("findings_heard") : t("findings_seen");
   const list=$("#findlist");
-  if(!cards.length){ list.innerHTML=`<div class="empty">Nothing above the confidence threshold. Try a clearer ${mode==="sound"?"recording":"shot"}.</div>`; return; }
+  if(!cards.length){ list.innerHTML=`<div class="empty">${LANG==='fi'?'Mikään ei ylittänyt varmuusrajaa. Kokeile selkeämpää '+(mode==='sound'?'äänitystä':'kuvaa')+'.':'Nothing above the confidence threshold. Try a clearer '+(mode==='sound'?'recording':'shot')+'.'}</div>`; return; }
   list.innerHTML="";
   cards.sort((a,b)=>b.pts-a.pts).forEach(c=>{
     const rar=rarityOf(c.key), col=RARITY_COLOR[rar];
     const row=document.createElement("div"); row.className="find";
     row.innerHTML=`<span class="swatch" style="background:${col}"></span>
-      <span class="nm">${c.key}${c.count>1?` ·<small style="display:inline;color:var(--olive-d);font-weight:600"> ×${c.count}</small>`:''}${c.first?' · <small style="display:inline;color:var(--olive-d);font-weight:600">new species</small>':''}
-        <small>${(c.conf*100|0)}% ${c.viaSound?'call match':'match'}</small></span>
-      <span class="rar" style="background:${col}">${rar}</span>
+      <span class="nm">${esc(dn(c.key))}${c.count>1?` ·<small style="display:inline;color:var(--olive-d);font-weight:600"> ×${c.count}</small>`:''}${c.first?` · <small style="display:inline;color:var(--olive-d);font-weight:600">${t("new_species")}</small>`:''}
+        <small>${(c.conf*100|0)}% ${c.viaSound?t("call_match"):t("match")}</small></span>
+      <span class="rar" style="background:${col}">${rarName(rar)}</span>
       <span class="pts">+${c.pts}</span>`;
     list.appendChild(row);
   });
@@ -1149,17 +1528,35 @@ function questTest(q, keys, fresh, finds){
     case "flock": return (finds||[]).some(f=>(f.count||1)>=(q.target||4));
     case "group": return keys.some(k => (q.match||[]).some(m => k.toLowerCase().includes(m.toLowerCase())));
     case "sound": return (finds||[]).some(f=>f.viaSound);
+    case "sound_count": {
+      const heard=new Set();
+      (log.finds||[]).forEach(f=>{ if(f.viaSound)(f.species||[]).forEach(s=>heard.add(s)); });
+      return heard.size>=(q.target||5);
+    }
+    case "heard_unseen": {
+      // identified by SOUND a species you have no PHOTO sighting of
+      const photo=new Set();
+      (log.finds||[]).forEach(f=>{ if(!f.viaSound)(f.species||[]).forEach(s=>photo.add(s)); });
+      return (finds||[]).some(f=>f.viaSound && (f.species||[]).some(k=>!photo.has(k)));
+    }
     default: return false;
   }
 }
-function assignQuests(){
-  const pool = (QUEST_POOL && QUEST_POOL.length) ? QUEST_POOL : [
-    {id:"two",title:"Two in one frame",desc:"Log two different species.",reward:40,type:"multi_species"},
-    {id:"rare",title:"Something uncommon",desc:"Find a rare species.",reward:60,type:"rarity"},
-    {id:"five",title:"A good day's count",desc:"Reach five species.",reward:50,type:"total_species",target:5},
-  ];
-  const n = (CONTENT && CONTENT.quests_per_user) || 3;
-  [...pool].sort(()=>Math.random()-0.5).slice(0,n).forEach(q=> log.quests[q.id]={...q,done:false});
+const FALLBACK_QUESTS = [
+  {id:"first",title:"First bird",desc:"Log your very first species.",reward:20,type:"total_species",target:1},
+  {id:"two",title:"Two in one frame",desc:"Log two different species.",reward:40,type:"multi_species"},
+  {id:"sound",title:"Birdsong ID",desc:"Identify a bird by its call.",reward:40,type:"sound"},
+];
+function questPool(){ return (QUEST_POOL && QUEST_POOL.length) ? QUEST_POOL : FALLBACK_QUESTS; }
+function completedQuests(){ return Object.values(log.quests||{}).filter(q=>q.done).length; }
+// mission board: grant every pool quest the player has unlocked (requires<=done)
+// and doesn't already have. Locked quests (requires>done) stay hidden until earned.
+function grantUnlocked(){
+  const done=completedQuests(); let added=false;
+  questPool().forEach(q=>{
+    if(!log.quests[q.id] && (q.requires||0)<=done){ log.quests[q.id]={...q,done:false}; added=true; }
+  });
+  return added;
 }
 function checkQuests(keys, fresh, finds){
   let gained=0;
@@ -1167,9 +1564,88 @@ function checkQuests(keys, fresh, finds){
     if(q.done) return;
     let pass=false;
     try{ pass=questTest(q,keys,fresh,finds||[]); }catch{}
-    if(pass){ q.done=true; gained+=q.reward; toast(`Quest complete: ${q.title}`); }
+    if(pass){ q.done=true; gained+=q.reward; toast(t("quest_complete", qf(q,'title'))); }
   });
+  grantUnlocked();   // completing quests may unlock the gated missions
   return gained;
+}
+
+// ============ SHARED STATE across players (read-only) ============
+// owner uuid -> display name, and owner uuid -> species map. Refreshed when
+// we touch the leaderboard / recent feed. Lets the journal show "also by partner"
+// and the recent feed attribute findings to the right person.
+let OWNER_NAMES = {};      // {uuid: name}
+let PARTNER_SPECIES = {};  // species(lowercased) -> true  (any OTHER player has it)
+let PARTNER_FINDS_TOTAL = 0;
+async function refreshShared(){
+  if(!session || !navigator.onLine) return;
+  try{
+    const {data} = await sb.from('logbook').select('owner, points, species, name, finds');
+    if(!data) return;
+    OWNER_NAMES = {}; PARTNER_SPECIES = {}; PARTNER_FINDS_TOTAL = 0;
+    data.forEach(r=>{
+      OWNER_NAMES[r.owner] = r.owner===session.user.id ? (me?.name||'You') : (r.name||'naturalist');
+      if(r.owner !== session.user.id){
+        Object.keys(r.species||{}).forEach(k=>{ PARTNER_SPECIES[k.toLowerCase()]=true; });
+        PARTNER_FINDS_TOTAL += (r.finds||0);
+      }
+    });
+  }catch(e){ /* best-effort */ }
+}
+
+// "x min/h/d ago" relative time, localized-ish
+function timeAgo(ts){
+  const s = Math.max(0,(Date.now()-ts)/1000);
+  if(s<60) return LANG==='fi'?"juuri nyt":"just now";
+  const m=Math.floor(s/60); if(m<60) return LANG==='fi'?`${m} min sitten`:`${m} min ago`;
+  const h=Math.floor(m/60); if(h<24) return LANG==='fi'?`${h} h sitten`:`${h} h ago`;
+  const d=Math.floor(h/24); if(d<7) return LANG==='fi'?`${d} pv sitten`:`${d} d ago`;
+  return new Date(ts).toLocaleDateString(LANG==='fi'?'fi-FI':undefined,{month:'short',day:'numeric'});
+}
+
+// ============ RECENT FINDINGS (shared feed on home) ============
+async function renderRecent(){
+  const list=$("#recentList"); if(!list) return;
+  let rows=[];
+  if(session && navigator.onLine){
+    try{
+      await refreshShared();
+      const {data}=await sb.from('sightings')
+        .select('id, owner, ts, species, thumb, via_sound, lat, lon')
+        .order('ts',{ascending:false}).limit(15);
+      if(data) rows=data.map(r=>({id:r.id, owner:r.owner, t:new Date(r.ts).getTime(),
+        species:r.species||[], thumb:r.thumb, viaSound:r.via_sound,
+        lat:r.lat, lon:r.lon, mine:r.owner===session.user.id}));
+    }catch(e){ /* fall through to local */ }
+  }
+  if(!rows.length){ // offline / no data: show own recent finds
+    rows=(log.finds||[]).slice(0,15).map(f=>({id:f._id, owner:session?.user?.id, t:f.t,
+      species:f.species||[], thumb:f.thumb, viaSound:f.viaSound,
+      lat:f.lat, lon:f.lon, mine:true}));
+  }
+  // drop junk species (person/car from old testing) and any now-empty rows
+  if(LABELS.length){
+    const known=new Set(LABELS.map(n=>n.toLowerCase()));
+    rows.forEach(r=>{ r.species=(r.species||[]).filter(s=>known.has(String(s).toLowerCase())); });
+    rows=rows.filter(r=>r.species.length);
+  }
+  rows = rows.slice(0,3);   // home shows only the 3 most recent; full list is in Journal
+  if(!rows.length){ list.innerHTML=`<div class="empty">${t("recent_empty")}</div>`; return; }
+  list.innerHTML="";
+  rows.forEach(r=>{
+    const names=(r.species||[]).map(dn).join(", ")||"—";
+    const who = r.mine ? (LANG==='fi'?"sinä":"you") : (OWNER_NAMES[r.owner]||(LANG==='fi'?'kumppani':'partner'));
+    const thumb = r.thumb
+      ? `<img class="rthumb" src="${r.thumb}" alt="">`
+      : `<span class="rph"><svg viewBox="0 0 24 24">${r.viaSound?'<path d="M12 2a3 3 0 00-3 3v7a3 3 0 006 0V5a3 3 0 00-3-3z"/><path d="M5 11a7 7 0 0014 0M12 18v3"/>':'<path d="M3 7a2 2 0 012-2h2l1.4-2h7.2L18 5h2a2 2 0 012 2v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><circle cx="12" cy="12.5" r="3.6"/>'}</svg></span>`;
+    const row=document.createElement("div"); row.className="rfind";
+    row.innerHTML=`${thumb}<span class="rnm">${esc(names)}<small>${timeAgo(r.t)}</small></span>
+      <span class="rwho${r.mine?' mine':''}">${esc(who)}</span>`;
+    const key=(r.species||[])[0];
+    if(key){ row.style.cursor="pointer";
+      row.onclick=()=>openSpecies(key, {lat:r.lat, lon:r.lon, thumb:r.thumb, viaSound:r.viaSound, who, mine:r.mine}); }
+    list.appendChild(row);
+  });
 }
 
 // ============ LEADERBOARD (from logbook table, all users) ============
@@ -1183,24 +1659,202 @@ async function renderBoard(){
   let rows=[];
   if(session && navigator.onLine){
     try{
-      const {data}=await sb.from('logbook').select('owner, points, species, name');
+      // DB-computed: points/species/sightings come straight from player_stats
+      let {data, error}=await sb.from('player_stats').select('owner, name, points, species, sightings');
+      if(error) throw error;
       rows=(data||[]).map(r=>({id:r.owner, pts:r.points||0,
-        species:Object.keys(r.species||{}).length,
+        species:r.species||0, finds:r.sightings||0,
         name: r.owner===session.user.id ? (me?.name||'You') : (r.name||'naturalist')}))
         .sort((a,b)=>b.pts-a.pts);
-    }catch(e){ /* fall through */ }
+    }catch(e){
+      // fallback if the view isn't created yet
+      try{
+        const {data}=await sb.from('logbook').select('owner, points, species, name, finds');
+        rows=(data||[]).map(r=>({id:r.owner, pts:r.points||0,
+          species:Object.keys(r.species||{}).length, finds:r.finds||0,
+          name: r.owner===session.user.id ? (me?.name||'You') : (r.name||'naturalist')}))
+          .sort((a,b)=>b.pts-a.pts);
+      }catch(e2){ /* offline */ }
+    }
   }
-  if(!rows.length){ el.innerHTML=`<div class="lbrow"><div class="empty" style="padding:14px">No naturalists ranked yet.</div></div>`;
-    $("#whoRank").textContent="unranked"; return; }
+  if(!rows.length){ el.innerHTML=`<div class="lbrow"><div class="empty" style="padding:14px">${t("ranks_empty")}</div></div>`;
+    $("#whoRank").textContent=LANG==='fi'?"ei sijoitusta":"unranked"; return; }
   el.innerHTML="";
   rows.slice(0,50).forEach((r,i)=>{
     const div=document.createElement("div"); div.className="lbrow"+(me&&r.id===me.id?" me":"");
-    div.innerHTML=`<div class="rk">${i+1}</div><div class="nm">${esc(r.name)}<small>${r.species} species</small></div><div class="sc">${r.pts.toLocaleString()}</div>`;
+    div.innerHTML=`<div class="rk">${i+1}</div><div class="nm">${esc(r.name)}<small>${t("ranks_species",r.species)} · ${t("ranks_finds",r.finds)}</small></div><div class="sc">${r.pts.toLocaleString()}</div>`;
     el.appendChild(div);
   });
   const myRank=rows.findIndex(r=>me&&r.id===me.id)+1;
-  $("#whoRank").textContent = myRank? `rank #${myRank}` : "unranked";
+  $("#whoRank").textContent = myRank? (LANG==='fi'?`sija #${myRank}`:`rank #${myRank}`) : (LANG==='fi'?"ei sijoitusta":"unranked");
 }
+
+// ============ i18n: apply to static DOM + toggle ============
+// set a button's text label while preserving its leading <svg> icon
+function setBtnText(el, text){
+  if(!el) return;
+  // remove existing trailing text nodes
+  [...el.childNodes].forEach(n=>{ if(n.nodeType===3) el.removeChild(n); });
+  el.appendChild(document.createTextNode(text));
+}
+function setText(sel, text){ const e=$(sel); if(e) e.textContent=text; }
+function setPlaceholder(sel, text){ const e=$(sel); if(e) e.placeholder=text; }
+function applyStaticI18n(){
+  document.documentElement.lang = LANG;
+  // gate
+  setText("#gate .eyebrow", t("eyebrow"));
+  setText("#gate p", t("gate_tagline"));
+  setPlaceholder("#gEmail", t("gate_email"));
+  setPlaceholder("#gPw", t("gate_pw"));
+  setText("#gSignin", t("gate_signin"));
+  // header
+  setText("header .eyebrow", t("eyebrow"));
+  const statL = document.querySelectorAll(".ribbon .stat .l");
+  if(statL[0]) statL[0].textContent=t("stat_points");
+  if(statL[1]) statL[1].textContent=t("stat_species");
+  if(statL[2]) statL[2].textContent=t("stat_finds");
+  if(statL[3]) statL[3].textContent=t("stat_quests");
+  // bottom nav
+  setBtnText($('nav button[data-v="spot"]'), t("nav_spot"));
+  setBtnText($('nav button[data-v="journal"]'), t("nav_journal"));
+  setBtnText($('nav button[data-v="quests"]'), t("nav_quests"));
+  setBtnText($('nav button[data-v="ranks"]'), t("nav_ranks"));
+  setBtnText($('nav button[data-v="map"]'), t("nav_map"));
+  setBtnText($('nav button[data-v="profile"]'), t("nav_profile"));
+  // labeler link inside profile
+  setText("#labelerProfileLink", t("label_link"));
+  // spot view
+  setText('.modes button[data-mode="photo"]', t("mode_photo"));
+  setText('.modes button[data-mode="sound"]', t("mode_sound"));
+  setText("#placeholder b", t("ph_title"));
+  setText("#phText", mode==="photo"?t("ph_photo"):t("ph_sound"));
+  setBtnText($("#cameraBtn"), t("btn_quickcam"));
+  setBtnText($("#nativeCamBtn"), t("btn_devicecam"));
+  setBtnText($("#uploadBtn"), t("btn_upload"));
+  setBtnText($("#shootBtn"), t("btn_capture"));
+  setBtnText($("#audioUploadBtn"), t("sound_upload"));
+  if(typeof setRecBtn==="function") setRecBtn(false);
+  setText("#zoomWrap span", t("zoom"));
+  setText("#recentHead", t("recent_head"));
+  setText("#spotHint", t("spot_hint"));
+  // journal
+  setText("#v-journal .sechead", t("journal_head"));
+  setText("#dexEmpty", t("journal_empty"));
+  setText('#dexSortBar button[data-sort="recent"]', t("sort_recent"));
+  setText('#dexSortBar button[data-sort="new"]', t("sort_new"));
+  setText('#dexSortBar button[data-sort="alpha"]', t("sort_alpha"));
+  setText('#dexSortBar button[data-sort="rarity"]', t("sort_rarity"));
+  // quests
+  const qHeads=document.querySelectorAll("#v-quests .sechead");
+  if(qHeads[0]) qHeads[0].textContent=t("quests_active");
+  setText("#doneHead", t("quests_done_head"));
+  // ranks
+  setText("#v-ranks .sechead", t("ranks_head"));
+  setText("#v-ranks .hint", t("ranks_hint"));
+  // map
+  setText("#v-map .sechead", t("map_head"));
+  setText("#v-map .maphint", t("map_hint"));
+  const me2=$("#mapEmpty p"); if(me2) me2.innerHTML=t("map_empty");
+  // profile
+  setText("#profileLangHead", t("profile_lang_head"));
+  setText("#profileNameHead", t("profile_name_head"));
+  setPlaceholder("#nameInput", t("profile_name_ph"));
+  setText("#saveName", t("profile_save"));
+  setText("#signOutBtn", t("profile_signout"));
+  setText("#deleteDataBtn", t("profile_delete"));
+  setText("#profileNameHint", t("profile_name_hint"));
+  setText("#profileToolsHead", t("profile_tools_head"));
+  setText("#recalcBtn", t("profile_recalc"));
+  // detail sheet
+  setText("#dMaplabel", t("detail_where"));
+  setText("#dDropBtn span:first-child", t("detail_more"));
+  setText("#dNoGeo", t("detail_nogeo"));
+  // AI confirm panel
+  setText(".aititle", t("ai_unsure_title"));
+  // language toggle active state
+  document.querySelectorAll("#langToggle button").forEach(b=>b.classList.toggle("on", b.dataset.lang===LANG));
+}
+function setLang(l){
+  LANG = (l==='en') ? 'en' : 'fi';
+  try{ localStorage.setItem('fieldmark_lang', LANG); }catch{}
+  applyStaticI18n();
+  // re-render whatever dynamic view is showing + the persistent ribbon
+  renderAll(); renderRecent();
+  const cur = document.querySelector("nav button.on")?.dataset.v;
+  if(cur==="journal") renderDex();
+  if(cur==="quests") renderQuests();
+  if(cur==="ranks") renderBoard();
+  if(cur==="map") renderMap();
+}
+document.querySelectorAll("#langToggle button").forEach(b=> b.onclick=()=>setLang(b.dataset.lang));
+document.querySelectorAll("#dexSortBar button").forEach(b=> b.onclick=()=>{
+  dexSort=b.dataset.sort; dexLimit=40;
+  document.querySelectorAll("#dexSortBar button").forEach(x=>x.classList.toggle("on", x===b));
+  renderDex();
+});
+
+// remove any logged "species" that isn't a real species in the field guide
+// (leftover person/car/etc. from old COCO-model testing). Idempotent.
+async function cleanJunkSpecies(){
+  if(!LABELS.length || !log) return;
+  const known = new Set(LABELS.map(n=>n.toLowerCase()));
+  const isKnown = k => known.has(String(k).toLowerCase());
+  let changed=false;
+  Object.keys(log.species||{}).forEach(k=>{ if(!isKnown(k)){ delete log.species[k]; changed=true; } });
+  if(Array.isArray(log.finds)){
+    const before=log.finds.length;
+    log.finds.forEach(f=>{ if(Array.isArray(f.species)) f.species=f.species.filter(isKnown); });
+    log.finds = log.finds.filter(f=> (f.species&&f.species.length) );
+    if(log.finds.length!==before) changed=true;
+  }
+  if(changed){ await sset("log",log); }
+}
+
+// Sightings are the single source of truth. Rebuild the species map (journal
+// marks + per-species "seen N×") from the actual findings, so the journal,
+// species count and recent feed can never drift apart again.
+function recomputeSpeciesFromFinds(){
+  if(!log) return;
+  const sp={};
+  (log.finds||[]).forEach(f=>{ (f.species||[]).forEach(s=>{ sp[s]=(sp[s]||0)+1; }); });
+  log.species=sp;
+}
+// OFFLINE FALLBACK ONLY — mirrors the DB scoring (rarity_points): the first time
+// you record a species scores DISCOVER, every later sighting scores REPEAT.
+// Online, points come straight from the player_stats view (syncMyStats).
+function pointsFromFinds(){
+  const order=[...(log.finds||[])].sort((a,b)=>a.t-b.t);
+  const seen=new Set(); let pts=0;
+  order.forEach(f=>{ if(f.elsewhere) return;
+    (f.species||[]).forEach(s=>{
+      const rar=rarityOf(s);
+      if(!seen.has(s)){ pts+=(DISCOVER[rar]||20); seen.add(s); }
+      else { pts+=(REPEAT[rar]||5); }
+    });
+  });
+  return pts;
+}
+function recomputePoints(){ if(log) log.points = pointsFromFinds() + (log.bonusPoints||0); }
+
+// authoritative: read this player's points from the DB view (computed from
+// sightings). Falls back to the local mirror only when offline / view missing.
+async function syncMyStats(){
+  if(!session || !navigator.onLine){ recomputePoints(); return; }
+  try{
+    const {data, error} = await sb.from('player_stats')
+      .select('points, species, sightings').eq('owner', session.user.id).maybeSingle();
+    if(error) throw error;
+    if(data){ log.points = data.points||0; }
+    else recomputePoints();
+  }catch(e){ recomputePoints(); }   // view not created yet, or offline
+}
+$("#recalcBtn").onclick = async ()=>{
+  recomputeSpeciesFromFinds();
+  await syncMyStats();
+  await sset("log",log);
+  renderAll(); renderRecent(); renderDex();
+  toast(t("recalc_done"));
+};
 
 // ============ renderers ============
 function renderAll(){
@@ -1210,35 +1864,83 @@ function renderAll(){
   $("#sFinds").textContent=log.finds.length;
   $("#sQuests").textContent=Object.values(log.quests).filter(q=>q.done).length;
 }
-function renderDex(){
-  const el=$("#dexgrid"); const seen=Object.entries(log.species);
-  $("#dexEmpty").style.display = seen.length?"none":"block";
+// most-recent / first-seen timestamp per species, from your sightings
+function seenTimes(){
+  const last={}, first={};
+  (log.finds||[]).forEach(f=>{ (f.species||[]).forEach(s=>{
+    if(!last[s]||f.t>last[s]) last[s]=f.t;
+    if(!first[s]||f.t<first[s]) first[s]=f.t;
+  }); });
+  return {last, first};
+}
+const lastSeenMap=()=>seenTimes().last;
+let dexLimit = 40;
+let dexSort = 'recent';   // recent | new | alpha | rarity
+const RAR_RANK={common:0,uncommon:1,rare:2,epic:3,legendary:4};
+async function renderDex(){
+  await refreshShared();   // so "also by partner" markers are fresh
+  const el=$("#dexgrid");
+  const seenKeys=Object.keys(log.species||{});
+  $("#dexEmpty").style.display = seenKeys.length?"none":"block";
+  const {last, first}=seenTimes();
+  // collected species, ordered by the chosen sort; locked species follow (alpha)
+  const cmp={
+    recent:(a,b)=>(last[b]||0)-(last[a]||0),
+    new:(a,b)=>(first[b]||0)-(first[a]||0),
+    alpha:(a,b)=>dn(a).localeCompare(dn(b), LANG==='fi'?'fi':undefined),
+    rarity:(a,b)=>(RAR_RANK[rarityOf(b)]-RAR_RANK[rarityOf(a)]) || dn(a).localeCompare(dn(b)),
+  }[dexSort] || ((a,b)=>(last[b]||0)-(last[a]||0));
+  const seenSorted=[...seenKeys].sort(cmp);
+  const locked=LABELS.filter(k=>!log.species[k])
+    .sort((a,b)=>dn(a).localeCompare(dn(b), LANG==='fi'?'fi':undefined));
+  const order=[...seenSorted, ...locked];
   el.innerHTML="";
-  const order=[...new Set([...Object.keys(log.species), ...LABELS])];
-  order.slice(0,40).forEach(k=>{
+  order.slice(0, dexLimit).forEach(k=>{
     const n=log.species[k]||0, rar=rarityOf(k), col=RARITY_COLOR[rar];
     const div=document.createElement("div"); div.className="dexcard"+(n?"":" locked");
-    div.innerHTML=`<div class="sp">${n?k:"???"}</div>
-      <span class="rar" style="background:${col};display:inline-block;margin-top:6px">${rar}</span>
-      <div class="meta">${n?`seen ${n}× · tap to view`:"unrecorded"}</div>`;
+    const partner = !n && PARTNER_SPECIES[String(k).toLowerCase()];
+    const seenLine = n
+      ? `${t("journal_seen",n)} · ${last[k]?t("journal_lastseen",timeAgo(last[k])):t("journal_tap")}`
+      : (partner ? `★ ${t("journal_alsohas")}` : t("journal_locked"));
+    div.innerHTML=`<div class="sp">${n?esc(dn(k)):t("journal_unrecorded")}</div>
+      <span class="rar" style="background:${col};display:inline-block;margin-top:6px">${rarName(rar)}</span>
+      <div class="meta">${seenLine}</div>`;
     if(n){ div.style.cursor="pointer"; div.onclick=()=>openSpecies(k); }
     el.appendChild(div);
   });
+  // "load more" when there's more to show
+  let more=$("#dexMore");
+  if(order.length>dexLimit){
+    if(!more){ more=document.createElement("button"); more.id="dexMore"; more.className="btn wide ghost";
+      more.style.marginTop="14px"; el.after(more);
+      more.onclick=()=>{ dexLimit+=40; renderDex(); }; }
+    more.textContent=`${t("journal_loadmore")} (${order.length-dexLimit})`;
+    more.style.display="block";
+  } else if(more){ more.style.display="none"; }
 }
 
 let detailMap=null;
-function openSpecies(key){
+function openSpecies(key, override=null){
+  // override = a specific sighting (e.g. a partner's, from the recent feed) whose
+  // location/photo we want to show even though it isn't in our own log.finds.
   const sightings = log.finds.filter(f=>f.species.includes(key));
-  const withThumb = sightings.find(f=>f.thumb);
-  const withGeo = sightings.find(f=>f.lat!=null);
+  const withThumb = (override && override.thumb) ? override : sightings.find(f=>f.thumb);
+  const withGeo = (override && override.lat!=null) ? override : sightings.find(f=>f.lat!=null);
+  const heard = (override ? override.viaSound : false) || sightings.some(s=>s.viaSound);
   const rar=rarityOf(key), col=RARITY_COLOR[rar];
-  $("#dTitle").textContent = key;
-  $("#dRar").textContent = rar; $("#dRar").style.background=col;
-  $("#dCount").textContent = `Seen ${log.species[key]}× · ${basePts(key)} pts base`;
+  $("#dTitle").textContent = dn(key);
+  $("#dRar").textContent = rarName(rar); $("#dRar").style.background=col;
+  if(override && override.who){            // opened from the recent feed -> show WHO found it
+    $("#dCount").textContent = override.mine
+      ? (LANG==='fi' ? "Sinä löysit tämän" : "You found this")
+      : (LANG==='fi' ? `${override.who} löysi tämän` : `${override.who} found this`);
+  } else {
+    $("#dCount").textContent = t("detail_seen", log.species[key]||0, basePts(key));
+  }
   populateWiki(key);
   const imgWrap=$("#dPhoto");
   if(withThumb){ imgWrap.innerHTML=`<img src="${withThumb.thumb}" alt="">`; imgWrap.style.display="block"; }
-  else { imgWrap.innerHTML=`<div class="dnophoto">No photo saved for this sighting${sightings.some(s=>s.viaSound)?" (heard by call)":""}.</div>`; imgWrap.style.display="block"; }
+  else { imgWrap.innerHTML=`<div class="dnophoto">${t("detail_nophoto")}${heard?t("detail_heard"):""}.</div>`; imgWrap.style.display="block"; }
   $("#speciesDetail").classList.add("open");
   const mapBox=$("#dMap");
   if(withGeo){
@@ -1276,9 +1978,12 @@ async function loadWiki(){
 async function populateWiki(key){
   await loadWiki();
   const w = wikiByName ? wikiByName[key.toLowerCase()] : null;
-  // names
+  // names: when showing the app in Finnish the title is already the Finnish name,
+  // so put the English name in the secondary slot; in English, show the Finnish name.
   $("#dSci").textContent = w?.sci || "";
-  $("#dFi").textContent  = w?.name_fi && w.name_fi.toLowerCase()!==key.toLowerCase() ? w.name_fi : "";
+  $("#dFi").textContent  = LANG==='fi'
+    ? (w?.name_en && w.name_en.toLowerCase()!==dn(key).toLowerCase() ? w.name_en : "")
+    : (w?.name_fi && w.name_fi.toLowerCase()!==key.toLowerCase() ? w.name_fi : "");
   // size stats — data may give separate length/wingspan, or one combined string
   const size = w?.size || {};
   let len = size.length || "", wing = size.wingspan || "", wt = size.weight || "—";
@@ -1291,14 +1996,18 @@ async function populateWiki(key){
     if(lm) len = lm[1];
     else { const all=[...combined.matchAll(/([\d.,\u2013-]+\s*cm)/gi)].map(x=>x[1]); len = all.find(v=>v!==wing) || all[0] || ""; }
   }
+  // localized size labels
+  const dsl=document.querySelectorAll("#dStats .dsl");
+  const sl=SIZE_LABELS[LANG]||SIZE_LABELS.en;
+  if(dsl[0])dsl[0].textContent=sl[0]; if(dsl[1])dsl[1].textContent=sl[1]; if(dsl[2])dsl[2].textContent=sl[2];
   if(w && (len||wing||wt!=="—")){
     $("#dStats").style.display="flex";
     $("#dLen").textContent = len||"—";
     $("#dWing").textContent = wing||"—";
     $("#dWeight").textContent = wt;
   } else $("#dStats").style.display="none";
-  // unique summary (always visible)
-  const sum = w?.summary?.en || w?.summary || w?.summary_2s || w?.extract || "";
+  // unique summary (always visible) — prefer Finnish when available
+  const sum = (LANG==='fi' && (w?.summary_fi || w?.summary?.fi)) || w?.summary?.en || w?.summary || w?.summary_2s || w?.extract || "";
   if(sum){ $("#dSummary").style.display="block"; $("#dSummary").textContent = sum; }
   else $("#dSummary").style.display="none";
   // everything else -> dropdown
@@ -1309,21 +2018,22 @@ function buildDropdown(w){
   if(!w){ btn.style.display="none"; body.style.display="none"; return; }
   const rows=[];
   const add=(label,val)=>{ if(val && String(val).trim() && val!=="null") rows.push([label,val]); };
-  const pick=f=> (f && (f.en||f)) || "";
-  add("Field marks", pick(w.field_marks));
-  add("Lookalikes", pick(w.lookalikes));
-  add("Diet", pick(w.diet));
-  add("Foraging", pick(w.foraging));
-  add("Visits feeders", w.visits_feeders);
-  add("Movement", w.movement_status);
-  add("Migration timing", pick(w.migration_timing));
-  add("Best months", Array.isArray(w.best_months)? w.best_months.join(", ") : w.best_months);
-  add("Active", w.active_period);
-  add("Nesting", pick(w.nesting));
-  add("Breeding season", w.breeding_season);
-  add("Weather behaviour", pick(w.weather_behavior));
-  add("Conservation", w.conservation_status);
-  add("Lifespan", w.lifespan);
+  // prefer Finnish text when present (f.fi), else English (f.en), else the raw value
+  const pick=f=>{ if(f==null) return ""; if(typeof f==='object') return (LANG==='fi'&&f.fi)||f.en||""; return f; };
+  add(wlab("field_marks"), pick(w.field_marks));
+  add(wlab("lookalikes"), pick(w.lookalikes));
+  add(wlab("diet"), pick(w.diet));
+  add(wlab("foraging"), pick(w.foraging));
+  add(wlab("visits_feeders"), lval("visits_feeders", pick(w.visits_feeders)));
+  add(wlab("movement"), lval("movement_status", pick(w.movement_status)));
+  add(wlab("migration"), lval(null, pick(w.migration_timing)));
+  add(wlab("best_months"), (Array.isArray(w.best_months)? lval(null,w.best_months).join(", ") : lval(null,w.best_months)));
+  add(wlab("active"), lval("active_period", pick(w.active_period)));
+  add(wlab("nesting"), pick(w.nesting));
+  add(wlab("breeding"), lval(null, pick(w.breeding_season)));
+  add(wlab("weather"), pick(w.weather_behavior));
+  add(wlab("conservation"), lval(null, pick(w.conservation_status)));
+  add(wlab("lifespan"), lval(null, pick(w.lifespan)));
   if(!rows.length){ btn.style.display="none"; body.style.display="none"; return; }
   btn.style.display="flex";
   body.innerHTML = rows.map(([l,v])=>`<div class="ddrow"><div class="ddlabel">${l}</div><div class="ddtext">${esc(String(v))}</div></div>`).join("");
@@ -1335,18 +2045,32 @@ $("#dDropBtn").onclick = ()=>{
   $("#dDropBody").style.display = open?"block":"none";
 };
 
+// resolve a quest's localized title/desc. Quests stored before the _fi fields
+// existed won't carry them, so fall back to the current pool definition by id.
+function qf(q,field){
+  const def=(QUEST_POOL||[]).find(d=>d.id===q.id)||q;
+  const fi=def[field+'_fi'];
+  return (LANG==='fi' && fi) ? fi : (def[field] || q[field] || '');
+}
 function renderQuests(){
   const qs=Object.values(log.quests);
   const active=qs.filter(q=>!q.done), done=qs.filter(q=>q.done);
+  const doneCount=done.length, have=new Set(qs.map(q=>q.id));
+  const locked=questPool().filter(q=>!have.has(q.id) && (q.requires||0)>doneCount);
   const aEl=$("#questList");
-  aEl.innerHTML = active.length?"":`<div class="empty">All current assignments complete. New ones arrive with each logbook.</div>`;
+  aEl.innerHTML = (active.length||locked.length)?"":`<div class="empty">${t("quests_empty")}</div>`;
   active.forEach(q=>{ const div=document.createElement("div"); div.className="quest";
-    div.innerHTML=`<div class="qr">+${q.reward}</div><div class="qt">${q.title}</div><div class="qd">${q.desc}</div>`;
+    div.innerHTML=`<div class="qr">+${q.reward}</div><div class="qt">${esc(qf(q,'title'))}</div><div class="qd">${esc(qf(q,'desc'))}</div>`;
+    aEl.appendChild(div); });
+  locked.forEach(q=>{ const div=document.createElement("div"); div.className="quest locked";
+    const need=(q.requires||0)-doneCount;
+    div.innerHTML=`<div class="qr">🔒</div><div class="qt">${esc(qf(q,'title'))}</div>
+      <div class="qd">${LANG==='fi'?`Avautuu ${q.requires} tehtävän jälkeen · ${need} jäljellä`:`Unlocks after ${q.requires} quests · ${need} to go`}</div>`;
     aEl.appendChild(div); });
   $("#doneHead").style.display = done.length?"flex":"none";
   const dEl=$("#questDone"); dEl.innerHTML="";
   done.forEach(q=>{ const div=document.createElement("div"); div.className="quest done";
-    div.innerHTML=`<div class="stamp">Done</div><div class="qt">${q.title}</div><div class="qd">${q.desc}</div>`;
+    div.innerHTML=`<div class="stamp">${t("quest_done_stamp")}</div><div class="qt">${esc(qf(q,'title'))}</div><div class="qd">${esc(qf(q,'desc'))}</div>`;
     dEl.appendChild(div); });
 }
 
@@ -1386,8 +2110,8 @@ async function renderMap(){
       `<div class="mappin" style="background:${col}"><span>${f.species.length>1?f.species.length:""}</span></div>`,
       iconSize:[26,26], iconAnchor:[13,26], popupAnchor:[0,-24]});
     const m=L.marker([f.lat,f.lon],{icon}).addTo(mapObj);
-    const when=new Date(f.t).toLocaleDateString(undefined,{month:"short",day:"numeric"});
-    const names=f.species.map(s=>s).join(", ");
+    const when=new Date(f.t).toLocaleDateString(LANG==='fi'?'fi-FI':undefined,{month:"short",day:"numeric"});
+    const names=f.species.map(dn).join(", ");
     m.bindPopup(`<div class="pop-sp">${esc(names)}</div><div class="pop-meta">${when} · ${f.lat.toFixed(3)}, ${f.lon.toFixed(3)}</div>`);
     mapMarkers.push(m); pts.push([f.lat,f.lon]);
   });

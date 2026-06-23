@@ -15,7 +15,6 @@
   .setup{padding:40px 24px;max-width:560px;margin:0 auto;text-align:center}
   .setup h2{font-family:'Fraunces',serif;font-weight:600;font-size:22px;margin-bottom:14px}
   .setup p{font-size:13px;color:var(--ink-soft);line-height:1.6;margin-bottom:16px}
-  .setup code{background:var(--paper-2);padding:2px 6px;border:1px solid var(--line);font-size:12px}
   input.field{font-family:inherit;font-size:14px;padding:10px 12px;border:1.5px solid var(--ink);background:#fff;width:100%;margin-bottom:12px}
   .btn{background:var(--olive-d);color:var(--paper);border:1.5px solid var(--ink);padding:11px 18px;cursor:pointer;font-family:'Fraunces',serif;font-weight:600;font-size:14px}
   .btn:hover{background:var(--olive)}.btn.ghost{background:transparent;color:var(--ink)}.btn:disabled{opacity:.4;cursor:not-allowed}
@@ -23,452 +22,254 @@
   main{flex:1;display:flex;overflow:hidden}
   #stage{flex:1;position:relative;background:#1a1813;display:flex;align-items:center;justify-content:center;overflow:hidden}
   #canvas{cursor:crosshair;max-width:100%;max-height:100%;touch-action:none}
-  aside{width:230px;flex:none;border-left:2px solid var(--ink);background:var(--paper-2);padding:16px;display:flex;flex-direction:column;gap:12px;overflow-y:auto}
-  .panel{font-size:12px}.panel h3{font-family:'Fraunces',serif;font-size:13px;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;color:var(--ink-soft)}
-  .species{font-family:'Fraunces',serif;font-weight:600;font-size:17px;text-transform:capitalize;line-height:1.2}
-  .classpick{display:flex;gap:8px}
-  .classpick button{flex:1;border:1.5px solid var(--ink);background:#fff;padding:8px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
-  .classpick button.on[data-c="bird"]{background:var(--bird);color:#fff;border-color:var(--bird)}
-  .classpick button.on[data-c="mammal"]{background:var(--mammal);color:#fff;border-color:var(--mammal)}
-  .boxlist{display:flex;flex-direction:column;gap:5px;max-height:160px;overflow-y:auto}
-  .boxrow{display:flex;align-items:center;gap:7px;font-size:11px;padding:5px 7px;border:1px solid var(--line);background:#fff}
+  aside{width:280px;flex:none;border-left:2px solid var(--ink);background:var(--paper-2);padding:16px;display:flex;flex-direction:column;gap:12px;overflow-y:auto}
+  .panel h3{font-family:'Fraunces',serif;font-size:13px;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;color:var(--ink-soft)}
+  .cand{display:flex;flex-direction:column;gap:6px}
+  .cand button{border:1.5px solid var(--ink);background:#fff;padding:9px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;text-align:left;display:flex;align-items:center;gap:8px}
+  .cand button .dot{width:11px;height:11px;flex:none;border:1px solid var(--ink)}
+  .cand button.on{background:var(--olive-d);color:var(--paper);border-color:var(--olive-d)}
+  .hint{font-size:11px;color:var(--ink-soft);line-height:1.5}
+  .boxlist{display:flex;flex-direction:column;gap:5px;max-height:200px;overflow-y:auto}
+  .boxrow{display:flex;align-items:center;gap:7px;font-size:12px;padding:6px 7px;border:1px solid var(--line);background:#fff;cursor:pointer}
+  .boxrow.sel{outline:2px solid var(--ink)}
   .boxrow .sw{width:11px;height:11px;flex:none}.boxrow .x{margin-left:auto;cursor:pointer;color:var(--accent);font-weight:700}
   .controls{margin-top:auto;display:flex;flex-direction:column;gap:8px}
-  .controls .btn{width:100%}
+  .controls .btn{width:100%}.row{display:flex;gap:8px}.row .btn{flex:1}
   .kbd{font-size:10.5px;color:var(--ink-soft);line-height:1.7;border-top:1px solid var(--line);padding-top:10px}
   .kbd b{font-family:monospace;background:var(--paper);border:1px solid var(--line);padding:0 4px;color:var(--ink)}
-  .empty-note{font-size:11px;color:var(--accent);font-style:italic}
 </style>
 </head>
 <body>
 <header>
   <h1>Box <em>labeler</em></h1>
   <div class="progress" id="progress"></div>
-  <div style="display:flex;gap:8px">
-    <button class="btn ghost" id="reviewBtn" style="padding:6px 12px;font-size:12px">Review labels</button>
-    <a class="btn" href="./index.html" style="padding:6px 12px;font-size:12px;text-decoration:none;display:flex;align-items:center">← App</a>
-  </div>
+  <a class="btn" href="./index.html" style="padding:6px 12px;font-size:12px;text-decoration:none;display:flex;align-items:center">← App</a>
 </header>
 
-<!-- review gallery overlay -->
-<div id="review" style="display:none;position:fixed;inset:0;z-index:50;background:var(--paper);overflow-y:auto;padding:16px">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-    <h2 style="font-family:'Fraunces',serif;font-weight:900;font-size:22px">Your labels</h2>
-    <button class="btn ghost" id="reviewClose" style="padding:6px 12px">Close</button>
-  </div>
-  <div id="reviewFilters" style="display:flex;gap:8px;margin-bottom:12px;font-size:12px">
-    <button class="btn ghost rf on" data-f="all" style="padding:6px 10px">All</button>
-    <button class="btn ghost rf" data-f="boxed" style="padding:6px 10px">Boxed</button>
-    <button class="btn ghost rf" data-f="noise" style="padding:6px 10px">Noise</button>
-  </div>
-  <div id="reviewStats" style="font-size:12px;color:var(--ink-soft);margin-bottom:12px"></div>
-  <div id="reviewGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px"></div>
-</div>
-
 <div class="setup" id="setup">
-  <h2>Hand-label the misses</h2>
-  <p>Sign in first (shared account), then load a batch. Boxes you draw sync to
-  Supabase so they reach the training machine — and so you and your partner
-  don't label the same images.</p>
+  <h2>Resolve flagged images</h2>
+  <p>The same photo got tagged as 2+ species. Pick the correct species on the
+  right, draw a box on that animal, then do the next animal. One animal? Just
+  draw one box. Not a bird/mammal at all? Mark it noise.</p>
   <input class="field" id="email" placeholder="email">
   <input class="field" id="pw" type="password" placeholder="password">
   <button class="btn" id="signinBtn">Sign in</button>
-  <div class="hint" id="authState" style="font-size:12px;color:var(--ink-soft);margin:8px 0"></div>
-  <hr style="border:0;border-top:1px solid var(--line);margin:14px 0">
-  <p>Loads the unlabeled images from <code>misses_index.json</code> (the list
-  written by <code>upload_misses.py</code>; images come from Supabase Storage).
-  Draw a tight box on each animal — boxes sync to Supabase live.</p>
-  <input class="field" id="missesPath" value="misses_index.json">
-  <input class="field" id="batchSize" type="number" value="200" placeholder="batch size (0 = all)">
-  <button class="btn" id="loadBtn" disabled>Load next batch</button>
-  <p style="margin-top:14px" id="setupErr"></p>
-</div>
-
-<script type="module">
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-// fill these with the SAME values as fieldmark-sync.js
-const SUPABASE_URL = 'https://ljuendcuoruxorjdcdmu.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_ZPJYzhstIt9ccIv-vm7Mhg_pMssWP18';
-window._sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-window._session = null;
-(async ()=>{ const {data}=await window._sb.auth.getSession(); window._session=data.session;
-  const el=document.getElementById('authState');
-  if(window._session){ el.textContent='Signed in.'; document.getElementById('loadBtn').disabled=false; }
-})();
-document.getElementById('signinBtn').onclick = async ()=>{
-  const email=document.getElementById('email').value.trim();
-  const pw=document.getElementById('pw').value;
-  const el=document.getElementById('authState');
-  try{
-    const {data,error}=await window._sb.auth.signInWithPassword({email,password:pw});
-    if(error) throw error;
-    window._session=data.session; el.textContent='Signed in.';
-    document.getElementById('loadBtn').disabled=false;
-  }catch(e){ el.textContent='Sign-in failed: '+e.message; }
-};
-// push one label to Supabase. lines=[] means NOISE (no animal) — still recorded
-// so the image is marked done and won't be served again.
-window._pushLabel = async (stem, split, lines)=>{
-  if(!window._session){ console.warn('not signed in — label not synced'); return; }
-  try{
-    const { error } = await window._sb.from('labels').upsert(
-      { stem, split, lines, updated_at:new Date().toISOString() },
-      { onConflict:'stem' });
-    if(error){ console.error('label sync FAILED:', error.message); }
-    else { console.log('synced', stem, lines.length?'('+lines.length+' boxes)':'(noise)'); }
-  }catch(e){ console.error('label sync threw:', e.message); }
-};
-// pull already-labeled stems (boxes OR noise) so neither labeler re-serves them
-window._labeledStems = async ()=>{
-  if(!window._session) return [];
-  try{ const {data,error}=await window._sb.from('labels').select('stem');
-    if(error){ console.error('labeledStems failed:', error.message); return []; }
-    return (data||[]).map(r=>r.stem); }catch(e){ console.error(e); return []; }
-};
-</script>
-<!-- end Supabase block -->
+  <div id="authState" style="font-size:12px;color:var(--ink-soft);margin:8px 0"></div>
+  <button class="btn" id="startBtn" disabled style="margin-top:8px">Start labeling</button>
+  <p style="margin-top:14px;color:var(--accent)" id="setupErr"></p>
 </div>
 
 <main id="workspace" style="display:none">
   <div id="stage"><canvas id="canvas"></canvas></div>
   <aside>
     <div class="panel">
-      <h3>Downloaded as</h3>
-      <div class="species" id="spName">—</div>
+      <h3>1 · Pick species</h3>
+      <div class="cand" id="candidates"></div>
+      <input class="field" id="search" list="speciesList" placeholder="…or search all 313" style="margin:8px 0 0">
+      <datalist id="speciesList"></datalist>
     </div>
     <div class="panel">
-      <h3>Box class</h3>
-      <div class="classpick">
-        <button data-c="bird" class="on">Bird</button>
-        <button data-c="mammal">Mammal</button>
-      </div>
-    </div>
-    <div class="panel">
-      <h3>Boxes <span id="boxCount"></span></h3>
-      <div class="boxlist" id="boxlist"></div>
-      <div class="empty-note" id="emptyNote" style="display:none">No box = image will be skipped (excluded from training).</div>
+      <h3>2 · Draw its box <span id="activeName" style="color:var(--ink);text-transform:none"></span></h3>
+      <div class="hint">Drag on the animal. Drag the corner circles to fix a box. Click a box below to recolor it to the selected species.</div>
+      <div class="boxlist" id="boxlist" style="margin-top:8px"></div>
     </div>
     <div class="controls">
-      <button class="btn" id="nextBtn">Save &amp; next →</button>
-      <button class="btn ghost" id="skipBtn">Skip (no animal)</button>
-      <button class="btn ghost" id="prevBtn">← Back</button>
-      <button class="btn" id="exportBtn">Export all labels</button>
-      <div class="kbd">
-        <b>drag</b> draw box · <b>D</b> delete last<br>
-        <b>B</b>/<b>M</b> bird/mammal · <b>→</b> save+next<br>
-        <b>S</b> skip · <b>←</b> back · <b>E</b> export
+      <button class="btn" id="saveBtn">Save &amp; next →</button>
+      <button class="btn danger" id="noiseBtn">Noise / not an animal</button>
+      <div class="row">
+        <button class="btn ghost" id="prevBtn">← Back</button>
+        <button class="btn ghost" id="skipBtn">Skip</button>
       </div>
+      <div class="kbd"><b>1-3</b> pick species · <b>drag</b> box · <b>D</b> del last<br>
+        <b>→</b> save+next · <b>←</b> back · <b>N</b> noise · <b>S</b> skip</div>
     </div>
   </aside>
 </main>
 
-<script>
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SUPABASE_URL = 'https://ljuendcuoruxorjdcdmu.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_ZPJYzhstIt9ccIv-vm7Mhg_pMssWP18';
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const $ = s => document.querySelector(s);
-let misses = [], idx = 0, curClass = 0;        // 0=bird,1=mammal
-const CLASSES = ["bird","mammal"];
-const COL = ["#3b6e8c","#b5612a"];
-let img = new Image(), boxes = [], saved = {}; // saved[stem] = {split, lines:[...]}
-let drawing=false, start=null, scale=1, offX=0, offY=0;
-const canvas = $("#canvas"), ctx = canvas.getContext("2d");
+const BIRD="#3b6e8c", MAMMAL="#b5612a";
 
-// ---------- load ----------
-$("#loadBtn").onclick = async ()=>{
-  const path = $("#missesPath").value.trim();
-  try{
-    const r = await fetch(path);
-    if(!r.ok) throw new Error("HTTP "+r.status);
-    const raw = await r.json();
-    // new shape: {base_url, images:[{stem,file}]}  (images live in Supabase Storage)
-    if(raw && raw.images && raw.base_url){
-      window._imgBase = raw.base_url;
-      misses = raw.images.map(it=>({stem:it.stem, file:it.file, split:'train',
-        species:'(unlabeled)', coarse:'bird',
-        path: raw.base_url + it.file}));
-    } else { misses = raw; window._imgBase = ''; }
-    if(!misses.length){ $("#setupErr").textContent="misses.json is empty — nothing to label."; return; }
+let session=null, SPECIES=[], COARSE_OF={};
+let queue=[], hist=[], hi=-1;
+let boxes=[], activeSp=null, selBox=-1, noise=false;
+let img=new Image(), drawing=false, start=null, cur=null, resizing=null, scale=1;
+const canvas=$("#canvas"), ctx=canvas.getContext("2d");
+const HANDLE=7;
+const colOf = sp => (COARSE_OF[sp]==='mammal') ? MAMMAL : BIRD;
+const shortName = sp => sp.length>16 ? sp.slice(0,15)+'…' : sp;
 
-    // restore any saved progress from a previous session (survives crashes)
-    const stored = localStorage.getItem("fieldmark_labels");
-    if(stored){ try{ saved = JSON.parse(stored); }catch{} }
-
-    // PRIORITIZE: order misses so the LEAST-labeled species come first.
-    // count how many of each species are still unlabeled, sort those species
-    // to the front so the worst-covered animals get done first.
-    let serverDone = [];
-    try{ serverDone = await window._labeledStems(); }catch{}
-    const doneStems = new Set([...Object.keys(saved), ...serverDone]);
-    const remaining = misses.filter(m=>!doneStems.has(m.stem));
-    const speciesRemaining = {};
-    remaining.forEach(m=>{ speciesRemaining[m.species]=(speciesRemaining[m.species]||0)+1; });
-    // more-remaining species first; within a species keep stable order.
-    misses = [...remaining].sort((a,b)=>
-      (speciesRemaining[b.species]-speciesRemaining[a.species]) ||
-      a.species.localeCompare(b.species));
-
-    // BATCH: only hand you a manageable chunk this session (least-covered first).
-    const batchSize = parseInt($("#batchSize").value) || 0;
-    if(batchSize > 0) misses = misses.slice(0, batchSize);
-
-    const totalDone = doneStems.size;
-    $("#setup").style.display="none"; $("#workspace").style.display="flex";
-    idx=0; load();
-    if(totalDone) toastMsg(`Resumed — ${totalDone} already labeled, ${misses.length} left.`);
-  }catch(e){
-    $("#setupErr").textContent = "Couldn't load "+path+" — served over http? ("+e.message+")";
-  }
+(async ()=>{ const {data}=await sb.auth.getSession(); session=data.session;
+  if(session){ $("#authState").textContent='Signed in.'; $("#startBtn").disabled=false; } })();
+$("#signinBtn").onclick = async ()=>{
+  const email=$("#email").value.trim(), password=$("#pw").value;
+  try{ const {data,error}=await sb.auth.signInWithPassword({email,password}); if(error) throw error;
+    session=data.session; $("#authState").textContent='Signed in.'; $("#startBtn").disabled=false;
+  }catch(e){ $("#authState").textContent='Sign-in failed: '+e.message; }
 };
-
-function toastMsg(t){ $("#progress").title=t; console.log(t); }
-function persist(){ try{ localStorage.setItem("fieldmark_labels", JSON.stringify(saved)); }catch(e){} }
-
-function load(){
-  const m = misses[idx];
-  $("#spName").textContent = m.species;
-  // default the class to whatever it was downloaded as
-  setClass(CLASSES.indexOf(m.coarse) >= 0 ? CLASSES.indexOf(m.coarse) : 0);
-  boxes = (saved[m.stem]?.boxes) ? [...saved[m.stem].boxes] : [];
-  $("#progress").innerHTML = `<b>${idx+1}</b> / ${misses.length} left &nbsp;·&nbsp; ${Object.keys(saved).length} saved &nbsp;·&nbsp; <span style="text-transform:capitalize">${m.species}</span>`;
-  img = new Image();
-  img.onload = ()=>{ fit(); draw(); };
-  img.onerror = ()=>{ ctx.fillStyle="#fff"; ctx.font="16px Inter"; fit0();
-    ctx.fillText("image not found: "+m.path, 20, 40); };
-  // path is like dataset/images/train/0000001.jpg — serve from project root
-  img.src = m.path;
-  renderBoxes();
+$("#startBtn").onclick = async ()=>{
+  try{
+    SPECIES = await (await fetch('./species.json')).json();
+    SPECIES.forEach(s=>COARSE_OF[s.name]=s.coarse);
+    const dl=$("#speciesList"); dl.innerHTML='';
+    SPECIES.map(s=>s.name).sort().forEach(n=>{ const o=document.createElement('option'); o.value=n; dl.appendChild(o); });
+    await loadMore();
+    if(!queue.length){ $("#setupErr").textContent="Nothing pending — all resolved. 🎉"; return; }
+    $("#setup").style.display='none'; $("#workspace").style.display='flex';
+    next();
+  }catch(e){ $("#setupErr").textContent="Couldn't start: "+e.message; }
+};
+async function loadMore(){
+  const taken=new Set([...hist.map(r=>r.stem), ...queue.map(r=>r.stem)]);
+  const {data,error}=await sb.from('label_items').select('*').eq('status','pending').limit(40);
+  if(error){ console.error(error.message); return; }
+  queue.push(...(data||[]).filter(r=>!taken.has(r.stem)));
 }
 
-function fit0(){ canvas.width = $("#stage").clientWidth; canvas.height = $("#stage").clientHeight; }
+// ---------- load one item ----------
+function render(){
+  const it=hist[hi];
+  noise=false; selBox=-1; activeSp=null;
+  boxes = (it.label && it.label.boxes) ? it.label.boxes.map(b=>({...b})) : [];
+  renderCands(it.candidates||[]);
+  $("#search").value='';
+  img=new Image();
+  img.onload=()=>{ fit(); draw(); };
+  img.onerror=()=>{ fit0(); ctx.fillStyle="#fff"; ctx.font="14px Inter"; ctx.fillText("image not found", 16, 28); };
+  img.src=it.url;
+  renderBoxes(); paintActive(); progress();
+}
+function progress(){ $("#progress").innerHTML=`<b>${hi+1}</b> this session · ${queue.length} queued · ${hist.filter(r=>r._done).length} saved`; }
+function fit0(){ canvas.width=$("#stage").clientWidth; canvas.height=$("#stage").clientHeight; }
 function fit(){
-  const sw = $("#stage").clientWidth, sh = $("#stage").clientHeight;
-  scale = Math.min(sw/img.naturalWidth, sh/img.naturalHeight, 1);
-  // fall back: if container tiny, still scale down
-  if(!isFinite(scale)||scale<=0) scale = Math.min(sw/img.naturalWidth, sh/img.naturalHeight);
-  canvas.width = img.naturalWidth*scale;
-  canvas.height = img.naturalHeight*scale;
+  const sw=$("#stage").clientWidth, sh=$("#stage").clientHeight;
+  scale=Math.min(sw/img.naturalWidth, sh/img.naturalHeight, 1);
+  if(!isFinite(scale)||scale<=0) scale=Math.min(sw/img.naturalWidth, sh/img.naturalHeight);
+  canvas.width=img.naturalWidth*scale; canvas.height=img.naturalHeight*scale;
+}
+
+// ---------- species picker ----------
+function renderCands(cands){
+  const el=$("#candidates"); el.innerHTML='';
+  cands.forEach((sp,i)=>{
+    const b=document.createElement('button');
+    b.innerHTML=`<span class="dot" style="background:${colOf(sp)}"></span>${i+1}. ${sp}`;
+    b.onclick=()=>pickSpecies(sp); b.dataset.sp=sp; el.appendChild(b);
+  });
+}
+function pickSpecies(sp){
+  noise=false;
+  if(selBox>=0 && boxes[selBox]){ boxes[selBox].species=sp; }   // recolor selected box
+  activeSp=sp; paintActive(); draw(); renderBoxes();
+}
+$("#search").onchange=()=>{ const v=$("#search").value.trim();
+  if(SPECIES.some(s=>s.name===v)) pickSpecies(v); $("#search").value=''; };
+function paintActive(){
+  [...$("#candidates").children].forEach(b=>b.classList.toggle('on', !noise && b.dataset.sp===activeSp));
+  $("#activeName").textContent = noise ? '· NOISE' : (activeSp?('· '+shortName(activeSp)):'· pick a species first');
+  $("#noiseBtn").style.outline = noise ? '3px solid var(--ink)' : 'none';
+}
+
+// ---------- canvas drawing (with corner handles) ----------
+function cornerPoints(b){
+  const x=b.x*canvas.width,y=b.y*canvas.height,w=b.w*canvas.width,h=b.h*canvas.height;
+  return [{x,y,cx:"l",cy:"t"},{x:x+w,y,cx:"r",cy:"t"},{x,y:y+h,cx:"l",cy:"b"},{x:x+w,y:y+h,cx:"r",cy:"b"}];
 }
 function draw(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
   if(img.complete && img.naturalWidth) ctx.drawImage(img,0,0,canvas.width,canvas.height);
   boxes.forEach((b,bi)=>{
-    const bx=b.x*canvas.width, by=b.y*canvas.height, bw=b.w*canvas.width, bh=b.h*canvas.height;
-    ctx.lineWidth=2; ctx.strokeStyle=COL[b.cls];
-    ctx.strokeRect(bx, by, bw, bh);
-    ctx.fillStyle=COL[b.cls]; ctx.fillRect(bx, by-16, 52, 16);
-    ctx.fillStyle="#fff"; ctx.font="600 11px Inter"; ctx.fillText(CLASSES[b.cls], bx+4, by-4);
-    // corner resize handles (draggable circles)
-    cornerPoints(b).forEach(c=>{
-      ctx.beginPath(); ctx.arc(c.x, c.y, HANDLE, 0, 7);
-      ctx.fillStyle="#fff"; ctx.fill();
-      ctx.lineWidth=2; ctx.strokeStyle=COL[b.cls]; ctx.stroke();
-    });
+    const c=colOf(b.species), bx=b.x*canvas.width, by=b.y*canvas.height, bw=b.w*canvas.width, bh=b.h*canvas.height;
+    ctx.lineWidth=(bi===selBox?3:2); ctx.strokeStyle=c; ctx.strokeRect(bx,by,bw,bh);
+    const lbl=shortName(b.species||'?'); ctx.font="600 11px Inter"; const tw=ctx.measureText(lbl).width+8;
+    ctx.fillStyle=c; ctx.fillRect(bx, by-16, tw, 16);
+    ctx.fillStyle="#fff"; ctx.fillText(lbl, bx+4, by-4);
+    cornerPoints(b).forEach(p=>{ ctx.beginPath(); ctx.arc(p.x,p.y,HANDLE,0,7); ctx.fillStyle="#fff"; ctx.fill(); ctx.lineWidth=2; ctx.strokeStyle=c; ctx.stroke(); });
   });
   if(drawing && start && cur){
-    const x=Math.min(start.x,cur.x), y=Math.min(start.y,cur.y), w=Math.abs(cur.x-start.x), h=Math.abs(cur.y-start.y);
-    ctx.setLineDash([5,4]); ctx.strokeStyle=COL[curClass]; ctx.lineWidth=2;
-    ctx.strokeRect(x,y,w,h); ctx.setLineDash([]);
+    const x=Math.min(start.x,cur.x),y=Math.min(start.y,cur.y),w=Math.abs(cur.x-start.x),h=Math.abs(cur.y-start.y);
+    ctx.setLineDash([5,4]); ctx.strokeStyle=activeSp?colOf(activeSp):"#fff"; ctx.lineWidth=2; ctx.strokeRect(x,y,w,h); ctx.setLineDash([]);
   }
 }
-
-const HANDLE=7;  // corner circle radius (px)
-// the four corners of a box, in canvas pixels, tagged with which corner
-function cornerPoints(b){
-  const x=b.x*canvas.width, y=b.y*canvas.height, w=b.w*canvas.width, h=b.h*canvas.height;
-  return [
-    {x:x,    y:y,    cx:"l", cy:"t"},
-    {x:x+w,  y:y,    cx:"r", cy:"t"},
-    {x:x,    y:y+h,  cx:"l", cy:"b"},
-    {x:x+w,  y:y+h,  cx:"r", cy:"b"},
-  ];
-}
-
-// ---------- drawing + resizing ----------
-let cur=null, resizing=null;  // resizing = {box, cx, cy} when dragging a corner
-function pos(e){
-  const r=canvas.getBoundingClientRect();
-  const cx=(e.touches?e.touches[0].clientX:e.clientX)-r.left;
-  const cy=(e.touches?e.touches[0].clientY:e.clientY)-r.top;
-  return {x:Math.max(0,Math.min(canvas.width,cx)), y:Math.max(0,Math.min(canvas.height,cy))};
-}
-// is point p near a corner handle of any box? return {box,cx,cy} or null
-function hitHandle(p){
-  for(let i=boxes.length-1;i>=0;i--){       // topmost first
-    for(const c of cornerPoints(boxes[i])){
-      if(Math.hypot(p.x-c.x, p.y-c.y) <= HANDLE+5)
-        return {box:boxes[i], cx:c.cx, cy:c.cy};
-    }
-  }
-  return null;
-}
-function down(e){
-  e.preventDefault();
-  const p=pos(e);
-  const grab=hitHandle(p);
-  if(grab){ resizing=grab; return; }   // grabbed a corner -> resize, don't draw new
-  drawing=true; start=p; cur=p;
-}
+function pos(e){ const r=canvas.getBoundingClientRect();
+  const cx=(e.touches?e.touches[0].clientX:e.clientX)-r.left, cy=(e.touches?e.touches[0].clientY:e.clientY)-r.top;
+  return {x:Math.max(0,Math.min(canvas.width,cx)), y:Math.max(0,Math.min(canvas.height,cy))}; }
+function hitHandle(p){ for(let i=boxes.length-1;i>=0;i--){ for(const c of cornerPoints(boxes[i])){ if(Math.hypot(p.x-c.x,p.y-c.y)<=HANDLE+5) return {box:boxes[i],cx:c.cx,cy:c.cy}; } } return null; }
+function down(e){ e.preventDefault(); const p=pos(e);
+  const grab=hitHandle(p); if(grab){ resizing=grab; return; }
+  if(noise) return;
+  if(!activeSp){ flash("Pick a species first"); return; }
+  drawing=true; start=p; cur=p; }
 function move(e){
-  if(resizing){
-    e.preventDefault();
-    const p=pos(e);
-    const b=resizing.box;
-    // current edges in canvas px
-    let x1=b.x*canvas.width, y1=b.y*canvas.height;
-    let x2=x1+b.w*canvas.width, y2=y1+b.h*canvas.height;
-    // move the grabbed corner's edges to the pointer
-    if(resizing.cx==="l") x1=p.x; else x2=p.x;
-    if(resizing.cy==="t") y1=p.y; else y2=p.y;
-    const nx=Math.min(x1,x2), ny=Math.min(y1,y2), nw=Math.abs(x2-x1), nh=Math.abs(y2-y1);
+  if(resizing){ e.preventDefault(); const p=pos(e); const b=resizing.box;
+    let x1=b.x*canvas.width,y1=b.y*canvas.height,x2=x1+b.w*canvas.width,y2=y1+b.h*canvas.height;
+    if(resizing.cx==="l")x1=p.x; else x2=p.x; if(resizing.cy==="t")y1=p.y; else y2=p.y;
+    const nx=Math.min(x1,x2),ny=Math.min(y1,y2),nw=Math.abs(x2-x1),nh=Math.abs(y2-y1);
     b.x=nx/canvas.width; b.y=ny/canvas.height; b.w=nw/canvas.width; b.h=nh/canvas.height;
-    // if you drag past the opposite edge, the grabbed corner flips side
-    if(x2<x1) resizing.cx = resizing.cx==="l"?"r":"l";
-    if(y2<y1) resizing.cy = resizing.cy==="t"?"b":"t";
-    draw();
-    return;
-  }
-  if(!drawing)return; e.preventDefault(); cur=pos(e); draw();
-}
+    if(x2<x1) resizing.cx=resizing.cx==="l"?"r":"l"; if(y2<y1) resizing.cy=resizing.cy==="t"?"b":"t";
+    draw(); return; }
+  if(!drawing) return; e.preventDefault(); cur=pos(e); draw(); }
 function up(e){
   if(resizing){ resizing=null; e.preventDefault(); draw(); renderBoxes(); return; }
-  if(!drawing)return; e.preventDefault(); drawing=false;
-  const a=start, b=cur||start;
-  const x=Math.min(a.x,b.x)/canvas.width, y=Math.min(a.y,b.y)/canvas.height;
-  const w=Math.abs(b.x-a.x)/canvas.width, h=Math.abs(b.y-a.y)/canvas.height;
-  if(w>0.01 && h>0.01) boxes.push({x,y,w,h,cls:curClass});  // ignore tiny accidental clicks
-  start=cur=null; draw(); renderBoxes();
-}
+  if(!drawing) return; e.preventDefault(); drawing=false;
+  const a=start,b=cur||start;
+  const x=Math.min(a.x,b.x)/canvas.width, y=Math.min(a.y,b.y)/canvas.height, w=Math.abs(b.x-a.x)/canvas.width, h=Math.abs(b.y-a.y)/canvas.height;
+  if(w>0.01 && h>0.01) boxes.push({x,y,w,h,species:activeSp});
+  start=cur=null; draw(); renderBoxes(); }
 canvas.addEventListener("mousedown",down); canvas.addEventListener("mousemove",move); window.addEventListener("mouseup",up);
 canvas.addEventListener("touchstart",down,{passive:false}); canvas.addEventListener("touchmove",move,{passive:false}); canvas.addEventListener("touchend",up,{passive:false});
 
-// ---------- class + box list ----------
-document.querySelectorAll(".classpick button").forEach(b=> b.onclick=()=>setClass(CLASSES.indexOf(b.dataset.c)));
-function setClass(c){ curClass=c; document.querySelectorAll(".classpick button").forEach(b=>b.classList.toggle("on", CLASSES.indexOf(b.dataset.c)===c)); }
 function renderBoxes(){
-  const el=$("#boxlist"); el.innerHTML="";
-  $("#boxCount").textContent = boxes.length?`(${boxes.length})`:"";
-  $("#emptyNote").style.display = boxes.length?"none":"block";
+  const el=$("#boxlist"); el.innerHTML='';
   boxes.forEach((b,i)=>{
-    const row=document.createElement("div"); row.className="boxrow";
-    row.innerHTML=`<span class="sw" style="background:${COL[b.cls]}"></span>${CLASSES[b.cls]} <span class="x" data-i="${i}">✕</span>`;
-    row.querySelector(".x").onclick=()=>{ boxes.splice(i,1); draw(); renderBoxes(); };
+    const row=document.createElement('div'); row.className='boxrow'+(i===selBox?' sel':'');
+    row.innerHTML=`<span class="sw" style="background:${colOf(b.species)}"></span>${shortName(b.species||'?')}<span class="x" data-i="${i}">✕</span>`;
+    row.onclick=ev=>{ if(ev.target.classList.contains('x')){ boxes.splice(i,1); selBox=-1; } else { selBox=(selBox===i?-1:i); if(selBox>=0) activeSp=boxes[i].species; }
+      draw(); renderBoxes(); paintActive(); };
     el.appendChild(row);
   });
 }
+let _flash=null;
+function flash(msg){ $("#activeName").textContent='· '+msg; clearTimeout(_flash); _flash=setTimeout(paintActive,1500); }
 
-// ---------- navigation / saving ----------
-// commit(markNoise): if there are boxes, save+push them. If no boxes AND
-// markNoise is true (user pressed Skip), record an explicit NOISE marker so
-// the image is done and never re-served. Plain next with no boxes does nothing.
-function commit(markNoise=false){
-  const m=misses[idx];
-  if(boxes.length){
-    const lines = boxes.map(b=>`${b.cls} ${(b.x+b.w/2).toFixed(6)} ${(b.y+b.h/2).toFixed(6)} ${b.w.toFixed(6)} ${b.h.toFixed(6)}`);
-    saved[m.stem] = {split:m.split, boxes:[...boxes], lines};
-    persist();
-    window._pushLabel(m.stem, m.split, lines);
-  } else if(markNoise){
-    saved[m.stem] = {split:m.split, boxes:[], lines:[], noise:true};
-    persist();
-    window._pushLabel(m.stem, m.split, []);   // empty lines = noise, marks done
-  } else {
-    persist();
-  }
+// ---------- save / navigate ----------
+$("#noiseBtn").onclick=()=>{ noise=!noise; if(noise){ boxes=[]; selBox=-1; } draw(); renderBoxes(); paintActive(); };
+async function save(){
+  const it=hist[hi];
+  if(!noise && !boxes.length) return false;
+  const label = noise ? {noise:true} : {noise:false, boxes:boxes.map(b=>({x:b.x,y:b.y,w:b.w,h:b.h,species:b.species}))};
+  const {error}=await sb.from('label_items').update(
+    {status:'done', label, labeled_by:session.user.id, updated_at:new Date().toISOString()}).eq('stem', it.stem);
+  if(error){ alert('save failed: '+error.message); return false; }
+  it.label=label; it._done=true; return true;
 }
-$("#nextBtn").onclick=()=>{ commit(); if(idx<misses.length-1){idx++; load();} else { alert("Reached the end of this batch."); } };
-$("#skipBtn").onclick=()=>{ boxes=[]; commit(true); if(idx<misses.length-1){idx++; load();} };
-$("#prevBtn").onclick=()=>{ commit(); if(idx>0){idx--; load();} };
+async function next(){
+  if(hi>=0 && hist[hi]){ if(!await save()){ flash("draw a box or mark noise"); return; } }
+  if(hi < hist.length-1){ hi++; render(); return; }
+  if(!queue.length) await loadMore();
+  if(!queue.length){ alert("Queue empty — done for now!"); return; }
+  hist.push(queue.shift()); hi=hist.length-1; render();
+}
+$("#saveBtn").onclick=next;
+$("#skipBtn").onclick=async ()=>{ if(hi<hist.length-1){ hi++; render(); return; }
+  if(!queue.length) await loadMore(); if(queue.length){ hist.push(queue.shift()); hi=hist.length-1; render(); } };
+$("#prevBtn").onclick=()=>{ if(hi>0){ hi--; render(); } };
 
-// ---------- export ----------
-$("#exportBtn").onclick=()=>{
-  commit();
-  // export a single JSON the merge script consumes: {stem: {split, lines}}
-  const out={}; Object.entries(saved).forEach(([stem,v])=> out[stem]={split:v.split, lines:v.lines});
-  const blob=new Blob([JSON.stringify(out,null,2)],{type:"application/json"});
-  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
-  a.download="hand_labels.json"; a.click();
-};
-
-// keyboard
 window.addEventListener("keydown",e=>{
-  if($("#workspace").style.display==="none")return;
-  if(e.key==="ArrowRight"){$("#nextBtn").click();}
-  else if(e.key==="ArrowLeft"){$("#prevBtn").click();}
-  else if(e.key==="s"||e.key==="S"){$("#skipBtn").click();}
-  else if(e.key==="e"||e.key==="E"){$("#exportBtn").click();}
-  else if(e.key==="b"||e.key==="B"){setClass(0);}
-  else if(e.key==="m"||e.key==="M"){setClass(1);}
-  else if(e.key==="d"||e.key==="D"){ boxes.pop(); draw(); renderBoxes(); }
+  if($("#workspace").style.display==="none") return;
+  if(document.activeElement===$("#search")) return;
+  if(e.key==="ArrowRight") next();
+  else if(e.key==="ArrowLeft") $("#prevBtn").click();
+  else if(e.key==="s"||e.key==="S") $("#skipBtn").click();
+  else if(e.key==="n"||e.key==="N") $("#noiseBtn").click();
+  else if(e.key==="d"||e.key==="D"){ boxes.pop(); selBox=-1; draw(); renderBoxes(); }
+  else if('123'.includes(e.key)){ const it=hist[hi]; const sp=(it.candidates||[])[+e.key-1]; if(sp) pickSpecies(sp); }
 });
-window.addEventListener("resize",()=>{ if($("#workspace").style.display!=="none"&&img.naturalWidth){fit();draw();} });
-
-// ---------- REVIEW gallery: see all labels, assess quality, re-open to fix ----------
-let reviewFilter="all", reviewRows=[];
-$("#reviewBtn").onclick = openReview;
-$("#reviewClose").onclick = ()=>{ $("#review").style.display="none"; };
-document.querySelectorAll(".rf").forEach(b=> b.onclick=()=>{
-  reviewFilter=b.dataset.f;
-  document.querySelectorAll(".rf").forEach(x=>x.classList.toggle("on",x===b));
-  renderReview();
-});
-async function openReview(){
-  $("#review").style.display="block";
-  $("#reviewGrid").innerHTML="<p style='color:var(--ink-soft)'>loading…</p>";
-  try{
-    const {data,error}=await window._sb.from('labels').select('stem,split,lines,updated_at').order('updated_at',{ascending:false});
-    if(error) throw error;
-    reviewRows=data||[];
-  }catch(e){ $("#reviewGrid").innerHTML="<p style='color:var(--accent)'>couldn't load: "+e.message+"</p>"; return; }
-  renderReview();
-}
-function renderReview(){
-  const base = window._imgBase || "";
-  const boxed = reviewRows.filter(r=>r.lines && r.lines.length);
-  const noise = reviewRows.filter(r=>!r.lines || !r.lines.length);
-  $("#reviewStats").textContent = `${reviewRows.length} labeled · ${boxed.length} with boxes · ${noise.length} marked noise`;
-  let rows = reviewFilter==="boxed"?boxed : reviewFilter==="noise"?noise : reviewRows;
-  const grid=$("#reviewGrid"); grid.innerHTML="";
-  rows.slice(0,400).forEach(r=>{
-    const cell=document.createElement("div");
-    cell.style.cssText="border:1.5px solid var(--ink);background:var(--paper-2);cursor:pointer;position:relative";
-    const isNoise=!r.lines||!r.lines.length;
-    cell.innerHTML = `<div style="position:relative">
-        <img src="${base}${r.stem}.jpg" loading="lazy" style="width:100%;display:block;aspect-ratio:1;object-fit:cover"
-             onerror="this.style.opacity=.2">
-        <canvas class="rvov" data-lines='${JSON.stringify(r.lines||[])}' style="position:absolute;inset:0;width:100%;height:100%"></canvas>
-      </div>
-      <div style="font-size:10px;padding:3px 5px;color:${isNoise?'var(--accent)':'var(--ink-soft)'}">
-        ${isNoise?'NOISE':r.lines.length+' box'+(r.lines.length>1?'es':'')}</div>`;
-    cell.onclick = ()=> reopenForEdit(r);
-    grid.appendChild(cell);
-    // draw boxes on the mini canvas once the image lays out
-    const im=cell.querySelector("img"), cv=cell.querySelector(".rvov");
-    im.addEventListener("load",()=>{
-      cv.width=im.clientWidth; cv.height=im.clientHeight;
-      const ctx=cv.getContext("2d"); (r.lines||[]).forEach(l=>{
-        const [c,cx,cy,w,h]=l.split(" ").map(Number);
-        ctx.lineWidth=2; ctx.strokeStyle=COL[c]||"#9b3b54";
-        ctx.strokeRect((cx-w/2)*cv.width,(cy-h/2)*cv.height,w*cv.width,h*cv.height);
-      });
-    });
-  });
-  if(!rows.length) grid.innerHTML="<p style='color:var(--ink-soft)'>none in this filter.</p>";
-}
-// clicking a reviewed label jumps the labeler to that image so you can fix it
-function reopenForEdit(r){
-  $("#review").style.display="none";
-  // ensure it's in the current misses list; if not, inject it
-  let i = misses.findIndex(m=>m.stem===r.stem);
-  if(i<0){
-    misses.unshift({stem:r.stem, file:r.stem+".jpg", split:r.split,
-      species:"(re-edit)", coarse:"bird", path:(window._imgBase||"")+r.stem+".jpg"});
-    i=0;
-  }
-  // preload its existing boxes so they're editable, not blank
-  saved[r.stem] = saved[r.stem] || {split:r.split, lines:r.lines||[],
-    boxes:(r.lines||[]).map(l=>{const[c,cx,cy,w,h]=l.split(" ").map(Number);
-      return {cls:c,x:cx-w/2,y:cy-h/2,w,h};})};
-  idx=i; load();
-}
-
+window.addEventListener("resize",()=>{ if($("#workspace").style.display!=="none" && img.naturalWidth){ fit(); draw(); } });
 </script>
 </body>
 </html>

@@ -1,2264 +1,2890 @@
 [
-  {
-    "name": "Mallard",
-    "sci": "Anas platyrhynchos Linnaeus, 1758",
-    "taxonKey": 9761484,
-    "coarse": "bird",
-    "obs": 2323
-  },
-  {
-    "name": "Barnacle Goose",
-    "sci": "Branta leucopsis (Bechstein, 1803)",
-    "taxonKey": 5232464,
-    "coarse": "bird",
-    "obs": 2236
-  },
-  {
-    "name": "Great Spotted Woodpecker",
-    "sci": "Dendrocopos major (Linnaeus, 1758)",
-    "taxonKey": 2477968,
-    "coarse": "bird",
-    "obs": 2073
-  },
-  {
-    "name": "Eurasian Blackbird",
-    "sci": "Turdus merula Linnaeus, 1758",
-    "taxonKey": 2490719,
-    "coarse": "bird",
-    "obs": 2056
-  },
-  {
-    "name": "Hooded Crow",
-    "sci": "Corvus cornix Linnaeus, 1758",
-    "taxonKey": 2482515,
-    "coarse": "bird",
-    "obs": 1960
-  },
-  {
-    "name": "Mew Gull",
-    "sci": "Larus canus Linnaeus, 1758",
-    "taxonKey": 7982160,
-    "coarse": "bird",
-    "obs": 1909
-  },
-  {
-    "name": "White Wagtail",
-    "sci": "Motacilla alba Linnaeus, 1758",
-    "taxonKey": 9687165,
-    "coarse": "bird",
-    "obs": 1899
-  },
-  {
-    "name": "Great Tit",
-    "sci": "Parus major Linnaeus, 1758",
-    "taxonKey": 9705453,
-    "coarse": "bird",
-    "obs": 1681
-  },
-  {
-    "name": "Fieldfare",
-    "sci": "Turdus pilaris Linnaeus, 1758",
-    "taxonKey": 2490737,
-    "coarse": "bird",
-    "obs": 1568
-  },
-  {
-    "name": "Whooper Swan",
-    "sci": "Cygnus cygnus (Linnaeus, 1758)",
-    "taxonKey": 2498347,
-    "coarse": "bird",
-    "obs": 1549
-  },
-  {
-    "name": "Common Goldeneye",
-    "sci": "Bucephala clangula (Linnaeus, 1758)",
-    "taxonKey": 2498326,
-    "coarse": "bird",
-    "obs": 1449
-  },
-  {
-    "name": "Common Chaffinch",
-    "sci": "Fringilla coelebs Linnaeus, 1758",
-    "taxonKey": 2494422,
-    "coarse": "bird",
-    "obs": 1447
-  },
-  {
-    "name": "House Sparrow",
-    "sci": "Passer domesticus (Linnaeus, 1758)",
-    "taxonKey": 5231190,
-    "coarse": "bird",
-    "obs": 1333
-  },
-  {
-    "name": "Black-headed Gull",
-    "sci": "Chroicocephalus ridibundus (Linnaeus, 1766)",
-    "taxonKey": 6065824,
-    "coarse": "bird",
-    "obs": 1330
-  },
-  {
-    "name": "Common Merganser",
-    "sci": "Mergus merganser Linnaeus, 1758",
-    "taxonKey": 9537647,
-    "coarse": "bird",
-    "obs": 1295
-  },
-  {
-    "name": "Common Wood-Pigeon",
-    "sci": "Columba palumbus Linnaeus, 1758",
-    "taxonKey": 2495455,
-    "coarse": "bird",
-    "obs": 1277
-  },
-  {
-    "name": "Eurasian Blue Tit",
-    "sci": "Cyanistes caeruleus (Linnaeus, 1758)",
-    "taxonKey": 2487879,
-    "coarse": "bird",
-    "obs": 1216
-  },
-  {
-    "name": "Western Jackdaw",
-    "sci": "Coloeus monedula (Linnaeus, 1758)",
-    "taxonKey": 6100954,
-    "coarse": "bird",
-    "obs": 1154
-  },
-  {
-    "name": "Mute Swan",
-    "sci": "Cygnus olor (J.F.Gmelin, 1789)",
-    "taxonKey": 2498343,
-    "coarse": "bird",
-    "obs": 1129
-  },
-  {
-    "name": "Common Crane",
-    "sci": "Grus grus (Linnaeus, 1758)",
-    "taxonKey": 2474950,
-    "coarse": "bird",
-    "obs": 1118
-  },
-  {
-    "name": "Eurasian Bullfinch",
-    "sci": "Pyrrhula pyrrhula (Linnaeus, 1758)",
-    "taxonKey": 2494543,
-    "coarse": "bird",
-    "obs": 1101
-  },
-  {
-    "name": "Eurasian Oystercatcher",
-    "sci": "Haematopus ostralegus Linnaeus, 1758",
-    "taxonKey": 7788295,
-    "coarse": "bird",
-    "obs": 1091
-  },
-  {
-    "name": "European Pied Flycatcher",
-    "sci": "Ficedula hypoleuca (Pallas, 1764)",
-    "taxonKey": 2492606,
-    "coarse": "bird",
-    "obs": 1032
-  },
-  {
-    "name": "Eurasian Magpie",
-    "sci": "Pica pica (Linnaeus, 1758)",
-    "taxonKey": 5229490,
-    "coarse": "bird",
-    "obs": 1029
-  },
-  {
-    "name": "Canada Goose (canadensis Group)",
-    "sci": "Branta canadensis (Linnaeus, 1758)",
-    "taxonKey": 5232437,
-    "coarse": "bird",
-    "obs": 964
-  },
-  {
-    "name": "European Robin",
-    "sci": "Erithacus rubecula (Linnaeus, 1758)",
-    "taxonKey": 2492462,
-    "coarse": "bird",
-    "obs": 859
-  },
-  {
-    "name": "European Greenfinch",
-    "sci": "Chloris chloris (Linnaeus, 1758)",
-    "taxonKey": 5845582,
-    "coarse": "bird",
-    "obs": 844
-  },
-  {
-    "name": "Eurasian Wigeon",
-    "sci": "Mareca penelope (Linnaeus, 1758)",
-    "taxonKey": 8000602,
-    "coarse": "bird",
-    "obs": 800
-  },
-  {
-    "name": "Yellowhammer",
-    "sci": "Emberiza citrinella Linnaeus, 1758",
-    "taxonKey": 2491534,
-    "coarse": "bird",
-    "obs": 797
-  },
-  {
-    "name": "Barn Swallow",
-    "sci": "Hirundo rustica Linnaeus, 1758",
-    "taxonKey": 9515886,
-    "coarse": "bird",
-    "obs": 777
-  },
-  {
-    "name": "Eurasian Tree Sparrow",
-    "sci": "Passer montanus (Linnaeus, 1758)",
-    "taxonKey": 5231198,
-    "coarse": "bird",
-    "obs": 775
-  },
-  {
-    "name": "Eurasian Siskin",
-    "sci": "Spinus spinus (Linnaeus, 1758)",
-    "taxonKey": 6092830,
-    "coarse": "bird",
-    "obs": 747
-  },
-  {
-    "name": "Great Crested Grebe",
-    "sci": "Podiceps cristatus (Linnaeus, 1758)",
-    "taxonKey": 2482054,
-    "coarse": "bird",
-    "obs": 736
-  },
-  {
-    "name": "Gray/Purple Heron",
-    "sci": "Ardea cinerea Linnaeus, 1758",
-    "taxonKey": 9797180,
-    "coarse": "bird",
-    "obs": 711
-  },
-  {
-    "name": "Northern Lapwing",
-    "sci": "Vanellus vanellus (Linnaeus, 1758)",
-    "taxonKey": 2480242,
-    "coarse": "bird",
-    "obs": 696
-  },
-  {
-    "name": "Herring Gull",
-    "sci": "Larus argentatus Pontoppidan, 1763",
-    "taxonKey": 2481139,
-    "coarse": "bird",
-    "obs": 686
-  },
-  {
-    "name": "White-tailed Eagle",
-    "sci": "Haliaeetus albicilla (Linnaeus, 1758)",
-    "taxonKey": 2480449,
-    "coarse": "bird",
-    "obs": 685
-  },
-  {
-    "name": "Ring-necked Pheasant",
-    "sci": "Phasianus colchicus Linnaeus, 1758",
-    "taxonKey": 9752149,
-    "coarse": "bird",
-    "obs": 671
-  },
-  {
-    "name": "Common Tern",
-    "sci": "Sterna hirundo Linnaeus, 1758",
-    "taxonKey": 9367409,
-    "coarse": "bird",
-    "obs": 660
-  },
-  {
-    "name": "Eurasian Jay",
-    "sci": "Garrulus glandarius (Linnaeus, 1758)",
-    "taxonKey": 5229493,
-    "coarse": "bird",
-    "obs": 649
-  },
-  {
-    "name": "Redwing",
-    "sci": "Turdus iliacus Linnaeus, 1758",
-    "taxonKey": 2490781,
-    "coarse": "bird",
-    "obs": 614
-  },
-  {
-    "name": "Rock Pigeon",
-    "sci": "Columba livia J.F.Gmelin, 1789",
-    "taxonKey": 2495414,
-    "coarse": "bird",
-    "obs": 613
-  },
-  {
-    "name": "Willow Tit",
-    "sci": "Poecile montanus (Conrad von Baldenstein, 1827)",
-    "taxonKey": 2487866,
-    "coarse": "bird",
-    "obs": 608
-  },
-  {
-    "name": "Great Cormorant/European Shag",
-    "sci": "Phalacrocorax carbo (Linnaeus, 1758)",
-    "taxonKey": 2481890,
-    "coarse": "bird",
-    "obs": 597
-  },
-  {
-    "name": "Lesser Black-backed Gull",
-    "sci": "Larus fuscus Linnaeus, 1758",
-    "taxonKey": 2481174,
-    "coarse": "bird",
-    "obs": 588
-  },
-  {
-    "name": "Siberian Jay",
-    "sci": "Perisoreus infaustus (Linnaeus, 1758)",
-    "taxonKey": 2482449,
-    "coarse": "bird",
-    "obs": 576
-  },
-  {
-    "name": "European Starling",
-    "sci": "Sturnus vulgaris Linnaeus, 1758",
-    "taxonKey": 9809229,
-    "coarse": "bird",
-    "obs": 567
-  },
-  {
-    "name": "European Goldfinch",
-    "sci": "Carduelis carduelis (Linnaeus, 1758)",
-    "taxonKey": 2494686,
-    "coarse": "bird",
-    "obs": 547
-  },
-  {
-    "name": "Eurasian Treecreeper",
-    "sci": "Certhia familiaris Linnaeus, 1758",
-    "taxonKey": 2487603,
-    "coarse": "bird",
-    "obs": 525
-  },
-  {
-    "name": "Brambling",
-    "sci": "Fringilla montifringilla Linnaeus, 1758",
-    "taxonKey": 2494441,
-    "coarse": "bird",
-    "obs": 524
-  },
-  {
-    "name": "Northern Wheatear",
-    "sci": "Oenanthe oenanthe (Linnaeus, 1758)",
-    "taxonKey": 5231240,
-    "coarse": "bird",
-    "obs": 523
-  },
-  {
-    "name": "Eurasian Coot",
-    "sci": "Fulica atra Linnaeus, 1758",
-    "taxonKey": 2474377,
-    "coarse": "bird",
-    "obs": 510
-  },
-  {
-    "name": "Black Woodpecker",
-    "sci": "Dryocopus martius (Linnaeus, 1758)",
-    "taxonKey": 2477872,
-    "coarse": "bird",
-    "obs": 499
-  },
-  {
-    "name": "Bohemian Waxwing",
-    "sci": "Bombycilla garrulus (Linnaeus, 1758)",
-    "taxonKey": 2484605,
-    "coarse": "bird",
-    "obs": 482
-  },
-  {
-    "name": "Song Thrush",
-    "sci": "Turdus philomelos C.L.Brehm, 1831",
-    "taxonKey": 7901064,
-    "coarse": "bird",
-    "obs": 475
-  },
-  {
-    "name": "Common Redpoll",
-    "sci": "Acanthis flammea (Linnaeus, 1758)",
-    "taxonKey": 5231630,
-    "coarse": "bird",
-    "obs": 474
-  },
-  {
-    "name": "Spotted Flycatcher",
-    "sci": "Muscicapa striata (Pallas, 1764)",
-    "taxonKey": 2492576,
-    "coarse": "bird",
-    "obs": 470
-  },
-  {
-    "name": "Common Eider",
-    "sci": "Somateria mollissima (Linnaeus, 1758)",
-    "taxonKey": 2498352,
-    "coarse": "bird",
-    "obs": 468
-  },
-  {
-    "name": "Arctic/Pacific Loon",
-    "sci": "Gavia arctica (Linnaeus, 1758)",
-    "taxonKey": 2481959,
-    "coarse": "bird",
-    "obs": 466
-  },
-  {
-    "name": "Green-winged Teal",
-    "sci": "Anas crecca Linnaeus, 1758",
-    "taxonKey": 8214667,
-    "coarse": "bird",
-    "obs": 463
-  },
-  {
-    "name": "Reed Bunting",
-    "sci": "Emberiza schoeniclus (Linnaeus, 1758)",
-    "taxonKey": 2491557,
-    "coarse": "bird",
-    "obs": 455
-  },
-  {
-    "name": "Common Raven",
-    "sci": "Corvus corax Linnaeus, 1758",
-    "taxonKey": 2482492,
-    "coarse": "bird",
-    "obs": 443
-  },
-  {
-    "name": "Graylag Goose",
-    "sci": "Anser anser (Linnaeus, 1758)",
-    "taxonKey": 2498036,
-    "coarse": "bird",
-    "obs": 437
-  },
-  {
-    "name": "Wood Sandpiper",
-    "sci": "Tringa glareola Linnaeus, 1758",
-    "taxonKey": 2481713,
-    "coarse": "bird",
-    "obs": 425
-  },
-  {
-    "name": "Common Sandpiper",
-    "sci": "Actitis hypoleucos (Linnaeus, 1758)",
-    "taxonKey": 2481800,
-    "coarse": "bird",
-    "obs": 422
-  },
-  {
-    "name": "Tufted Duck",
-    "sci": "Aythya fuligula (Linnaeus, 1758)",
-    "taxonKey": 2498261,
-    "coarse": "bird",
-    "obs": 417
-  },
-  {
-    "name": "Coal Tit",
-    "sci": "Periparus ater (Linnaeus, 1758)",
-    "taxonKey": 2487871,
-    "coarse": "bird",
-    "obs": 412
-  },
-  {
-    "name": "Western Capercaillie",
-    "sci": "Tetrao urogallus Linnaeus, 1758",
-    "taxonKey": 2473577,
-    "coarse": "bird",
-    "obs": 405
-  },
-  {
-    "name": "Ruff",
-    "sci": "Calidris pugnax (Linnaeus, 1758)",
-    "taxonKey": 8250742,
-    "coarse": "bird",
-    "obs": 396
-  },
-  {
-    "name": "Willow Warbler",
-    "sci": "Phylloscopus trochilus (Linnaeus, 1758)",
-    "taxonKey": 2493052,
-    "coarse": "bird",
-    "obs": 377
-  },
-  {
-    "name": "black grouse",
-    "sci": "Lyrurus tetrix (Linnaeus, 1758)",
-    "taxonKey": 2473682,
-    "coarse": "bird",
-    "obs": 374
-  },
-  {
-    "name": "Goldcrest",
-    "sci": "Regulus regulus (Linnaeus, 1758)",
-    "taxonKey": 2484596,
-    "coarse": "bird",
-    "obs": 364
-  },
-  {
-    "name": "Hazel Grouse",
-    "sci": "Tetrastes bonasia (Linnaeus, 1758)",
-    "taxonKey": 2473663,
-    "coarse": "bird",
-    "obs": 356
-  },
-  {
-    "name": "Eurasian Sparrowhawk",
-    "sci": "Accipiter nisus (Linnaeus, 1758)",
-    "taxonKey": 2480637,
-    "coarse": "bird",
-    "obs": 354
-  },
-  {
-    "name": "Gray-headed Woodpecker",
-    "sci": "Picus canus J.F.Gmelin, 1788",
-    "taxonKey": 2478548,
-    "coarse": "bird",
-    "obs": 352
-  },
-  {
-    "name": "Eurasian Curlew",
-    "sci": "Numenius arquata (Linnaeus, 1758)",
-    "taxonKey": 2481792,
-    "coarse": "bird",
-    "obs": 352
-  },
-  {
-    "name": "Crested Tit",
-    "sci": "Lophophanes cristatus (Linnaeus, 1758)",
-    "taxonKey": 2487883,
-    "coarse": "bird",
-    "obs": 351
-  },
-  {
-    "name": "Lesser Spotted Woodpecker",
-    "sci": "Dryobates minor (Linnaeus, 1758)",
-    "taxonKey": 9015784,
-    "coarse": "bird",
-    "obs": 343
-  },
-  {
-    "name": "Pine Grosbeak",
-    "sci": "Pinicola enucleator (Linnaeus, 1758)",
-    "taxonKey": 2494771,
-    "coarse": "bird",
-    "obs": 335
-  },
-  {
-    "name": "Common Redstart",
-    "sci": "Phoenicurus phoenicurus (Linnaeus, 1758)",
-    "taxonKey": 5739317,
-    "coarse": "bird",
-    "obs": 335
-  },
-  {
-    "name": "Tree Pipit",
-    "sci": "Anthus trivialis (Linnaeus, 1758)",
-    "taxonKey": 2490246,
-    "coarse": "bird",
-    "obs": 333
-  },
-  {
-    "name": "Arctic Tern",
-    "sci": "Sterna paradisaea Pontoppidan, 1763",
-    "taxonKey": 5229230,
-    "coarse": "bird",
-    "obs": 327
-  },
-  {
-    "name": "White-throated Dipper",
-    "sci": "Cinclus cinclus (Linnaeus, 1758)",
-    "taxonKey": 2495093,
-    "coarse": "bird",
-    "obs": 319
-  },
-  {
-    "name": "Osprey",
-    "sci": "Pandion haliaetus (Linnaeus, 1758)",
-    "taxonKey": 2480726,
-    "coarse": "bird",
-    "obs": 316
-  },
-  {
-    "name": "Western Yellow Wagtail",
-    "sci": "Motacilla flava Linnaeus, 1758",
-    "taxonKey": 9701857,
-    "coarse": "bird",
-    "obs": 311
-  },
-  {
-    "name": "White-backed Woodpecker",
-    "sci": "Dendrocopos leucotos (Bechstein, 1802)",
-    "taxonKey": 2477927,
-    "coarse": "bird",
-    "obs": 295
-  },
-  {
-    "name": "Eurasian Marsh-Harrier",
-    "sci": "Circus aeruginosus (Linnaeus, 1758)",
-    "taxonKey": 2480482,
-    "coarse": "bird",
-    "obs": 295
-  },
-  {
-    "name": "Gadwall",
-    "sci": "Mareca strepera (Linnaeus, 1758)",
-    "taxonKey": 9362027,
-    "coarse": "bird",
-    "obs": 293
-  },
-  {
-    "name": "Red-breasted Merganser",
-    "sci": "Mergus serrator Linnaeus, 1758",
-    "taxonKey": 2498375,
-    "coarse": "bird",
-    "obs": 290
-  },
-  {
-    "name": "Eurasian Moorhen",
-    "sci": "Gallinula chloropus (Linnaeus, 1758)",
-    "taxonKey": 5228199,
-    "coarse": "bird",
-    "obs": 277
-  },
-  {
-    "name": "Long-tailed Tit",
-    "sci": "Aegithalos caudatus (Linnaeus, 1758)",
-    "taxonKey": 2495000,
-    "coarse": "bird",
-    "obs": 274
-  },
-  {
-    "name": "Eurasian Kestrel",
-    "sci": "Falco tinnunculus Linnaeus, 1758",
-    "taxonKey": 9616058,
-    "coarse": "bird",
-    "obs": 266
-  },
-  {
-    "name": "Greater White-fronted Goose",
-    "sci": "Anser albifrons (Scopoli, 1769)",
-    "taxonKey": 2498017,
-    "coarse": "bird",
-    "obs": 265
-  },
-  {
-    "name": "Common Swift",
-    "sci": "Apus apus (Linnaeus, 1758)",
-    "taxonKey": 5228676,
-    "coarse": "bird",
-    "obs": 265
-  },
-  {
-    "name": "Eurasian Woodcock",
-    "sci": "Scolopax rusticola Linnaeus, 1758",
-    "taxonKey": 2481700,
-    "coarse": "bird",
-    "obs": 263
-  },
-  {
-    "name": "Sedge Warbler",
-    "sci": "Acrocephalus schoenobaenus (Linnaeus, 1758)",
-    "taxonKey": 2493129,
-    "coarse": "bird",
-    "obs": 263
-  },
-  {
-    "name": "Greater Whitethroat",
-    "sci": "Sylvia communis Latham, 1787",
-    "taxonKey": 2492943,
-    "coarse": "bird",
-    "obs": 256
-  },
-  {
-    "name": "Common Chiffchaff",
-    "sci": "Phylloscopus collybita (Vieillot, 1817)",
-    "taxonKey": 2493091,
-    "coarse": "bird",
-    "obs": 256
-  },
-  {
-    "name": "Eurasian Three-toed Woodpecker",
-    "sci": "Picoides tridactylus (Linnaeus, 1758)",
-    "taxonKey": 2477804,
-    "coarse": "bird",
-    "obs": 254
-  },
-  {
-    "name": "Common Greenshank",
-    "sci": "Tringa nebularia (Gunnerus, 1767)",
-    "taxonKey": 2481726,
-    "coarse": "bird",
-    "obs": 252
-  },
-  {
-    "name": "Eurasian Linnet",
-    "sci": "Linaria cannabina (Linnaeus, 1758)",
-    "taxonKey": 8104397,
-    "coarse": "bird",
-    "obs": 244
-  },
-  {
-    "name": "Whinchat",
-    "sci": "Saxicola rubetra (Linnaeus, 1758)",
-    "taxonKey": 2492521,
-    "coarse": "bird",
-    "obs": 243
-  },
-  {
-    "name": "Northern Shoveler",
-    "sci": "Spatula clypeata (Linnaeus, 1758)",
-    "taxonKey": 8332393,
-    "coarse": "bird",
-    "obs": 241
-  },
-  {
-    "name": "Lesser Whitethroat",
-    "sci": "Sylvia curruca (Linnaeus, 1758)",
-    "taxonKey": 2492960,
-    "coarse": "bird",
-    "obs": 240
-  },
-  {
-    "name": "Common Redshank",
-    "sci": "Tringa totanus (Linnaeus, 1758)",
-    "taxonKey": 2481714,
-    "coarse": "bird",
-    "obs": 238
-  },
-  {
-    "name": "Horned Grebe",
-    "sci": "Podiceps auritus (Linnaeus, 1758)",
-    "taxonKey": 2482059,
-    "coarse": "bird",
-    "obs": 236
-  },
-  {
-    "name": "Red-necked Grebe",
-    "sci": "Podiceps grisegena (Boddaert, 1783)",
-    "taxonKey": 2482051,
-    "coarse": "bird",
-    "obs": 231
-  },
-  {
-    "name": "Gray-headed Chickadee",
-    "sci": "Poecile cinctus (Boddaert, 1783)",
-    "taxonKey": 2487862,
-    "coarse": "bird",
-    "obs": 227
-  },
-  {
-    "name": "Common Snipe",
-    "sci": "Gallinago gallinago (Linnaeus, 1758)",
-    "taxonKey": 2481819,
-    "coarse": "bird",
-    "obs": 223
-  },
-  {
-    "name": "Common Buzzard",
-    "sci": "Buteo buteo (Linnaeus, 1758)",
-    "taxonKey": 2480537,
-    "coarse": "bird",
-    "obs": 221
-  },
-  {
-    "name": "Red-backed Shrike",
-    "sci": "Lanius collurio Linnaeus, 1758",
-    "taxonKey": 7745240,
-    "coarse": "bird",
-    "obs": 220
-  },
-  {
-    "name": "Red Crossbill",
-    "sci": "Loxia curvirostra Linnaeus, 1758",
-    "taxonKey": 9629160,
-    "coarse": "bird",
-    "obs": 220
-  },
-  {
-    "name": "Great Black-backed Gull",
-    "sci": "Larus marinus Linnaeus, 1758",
-    "taxonKey": 2481172,
-    "coarse": "bird",
-    "obs": 211
-  },
-  {
-    "name": "Eurasian Skylark",
-    "sci": "Alauda arvensis Linnaeus, 1758",
-    "taxonKey": 8077224,
-    "coarse": "bird",
-    "obs": 207
-  },
-  {
-    "name": "Great Egret",
-    "sci": "Ardea alba Linnaeus, 1758",
-    "taxonKey": 9752617,
-    "coarse": "bird",
-    "obs": 206
-  },
-  {
-    "name": "European Golden-Plover",
-    "sci": "Pluvialis apricaria (Linnaeus, 1758)",
-    "taxonKey": 2480332,
-    "coarse": "bird",
-    "obs": 205
-  },
-  {
-    "name": "Meadow Pipit",
-    "sci": "Anthus pratensis (Linnaeus, 1758)",
-    "taxonKey": 2490266,
-    "coarse": "bird",
-    "obs": 203
-  },
-  {
-    "name": "Northern Hawk Owl",
-    "sci": "Surnia ulula (Linnaeus, 1758)",
-    "taxonKey": 2497894,
-    "coarse": "bird",
-    "obs": 200
-  },
-  {
-    "name": "Common Rosefinch",
-    "sci": "Carpodacus erythrinus (Pallas, 1770)",
-    "taxonKey": 2494459,
-    "coarse": "bird",
-    "obs": 199
-  },
-  {
-    "name": "Dunnock",
-    "sci": "Prunella modularis (Linnaeus, 1758)",
-    "taxonKey": 5231763,
-    "coarse": "bird",
-    "obs": 194
-  },
-  {
-    "name": "Great Gray Shrike",
-    "sci": "Lanius excubitor Linnaeus, 1758",
-    "taxonKey": 9444556,
-    "coarse": "bird",
-    "obs": 188
-  },
-  {
-    "name": "Eurasian Blackcap",
-    "sci": "Sylvia atricapilla (Linnaeus, 1758)",
-    "taxonKey": 2492956,
-    "coarse": "bird",
-    "obs": 185
-  },
-  {
-    "name": "Eurasian Pygmy-Owl",
-    "sci": "Glaucidium passerinum (Linnaeus, 1758)",
-    "taxonKey": 5232162,
-    "coarse": "bird",
-    "obs": 184
-  },
-  {
-    "name": "Common Ringed Plover",
-    "sci": "Charadrius hiaticula Linnaeus, 1758",
-    "taxonKey": 9566659,
-    "coarse": "bird",
-    "obs": 177
-  },
-  {
-    "name": "Eurasian Wren",
-    "sci": "Troglodytes troglodytes (Linnaeus, 1758)",
-    "taxonKey": 5231438,
-    "coarse": "bird",
-    "obs": 176
-  },
-  {
-    "name": "Smew",
-    "sci": "Mergellus albellus (Linnaeus, 1758)",
-    "taxonKey": 2498285,
-    "coarse": "bird",
-    "obs": 175
-  },
-  {
-    "name": "Tawny Owl",
-    "sci": "Strix aluco Linnaeus, 1758",
-    "taxonKey": 9282206,
-    "coarse": "bird",
-    "obs": 172
-  },
-  {
-    "name": "Eurasian Hobby",
-    "sci": "Falco subbuteo Linnaeus, 1758",
-    "taxonKey": 2481035,
-    "coarse": "bird",
-    "obs": 167
-  },
-  {
-    "name": "Taiga/Tundra Bean-Goose",
-    "sci": "Anser fabalis (Latham, 1787)",
-    "taxonKey": 2498027,
-    "coarse": "bird",
-    "obs": 166
-  },
-  {
-    "name": "Eurasian Nutcracker",
-    "sci": "Nucifraga caryocatactes (Linnaeus, 1758)",
-    "taxonKey": 2482613,
-    "coarse": "bird",
-    "obs": 165
-  },
-  {
-    "name": "Willow Ptarmigan",
-    "sci": "Lagopus lagopus (Linnaeus, 1758)",
-    "taxonKey": 2473421,
-    "coarse": "bird",
-    "obs": 164
-  },
-  {
-    "name": "Thrush Nightingale",
-    "sci": "Luscinia luscinia (Linnaeus, 1758)",
-    "taxonKey": 2492542,
-    "coarse": "bird",
-    "obs": 160
-  },
-  {
-    "name": "Wood Warbler",
-    "sci": "Phylloscopus sibillatrix (Bechstein, 1792)",
-    "taxonKey": 8128385,
-    "coarse": "bird",
-    "obs": 159
-  },
-  {
-    "name": "Rustic Bunting",
-    "sci": "Emberiza rustica Pallas, 1776",
-    "taxonKey": 2491582,
-    "coarse": "bird",
-    "obs": 156
-  },
-  {
-    "name": "Great Gray Owl",
-    "sci": "Strix nebulosa J.R.Forster, 1772",
-    "taxonKey": 2497522,
-    "coarse": "bird",
-    "obs": 154
-  },
-  {
-    "name": "Bluethroat",
-    "sci": "Luscinia svecica (Linnaeus, 1758)",
-    "taxonKey": 4408732,
-    "coarse": "bird",
-    "obs": 152
-  },
-  {
-    "name": "Green Sandpiper",
-    "sci": "Tringa ochropus Linnaeus, 1758",
-    "taxonKey": 2481728,
-    "coarse": "bird",
-    "obs": 151
-  },
-  {
-    "name": "Ural Owl",
-    "sci": "Strix uralensis Pallas, 1771",
-    "taxonKey": 2497509,
-    "coarse": "bird",
-    "obs": 151
-  },
-  {
-    "name": "Common Pochard",
-    "sci": "Aythya ferina (Linnaeus, 1758)",
-    "taxonKey": 2498255,
-    "coarse": "bird",
-    "obs": 148
-  },
-  {
-    "name": "Long-tailed Duck",
-    "sci": "Clangula hyemalis (Linnaeus, 1758)",
-    "taxonKey": 2498273,
-    "coarse": "bird",
-    "obs": 145
-  },
-  {
-    "name": "Hawfinch",
-    "sci": "Coccothraustes coccothraustes (Linnaeus, 1758)",
-    "taxonKey": 2494329,
-    "coarse": "bird",
-    "obs": 144
-  },
-  {
-    "name": "Common Cuckoo",
-    "sci": "Cuculus canorus Linnaeus, 1758",
-    "taxonKey": 5231918,
-    "coarse": "bird",
-    "obs": 140
-  },
-  {
-    "name": "Common House-Martin",
-    "sci": "Delichon urbicum (Linnaeus, 1758)",
-    "taxonKey": 2489214,
-    "coarse": "bird",
-    "obs": 139
-  },
-  {
-    "name": "Mistle Thrush",
-    "sci": "Turdus viscivorus Linnaeus, 1758",
-    "taxonKey": 2490774,
-    "coarse": "bird",
-    "obs": 138
-  },
-  {
-    "name": "Little Gull",
-    "sci": "Hydrocoloeus minutus (Pallas, 1776)",
-    "taxonKey": 6065841,
-    "coarse": "bird",
-    "obs": 131
-  },
-  {
-    "name": "Snow Bunting",
-    "sci": "Plectrophenax nivalis (Linnaeus, 1758)",
-    "taxonKey": 2491719,
-    "coarse": "bird",
-    "obs": 130
-  },
-  {
-    "name": "Northern Pintail",
-    "sci": "Anas acuta Linnaeus, 1758",
-    "taxonKey": 2498112,
-    "coarse": "bird",
-    "obs": 130
-  },
-  {
-    "name": "Spotted Redshank",
-    "sci": "Tringa erythropus (Pallas, 1764)",
-    "taxonKey": 2481725,
-    "coarse": "bird",
-    "obs": 129
-  },
-  {
-    "name": "Dunlin",
-    "sci": "Calidris alpina (Linnaeus, 1758)",
-    "taxonKey": 2481759,
-    "coarse": "bird",
-    "obs": 128
-  },
-  {
-    "name": "Red-throated Loon",
-    "sci": "Gavia stellata (Pontoppidan, 1763)",
-    "taxonKey": 2481958,
-    "coarse": "bird",
-    "obs": 128
-  },
-  {
-    "name": "Parrot Crossbill",
-    "sci": "Loxia pytyopsittacus von Borkhausen, 1793",
-    "taxonKey": 2494154,
-    "coarse": "bird",
-    "obs": 127
-  },
-  {
-    "name": "Caspian Tern",
-    "sci": "Hydroprogne caspia (Pallas, 1770)",
-    "taxonKey": 2481236,
-    "coarse": "bird",
-    "obs": 122
-  },
-  {
-    "name": "Red-flanked Bluetail",
-    "sci": "Tarsiger cyanurus (Pallas, 1773)",
-    "taxonKey": 2492509,
-    "coarse": "bird",
-    "obs": 121
-  },
-  {
-    "name": "Stock Dove",
-    "sci": "Columba oenas Linnaeus, 1758",
-    "taxonKey": 2495471,
-    "coarse": "bird",
-    "obs": 118
-  },
-  {
-    "name": "European Honey-buzzard",
-    "sci": "Pernis apivorus (Linnaeus, 1758)",
-    "taxonKey": 2480420,
-    "coarse": "bird",
-    "obs": 116
-  },
-  {
-    "name": "Hen Harrier",
-    "sci": "Circus cyaneus (Linnaeus, 1766)",
-    "taxonKey": 2480487,
-    "coarse": "bird",
-    "obs": 116
-  },
-  {
-    "name": "Eurasian Nuthatch",
-    "sci": "Sitta europaea Linnaeus, 1758",
-    "taxonKey": 2484916,
-    "coarse": "bird",
-    "obs": 115
-  },
-  {
-    "name": "Boreal Owl",
-    "sci": "Aegolius funereus (Linnaeus, 1758)",
-    "taxonKey": 5739298,
-    "coarse": "bird",
-    "obs": 114
-  },
-  {
-    "name": "Bank Swallow",
-    "sci": "Riparia riparia (Linnaeus, 1758)",
-    "taxonKey": 2489160,
-    "coarse": "bird",
-    "obs": 113
-  },
-  {
-    "name": "Rough-legged Hawk",
-    "sci": "Buteo lagopus (Pontoppidan, 1763)",
-    "taxonKey": 2480524,
-    "coarse": "bird",
-    "obs": 110
-  },
-  {
-    "name": "White-winged Scoter",
-    "sci": "Melanitta fusca (Linnaeus, 1758)",
-    "taxonKey": 2498238,
-    "coarse": "bird",
-    "obs": 107
-  },
-  {
-    "name": "Rook",
-    "sci": "Corvus frugilegus Linnaeus, 1758",
-    "taxonKey": 2482513,
-    "coarse": "bird",
-    "obs": 105
-  },
-  {
-    "name": "Eurasian Eagle-Owl",
-    "sci": "Bubo bubo (Linnaeus, 1758)",
-    "taxonKey": 5959092,
-    "coarse": "bird",
-    "obs": 101
-  },
-  {
-    "name": "Red-breasted Flycatcher",
-    "sci": "Ficedula parva (Bechstein, 1792)",
-    "taxonKey": 2492605,
-    "coarse": "bird",
-    "obs": 97
-  },
-  {
-    "name": "Tundra Bean-Goose",
-    "sci": "Anser serrirostris Gould, 1852",
-    "taxonKey": 7340170,
-    "coarse": "bird",
-    "obs": 95
-  },
-  {
-    "name": "Blyth's Reed Warbler",
-    "sci": "Acrocephalus dumetorum Blyth, 1849",
-    "taxonKey": 2493145,
-    "coarse": "bird",
-    "obs": 86
-  },
-  {
-    "name": "Garden Warbler",
-    "sci": "Sylvia borin (Boddaert, 1783)",
-    "taxonKey": 2492942,
-    "coarse": "bird",
-    "obs": 85
-  },
-  {
-    "name": "Icterine Warbler",
-    "sci": "Hippolais icterina (Vieillot, 1817)",
-    "taxonKey": 2493220,
-    "coarse": "bird",
-    "obs": 82
-  },
-  {
-    "name": "Eurasian Wryneck",
-    "sci": "Jynx torquilla Linnaeus, 1758",
-    "taxonKey": 8012314,
-    "coarse": "bird",
-    "obs": 81
-  },
-  {
-    "name": "Little Bunting",
-    "sci": "Emberiza pusilla Pallas, 1776",
-    "taxonKey": 2491544,
-    "coarse": "bird",
-    "obs": 79
-  },
-  {
-    "name": "Mandarin Duck",
-    "sci": "Aix galericulata (Linnaeus, 1758)",
-    "taxonKey": 2498388,
-    "coarse": "bird",
-    "obs": 78
-  },
-  {
-    "name": "Eurasian Collared-Dove",
-    "sci": "Streptopelia decaocto (Frivaldszky, 1838)",
-    "taxonKey": 2495696,
-    "coarse": "bird",
-    "obs": 77
-  },
-  {
-    "name": "Common Scoter",
-    "sci": "Melanitta nigra (Linnaeus, 1758)",
-    "taxonKey": 2498247,
-    "coarse": "bird",
-    "obs": 77
-  },
-  {
-    "name": "Long-eared Owl",
-    "sci": "Asio otus (Linnaeus, 1758)",
-    "taxonKey": 2497306,
-    "coarse": "bird",
-    "obs": 76
-  },
-  {
-    "name": "Lapland Longspur",
-    "sci": "Calcarius lapponicus (Linnaeus, 1758)",
-    "taxonKey": 2491678,
-    "coarse": "bird",
-    "obs": 75
-  },
-  {
-    "name": "Water Rail",
-    "sci": "Rallus aquaticus Linnaeus, 1758",
-    "taxonKey": 2474831,
-    "coarse": "bird",
-    "obs": 74
-  },
-  {
-    "name": "Temminck's Stint",
-    "sci": "Calidris temminckii (Leisler, 1812)",
-    "taxonKey": 2481740,
-    "coarse": "bird",
-    "obs": 74
-  },
-  {
-    "name": "Short-eared Owl",
-    "sci": "Asio flammeus (Pontoppidan, 1763)",
-    "taxonKey": 2497295,
-    "coarse": "bird",
-    "obs": 72
-  },
-  {
-    "name": "Common Shelduck",
-    "sci": "Tadorna tadorna (Linnaeus, 1758)",
-    "taxonKey": 2498009,
-    "coarse": "bird",
-    "obs": 72
-  },
-  {
-    "name": "Rock Ptarmigan",
-    "sci": "Lagopus muta (Montin, 1781)",
-    "taxonKey": 5227679,
-    "coarse": "bird",
-    "obs": 71
-  },
-  {
-    "name": "Garganey",
-    "sci": "Spatula querquedula (Linnaeus, 1758)",
-    "taxonKey": 9274012,
-    "coarse": "bird",
-    "obs": 71
-  },
-  {
-    "name": "Whimbrel",
-    "sci": "Numenius phaeopus (Linnaeus, 1758)",
-    "taxonKey": 2481784,
-    "coarse": "bird",
-    "obs": 70
-  },
-  {
-    "name": "Golden Eagle",
-    "sci": "Aquila chrysaetos (Linnaeus, 1758)",
-    "taxonKey": 2480506,
-    "coarse": "bird",
-    "obs": 69
-  },
-  {
-    "name": "Eurasian Nightjar",
-    "sci": "Caprimulgus europaeus Linnaeus, 1758",
-    "taxonKey": 8109681,
-    "coarse": "bird",
-    "obs": 69
-  },
-  {
-    "name": "Ortolan Bunting",
-    "sci": "Emberiza hortulana Linnaeus, 1758",
-    "taxonKey": 2491482,
-    "coarse": "bird",
-    "obs": 68
-  },
-  {
-    "name": "Great Bittern",
-    "sci": "Botaurus stellaris (Linnaeus, 1758)",
-    "taxonKey": 2480910,
-    "coarse": "bird",
-    "obs": 67
-  },
-  {
-    "name": "Bearded Reedling",
-    "sci": "Panurus biarmicus (Linnaeus, 1758)",
-    "taxonKey": 2493367,
-    "coarse": "bird",
-    "obs": 66
-  },
-  {
-    "name": "Merlin",
-    "sci": "Falco columbarius Linnaeus, 1758",
-    "taxonKey": 9813242,
-    "coarse": "bird",
-    "obs": 65
-  },
-  {
-    "name": "Black-tailed Godwit",
-    "sci": "Limosa limosa (Linnaeus, 1758)",
-    "taxonKey": 2481685,
-    "coarse": "bird",
-    "obs": 63
-  },
-  {
-    "name": "Bar-tailed Godwit",
-    "sci": "Limosa lapponica (Linnaeus, 1758)",
-    "taxonKey": 2481681,
-    "coarse": "bird",
-    "obs": 60
-  },
-  {
-    "name": "Eurasian Dotterel",
-    "sci": "Charadrius morinellus Linnaeus, 1758",
-    "taxonKey": 2480281,
-    "coarse": "bird",
-    "obs": 55
-  },
-  {
-    "name": "Ruddy Turnstone",
-    "sci": "Arenaria interpres (Linnaeus, 1758)",
-    "taxonKey": 2481776,
-    "coarse": "bird",
-    "obs": 55
-  },
-  {
-    "name": "Gray Wagtail",
-    "sci": "Motacilla cinerea Tunstall, 1771",
-    "taxonKey": 2490310,
-    "coarse": "bird",
-    "obs": 55
-  },
-  {
-    "name": "Gray Partridge",
-    "sci": "Perdix perdix (Linnaeus, 1758)",
-    "taxonKey": 2473958,
-    "coarse": "bird",
-    "obs": 52
-  },
-  {
-    "name": "Brant",
-    "sci": "Branta bernicla (Linnaeus, 1758)",
-    "taxonKey": 5232446,
-    "coarse": "bird",
-    "obs": 51
-  },
-  {
-    "name": "Ring Ouzel",
-    "sci": "Turdus torquatus Linnaeus, 1758",
-    "taxonKey": 7865305,
-    "coarse": "bird",
-    "obs": 50
-  },
-  {
-    "name": "Carrion Crow",
-    "sci": "Corvus corone Linnaeus, 1758",
-    "taxonKey": 9409796,
-    "coarse": "bird",
-    "obs": 49
-  },
-  {
-    "name": "Red-necked Phalarope",
-    "sci": "Phalaropus lobatus (Linnaeus, 1758)",
-    "taxonKey": 5739290,
-    "coarse": "bird",
-    "obs": 48
-  },
-  {
-    "name": "Long-tailed Jaeger",
-    "sci": "Stercorarius longicaudus Vieillot, 1819",
-    "taxonKey": 2481613,
-    "coarse": "bird",
-    "obs": 47
-  },
-  {
-    "name": "White Stork",
-    "sci": "Ciconia ciconia (Linnaeus, 1758)",
-    "taxonKey": 2481912,
-    "coarse": "bird",
-    "obs": 45
-  },
-  {
-    "name": "Black Guillemot",
-    "sci": "Cepphus grylle (Linnaeus, 1758)",
-    "taxonKey": 2481312,
-    "coarse": "bird",
-    "obs": 42
-  },
-  {
-    "name": "Pink-footed Goose",
-    "sci": "Anser brachyrhynchus Baillon, 1834",
-    "taxonKey": 2498024,
-    "coarse": "bird",
-    "obs": 42
-  },
-  {
-    "name": "Little Stint",
-    "sci": "Calidris minuta (Leisler, 1812)",
-    "taxonKey": 2481749,
-    "coarse": "bird",
-    "obs": 41
-  },
-  {
-    "name": "Black Redstart",
-    "sci": "Phoenicurus ochruros (S.G.Gmelin, 1774)",
-    "taxonKey": 5739315,
-    "coarse": "bird",
-    "obs": 41
-  },
-  {
-    "name": "Parasitic Jaeger",
-    "sci": "Stercorarius parasiticus (Linnaeus, 1758)",
-    "taxonKey": 2481621,
-    "coarse": "bird",
-    "obs": 40
-  },
-  {
-    "name": "Citrine Wagtail",
-    "sci": "Motacilla citreola Pallas, 1776",
-    "taxonKey": 2490307,
-    "coarse": "bird",
-    "obs": 40
-  },
-  {
-    "name": "Steller's Eider",
-    "sci": "Polysticta stelleri",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Pallid Harrier",
-    "sci": "Circus macrourus",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Pied Avocet",
-    "sci": "Recurvirostra avosetta",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Common Murre",
-    "sci": "Uria aalge",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Black Kite",
-    "sci": "Milvus migrans",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Eurasian Hoopoe",
-    "sci": "Upupa epops",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Great Snipe",
-    "sci": "Gallinago media",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Pallas's Leaf Warbler",
-    "sci": "Phylloscopus proregulus",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Greenish Warbler",
-    "sci": "Phylloscopus trochiloides",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Glaucous Gull",
-    "sci": "Larus hyperboreus",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Red Knot",
-    "sci": "Calidris canutus",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Jack Snipe",
-    "sci": "Lymnocryptes minimus",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Broad-billed Sandpiper",
-    "sci": "Calidris falcinellus",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Northern Goshawk",
-    "sci": "Accipiter gentilis",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Woodlark",
-    "sci": "Lullula arborea",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "European Serin",
-    "sci": "Serinus serinus",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Two-barred Crossbill",
-    "sci": "Loxia leucoptera",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Eurasian Golden Oriole",
-    "sci": "Oriolus oriolus",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Common Kingfisher",
-    "sci": "Alcedo atthis",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Curlew Sandpiper",
-    "sci": "Calidris ferruginea",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "King Eider",
-    "sci": "Somateria spectabilis",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Marsh Sandpiper",
-    "sci": "Tringa stagnatilis",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Greater Scaup",
-    "sci": "Aythya marila",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Red-throated Pipit",
-    "sci": "Anthus cervinus",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Spotted Crake",
-    "sci": "Porzana porzana",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Eurasian Rock Pipit",
-    "sci": "Anthus petrosus",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "European Bee-eater",
-    "sci": "Merops apiaster",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Purple Sandpiper",
-    "sci": "Calidris maritima",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Wood Duck",
-    "sci": "Aix sponsa",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Black Swan",
-    "sci": "Cygnus atratus",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Black Tern",
-    "sci": "Chlidonias niger",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Peregrine Falcon",
-    "sci": "Falco peregrinus",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Montagu's Harrier",
-    "sci": "Circus pygargus",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Tundra Swan",
-    "sci": "Cygnus columbianus",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Black-legged Kittiwake",
-    "sci": "Rissa tridactyla",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Little Auk",
-    "sci": "Alle alle",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Little Bunting",
-    "sci": "Schoeniclus pusillus",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Little Ringed Plover",
-    "sci": "Charadrius dubius",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Little Grebe",
-    "sci": "Tachybaptus ruficollis",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Rustic Bunting",
-    "sci": "Schoeniclus rusticus",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Red-footed Falcon",
-    "sci": "Falco vespertinus",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Red-breasted Goose",
-    "sci": "Branta ruficollis",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Terek Sandpiper",
-    "sci": "Xenus cinereus",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Corn Crake",
-    "sci": "Crex crex",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Razorbill",
-    "sci": "Alca torda",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Bar-headed Goose",
-    "sci": "Anser indicus",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Grey Plover",
-    "sci": "Pluvialis squatarola",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Arctic Redpoll",
-    "sci": "Acanthis hornemanni",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Gyrfalcon",
-    "sci": "Falco rusticolus",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Horned Lark",
-    "sci": "Eremophila alpestris",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Snowy Owl",
-    "sci": "Bubo scandiacus",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "European Turtle Dove",
-    "sci": "Streptopelia turtur",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Common Quail",
-    "sci": "Coturnix coturnix",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Marsh Tit",
-    "sci": "Poecile palustris",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Twite",
-    "sci": "Linaria flavirostris",
-    "taxonKey": null,
-    "coarse": "bird",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Eurasian red squirrel",
-    "sci": "Sciurus vulgaris Linnaeus, 1758",
-    "taxonKey": 8211070,
-    "coarse": "mammal",
-    "obs": 2327
-  },
-  {
-    "name": "Siberian Flying Squirrel",
-    "sci": "Pteromys volans (Linnaeus, 1758)",
-    "taxonKey": 2437258,
-    "coarse": "mammal",
-    "obs": 1862
-  },
-  {
-    "name": "European hare",
-    "sci": "Lepus europaeus Pallas, 1778",
-    "taxonKey": 7952072,
-    "coarse": "mammal",
-    "obs": 1549
-  },
-  {
-    "name": "European roe deer",
-    "sci": "Capreolus capreolus (Linnaeus, 1758)",
-    "taxonKey": 5220126,
-    "coarse": "mammal",
-    "obs": 1297
-  },
-  {
-    "name": "hedgehog",
-    "sci": "Erinaceus europaeus Linnaeus, 1758",
-    "taxonKey": 5219616,
-    "coarse": "mammal",
-    "obs": 779
-  },
-  {
-    "name": "red fox",
-    "sci": "Vulpes vulpes (Linnaeus, 1758)",
-    "taxonKey": 5219243,
-    "coarse": "mammal",
-    "obs": 752
-  },
-  {
-    "name": "moose",
-    "sci": "Alces alces (Linnaeus, 1758)",
-    "taxonKey": 2440940,
-    "coarse": "mammal",
-    "obs": 696
-  },
-  {
-    "name": "reindeer",
-    "sci": "Rangifer tarandus (Linnaeus, 1758)",
-    "taxonKey": 5220114,
-    "coarse": "mammal",
-    "obs": 633
-  },
-  {
-    "name": "white-tailed deer",
-    "sci": "Odocoileus virginianus (Zimmermann, 1780)",
-    "taxonKey": 2440965,
-    "coarse": "mammal",
-    "obs": 591
-  },
-  {
-    "name": "mountain hare",
-    "sci": "Lepus timidus Linnaeus, 1758",
-    "taxonKey": 2436756,
-    "coarse": "mammal",
-    "obs": 453
-  },
-  {
-    "name": "European otter",
-    "sci": "Lutra lutra (Linnaeus, 1758)",
-    "taxonKey": 2433753,
-    "coarse": "mammal",
-    "obs": 392
-  },
-  {
-    "name": "brown bear",
-    "sci": "Ursus arctos Linnaeus, 1758",
-    "taxonKey": 2433433,
-    "coarse": "mammal",
-    "obs": 255
-  },
-  {
-    "name": "Eurasian lynx",
-    "sci": "Lynx lynx (Linnaeus, 1758)",
-    "taxonKey": 2435240,
-    "coarse": "mammal",
-    "obs": 254
-  },
-  {
-    "name": "European pine marten",
-    "sci": "Martes martes (Linnaeus, 1758)",
-    "taxonKey": 5218878,
-    "coarse": "mammal",
-    "obs": 199
-  },
-  {
-    "name": "Yellow-necked Mouse",
-    "sci": "Apodemus flavicollis (Melchior, 1834)",
-    "taxonKey": 2437756,
-    "coarse": "mammal",
-    "obs": 194
-  },
-  {
-    "name": "raccoon dog",
-    "sci": "Nyctereutes procyonoides (Gray, 1834)",
-    "taxonKey": 2434552,
-    "coarse": "mammal",
-    "obs": 159
-  },
-  {
-    "name": "European rabbit",
-    "sci": "Oryctolagus cuniculus (Linnaeus, 1758)",
-    "taxonKey": 2436940,
-    "coarse": "mammal",
-    "obs": 159
-  },
-  {
-    "name": "European badger",
-    "sci": "Meles meles (Linnaeus, 1758)",
-    "taxonKey": 2433875,
-    "coarse": "mammal",
-    "obs": 157
-  },
-  {
-    "name": "Asian Minute Shrew",
-    "sci": "Sorex minutissimus Zimmermann, 1780",
-    "taxonKey": 2435959,
-    "coarse": "mammal",
-    "obs": 153
-  },
-  {
-    "name": "Bank Vole",
-    "sci": "Myodes glareolus (Schreber, 1780)",
-    "taxonKey": 5706764,
-    "coarse": "mammal",
-    "obs": 129
-  },
-  {
-    "name": "wolverine",
-    "sci": "Gulo gulo (Linnaeus, 1758)",
-    "taxonKey": 5219073,
-    "coarse": "mammal",
-    "obs": 125
-  },
-  {
-    "name": "grey seal",
-    "sci": "Halichoerus grypus (Fabricius, 1791)",
-    "taxonKey": 2434806,
-    "coarse": "mammal",
-    "obs": 122
-  },
-  {
-    "name": "least weasel",
-    "sci": "Mustela nivalis Linnaeus, 1766",
-    "taxonKey": 5218987,
-    "coarse": "mammal",
-    "obs": 106
-  },
-  {
-    "name": "European water vole",
-    "sci": "Arvicola amphibius (Linnaeus, 1758)",
-    "taxonKey": 4265185,
-    "coarse": "mammal",
-    "obs": 101
-  },
-  {
-    "name": "brown rat",
-    "sci": "Rattus norvegicus (Berkenhout, 1769)",
-    "taxonKey": 2439261,
-    "coarse": "mammal",
-    "obs": 100
-  },
-  {
-    "name": "stoat",
-    "sci": "Mustela erminea Linnaeus, 1758",
-    "taxonKey": 5219019,
-    "coarse": "mammal",
-    "obs": 100
-  },
-  {
-    "name": "European mole",
-    "sci": "Talpa europaea Linnaeus, 1758",
-    "taxonKey": 7872906,
-    "coarse": "mammal",
-    "obs": 86
-  },
-  {
-    "name": "Northern Bat",
-    "sci": "Eptesicus nilssonii (Keyserling & Blasius, 1839)",
-    "taxonKey": 7261816,
-    "coarse": "mammal",
-    "obs": 79
-  },
-  {
-    "name": "common shrew",
-    "sci": "Sorex araneus Linnaeus, 1758",
-    "taxonKey": 8316400,
-    "coarse": "mammal",
-    "obs": 68
-  },
-  {
-    "name": "gray wolf",
-    "sci": "Canis lupus Linnaeus, 1758",
-    "taxonKey": 5219173,
-    "coarse": "mammal",
-    "obs": 66
-  },
-  {
-    "name": "ringed seal",
-    "sci": "Pusa hispida (Schreber, 1775)",
-    "taxonKey": 5219369,
-    "coarse": "mammal",
-    "obs": 64
-  },
-  {
-    "name": "muskrat",
-    "sci": "Ondatra zibethicus (Linnaeus, 1766)",
-    "taxonKey": 5219858,
-    "coarse": "mammal",
-    "obs": 58
-  },
-  {
-    "name": "fallow deer",
-    "sci": "Dama dama (Linnaeus, 1758)",
-    "taxonKey": 5220136,
-    "coarse": "mammal",
-    "obs": 49
-  },
-  {
-    "name": "American beaver",
-    "sci": "Castor canadensis Kuhl, 1820",
-    "taxonKey": 2439838,
-    "coarse": "mammal",
-    "obs": 45
-  },
-  {
-    "name": "field vole",
-    "sci": "Microtus agrestis (Linnaeus, 1761)",
-    "taxonKey": 2438616,
-    "coarse": "mammal",
-    "obs": 44
-  },
-  {
-    "name": "Harvest Mouse",
-    "sci": "Micromys minutus (Pallas, 1771)",
-    "taxonKey": 5219833,
-    "coarse": "mammal",
-    "obs": 43
-  },
-  {
-    "name": "Eurasian Beaver",
-    "sci": "Castor fiber",
-    "taxonKey": null,
-    "coarse": "mammal",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Grey Red-backed Vole",
-    "sci": "Myodes rufocanus",
-    "taxonKey": null,
-    "coarse": "mammal",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "European Polecat",
-    "sci": "Mustela putorius",
-    "taxonKey": null,
-    "coarse": "mammal",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Laxmann's Shrew",
-    "sci": "Sorex caecutiens",
-    "taxonKey": null,
-    "coarse": "mammal",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Common Vole",
-    "sci": "Microtus arvalis",
-    "taxonKey": null,
-    "coarse": "mammal",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Northern Birch Mouse",
-    "sci": "Sicista betulina",
-    "taxonKey": null,
-    "coarse": "mammal",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "House Mouse",
-    "sci": "Mus musculus",
-    "taxonKey": null,
-    "coarse": "mammal",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Root Vole",
-    "sci": "Microtus oeconomus",
-    "taxonKey": null,
-    "coarse": "mammal",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Wood Lemming",
-    "sci": "Myopus schisticolor",
-    "taxonKey": null,
-    "coarse": "mammal",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "American Mink",
-    "sci": "Neovison vison",
-    "taxonKey": null,
-    "coarse": "mammal",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Taiga Shrew",
-    "sci": "Sorex isodon",
-    "taxonKey": null,
-    "coarse": "mammal",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Striped Field Mouse",
-    "sci": "Apodemus agrarius",
-    "taxonKey": null,
-    "coarse": "mammal",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Northern Red-backed Vole",
-    "sci": "Myodes rutilus",
-    "taxonKey": null,
-    "coarse": "mammal",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Norway Lemming",
-    "sci": "Lemmus lemmus",
-    "taxonKey": null,
-    "coarse": "mammal",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Eurasian Water Shrew",
-    "sci": "Neomys fodiens",
-    "taxonKey": null,
-    "coarse": "mammal",
-    "obs": null,
-    "added": true
-  },
-  {
-    "name": "Wild Boar",
-    "sci": "Sus scrofa",
-    "taxonKey": null,
-    "coarse": "mammal",
-    "obs": null,
-    "added": true
-  }
+{
+"name": "Mallard",
+"sci": "Anas platyrhynchos Linnaeus, 1758",
+"taxonKey": 9761484,
+"coarse": "bird",
+"obs": 2323,
+"name_fi": "Sinisorsa",
+"rarity": "common"
+},
+{
+"name": "Barnacle Goose",
+"sci": "Branta leucopsis (Bechstein, 1803)",
+"taxonKey": 5232464,
+"coarse": "bird",
+"obs": 2236,
+"name_fi": "Valkoposkihanhi",
+"rarity": "common"
+},
+{
+"name": "Great Spotted Woodpecker",
+"sci": "Dendrocopos major (Linnaeus, 1758)",
+"taxonKey": 2477968,
+"coarse": "bird",
+"obs": 2073,
+"name_fi": "Käpytikka",
+"rarity": "common"
+},
+{
+"name": "Eurasian Blackbird",
+"sci": "Turdus merula Linnaeus, 1758",
+"taxonKey": 2490719,
+"coarse": "bird",
+"obs": 2056,
+"name_fi": "Mustarastas",
+"rarity": "common"
+},
+{
+"name": "Hooded Crow",
+"sci": "Corvus cornix Linnaeus, 1758",
+"taxonKey": 2482515,
+"coarse": "bird",
+"obs": 1960,
+"name_fi": "Varis",
+"rarity": "common"
+},
+{
+"name": "Mew Gull",
+"sci": "Larus canus Linnaeus, 1758",
+"taxonKey": 7982160,
+"coarse": "bird",
+"obs": 1909,
+"name_fi": "Kalalokki",
+"rarity": "common"
+},
+{
+"name": "White Wagtail",
+"sci": "Motacilla alba Linnaeus, 1758",
+"taxonKey": 9687165,
+"coarse": "bird",
+"obs": 1899,
+"name_fi": "Västäräkki",
+"rarity": "common"
+},
+{
+"name": "Great Tit",
+"sci": "Parus major Linnaeus, 1758",
+"taxonKey": 9705453,
+"coarse": "bird",
+"obs": 1681,
+"name_fi": "Talitiainen",
+"rarity": "common"
+},
+{
+"name": "Fieldfare",
+"sci": "Turdus pilaris Linnaeus, 1758",
+"taxonKey": 2490737,
+"coarse": "bird",
+"obs": 1568,
+"name_fi": "Räkättirastas",
+"rarity": "common"
+},
+{
+"name": "Whooper Swan",
+"sci": "Cygnus cygnus (Linnaeus, 1758)",
+"taxonKey": 2498347,
+"coarse": "bird",
+"obs": 1549,
+"name_fi": "Laulujoutsen",
+"rarity": "common"
+},
+{
+"name": "Common Goldeneye",
+"sci": "Bucephala clangula (Linnaeus, 1758)",
+"taxonKey": 2498326,
+"coarse": "bird",
+"obs": 1449,
+"name_fi": "Telkkä",
+"rarity": "common"
+},
+{
+"name": "Common Chaffinch",
+"sci": "Fringilla coelebs Linnaeus, 1758",
+"taxonKey": 2494422,
+"coarse": "bird",
+"obs": 1447,
+"name_fi": "Peippo",
+"rarity": "common"
+},
+{
+"name": "House Sparrow",
+"sci": "Passer domesticus (Linnaeus, 1758)",
+"taxonKey": 5231190,
+"coarse": "bird",
+"obs": 1333,
+"name_fi": "Varpunen",
+"rarity": "common"
+},
+{
+"name": "Black-headed Gull",
+"sci": "Chroicocephalus ridibundus (Linnaeus, 1766)",
+"taxonKey": 6065824,
+"coarse": "bird",
+"obs": 1330,
+"name_fi": "Naurulokki",
+"rarity": "common"
+},
+{
+"name": "Common Merganser",
+"sci": "Mergus merganser Linnaeus, 1758",
+"taxonKey": 9537647,
+"coarse": "bird",
+"obs": 1295,
+"name_fi": "Isokoskelo",
+"rarity": "common"
+},
+{
+"name": "Common Wood-Pigeon",
+"sci": "Columba palumbus Linnaeus, 1758",
+"taxonKey": 2495455,
+"coarse": "bird",
+"obs": 1277,
+"name_fi": "Sepelkyyhky",
+"rarity": "common"
+},
+{
+"name": "Eurasian Blue Tit",
+"sci": "Cyanistes caeruleus (Linnaeus, 1758)",
+"taxonKey": 2487879,
+"coarse": "bird",
+"obs": 1216,
+"name_fi": "Sinitiainen",
+"rarity": "common"
+},
+{
+"name": "Western Jackdaw",
+"sci": "Coloeus monedula (Linnaeus, 1758)",
+"taxonKey": 6100954,
+"coarse": "bird",
+"obs": 1154,
+"name_fi": "Naakka",
+"rarity": "common"
+},
+{
+"name": "Mute Swan",
+"sci": "Cygnus olor (J.F.Gmelin, 1789)",
+"taxonKey": 2498343,
+"coarse": "bird",
+"obs": 1129,
+"name_fi": "Kyhmyjoutsen",
+"rarity": "common"
+},
+{
+"name": "Common Crane",
+"sci": "Grus grus (Linnaeus, 1758)",
+"taxonKey": 2474950,
+"coarse": "bird",
+"obs": 1118,
+"name_fi": "Kurki",
+"rarity": "common"
+},
+{
+"name": "Eurasian Bullfinch",
+"sci": "Pyrrhula pyrrhula (Linnaeus, 1758)",
+"taxonKey": 2494543,
+"coarse": "bird",
+"obs": 1101,
+"name_fi": "Punatulkku",
+"rarity": "common"
+},
+{
+"name": "Eurasian Oystercatcher",
+"sci": "Haematopus ostralegus Linnaeus, 1758",
+"taxonKey": 7788295,
+"coarse": "bird",
+"obs": 1091,
+"name_fi": "Meriharakka",
+"rarity": "common"
+},
+{
+"name": "European Pied Flycatcher",
+"sci": "Ficedula hypoleuca (Pallas, 1764)",
+"taxonKey": 2492606,
+"coarse": "bird",
+"obs": 1032,
+"name_fi": "Kirjosieppo",
+"rarity": "common"
+},
+{
+"name": "Eurasian Magpie",
+"sci": "Pica pica (Linnaeus, 1758)",
+"taxonKey": 5229490,
+"coarse": "bird",
+"obs": 1029,
+"name_fi": "Harakka",
+"rarity": "common"
+},
+{
+"name": "Canada Goose (canadensis Group)",
+"sci": "Branta canadensis (Linnaeus, 1758)",
+"taxonKey": 5232437,
+"coarse": "bird",
+"obs": 964,
+"name_fi": "Kanadanhanhi",
+"rarity": "common"
+},
+{
+"name": "European Robin",
+"sci": "Erithacus rubecula (Linnaeus, 1758)",
+"taxonKey": 2492462,
+"coarse": "bird",
+"obs": 859,
+"name_fi": "Punarinta",
+"rarity": "common"
+},
+{
+"name": "European Greenfinch",
+"sci": "Chloris chloris (Linnaeus, 1758)",
+"taxonKey": 5845582,
+"coarse": "bird",
+"obs": 844,
+"name_fi": "Viherpeippo",
+"rarity": "common"
+},
+{
+"name": "Eurasian Wigeon",
+"sci": "Mareca penelope (Linnaeus, 1758)",
+"taxonKey": 8000602,
+"coarse": "bird",
+"obs": 800,
+"name_fi": "Haapana",
+"rarity": "common"
+},
+{
+"name": "Yellowhammer",
+"sci": "Emberiza citrinella Linnaeus, 1758",
+"taxonKey": 2491534,
+"coarse": "bird",
+"obs": 797,
+"name_fi": "Keltasirkku",
+"rarity": "common"
+},
+{
+"name": "Barn Swallow",
+"sci": "Hirundo rustica Linnaeus, 1758",
+"taxonKey": 9515886,
+"coarse": "bird",
+"obs": 777,
+"name_fi": "Haarapääsky",
+"rarity": "common"
+},
+{
+"name": "Eurasian Tree Sparrow",
+"sci": "Passer montanus (Linnaeus, 1758)",
+"taxonKey": 5231198,
+"coarse": "bird",
+"obs": 775,
+"name_fi": "Pikkuvarpunen",
+"rarity": "common"
+},
+{
+"name": "Eurasian Siskin",
+"sci": "Spinus spinus (Linnaeus, 1758)",
+"taxonKey": 6092830,
+"coarse": "bird",
+"obs": 747,
+"name_fi": "Vihervarpunen",
+"rarity": "common"
+},
+{
+"name": "Great Crested Grebe",
+"sci": "Podiceps cristatus (Linnaeus, 1758)",
+"taxonKey": 2482054,
+"coarse": "bird",
+"obs": 736,
+"name_fi": "Silkkiuikku",
+"rarity": "common"
+},
+{
+"name": "Gray/Purple Heron",
+"sci": "Ardea cinerea Linnaeus, 1758",
+"taxonKey": 9797180,
+"coarse": "bird",
+"obs": 711,
+"name_fi": "Harmaahaikara",
+"rarity": "common"
+},
+{
+"name": "Northern Lapwing",
+"sci": "Vanellus vanellus (Linnaeus, 1758)",
+"taxonKey": 2480242,
+"coarse": "bird",
+"obs": 696,
+"name_fi": "Töyhtöhyyppä",
+"rarity": "common"
+},
+{
+"name": "Herring Gull",
+"sci": "Larus argentatus Pontoppidan, 1763",
+"taxonKey": 2481139,
+"coarse": "bird",
+"obs": 686,
+"name_fi": "Harmaalokki",
+"rarity": "common"
+},
+{
+"name": "White-tailed Eagle",
+"sci": "Haliaeetus albicilla (Linnaeus, 1758)",
+"taxonKey": 2480449,
+"coarse": "bird",
+"obs": 685,
+"name_fi": "Merikotka",
+"rarity": "common"
+},
+{
+"name": "Ring-necked Pheasant",
+"sci": "Phasianus colchicus Linnaeus, 1758",
+"taxonKey": 9752149,
+"coarse": "bird",
+"obs": 671,
+"name_fi": "Fasaani",
+"rarity": "common"
+},
+{
+"name": "Common Tern",
+"sci": "Sterna hirundo Linnaeus, 1758",
+"taxonKey": 9367409,
+"coarse": "bird",
+"obs": 660,
+"name_fi": "Kalatiira",
+"rarity": "common"
+},
+{
+"name": "Eurasian Jay",
+"sci": "Garrulus glandarius (Linnaeus, 1758)",
+"taxonKey": 5229493,
+"coarse": "bird",
+"obs": 649,
+"name_fi": "Närhi",
+"rarity": "common"
+},
+{
+"name": "Redwing",
+"sci": "Turdus iliacus Linnaeus, 1758",
+"taxonKey": 2490781,
+"coarse": "bird",
+"obs": 614,
+"name_fi": "Punakylkirastas",
+"rarity": "common"
+},
+{
+"name": "Rock Pigeon",
+"sci": "Columba livia J.F.Gmelin, 1789",
+"taxonKey": 2495414,
+"coarse": "bird",
+"obs": 613,
+"name_fi": "Kalliokyyhky",
+"rarity": "common"
+},
+{
+"name": "Willow Tit",
+"sci": "Poecile montanus (Conrad von Baldenstein, 1827)",
+"taxonKey": 2487866,
+"coarse": "bird",
+"obs": 608,
+"name_fi": "Hömötiainen",
+"rarity": "common"
+},
+{
+"name": "Great Cormorant/European Shag",
+"sci": "Phalacrocorax carbo (Linnaeus, 1758)",
+"taxonKey": 2481890,
+"coarse": "bird",
+"obs": 597,
+"name_fi": "Merimetso",
+"rarity": "common"
+},
+{
+"name": "Lesser Black-backed Gull",
+"sci": "Larus fuscus Linnaeus, 1758",
+"taxonKey": 2481174,
+"coarse": "bird",
+"obs": 588,
+"name_fi": "Selkälokki",
+"rarity": "common"
+},
+{
+"name": "Siberian Jay",
+"sci": "Perisoreus infaustus (Linnaeus, 1758)",
+"taxonKey": 2482449,
+"coarse": "bird",
+"obs": 576,
+"name_fi": "Kuukkeli",
+"rarity": "common"
+},
+{
+"name": "European Starling",
+"sci": "Sturnus vulgaris Linnaeus, 1758",
+"taxonKey": 9809229,
+"coarse": "bird",
+"obs": 567,
+"name_fi": "Kottarainen",
+"rarity": "common"
+},
+{
+"name": "European Goldfinch",
+"sci": "Carduelis carduelis (Linnaeus, 1758)",
+"taxonKey": 2494686,
+"coarse": "bird",
+"obs": 547,
+"name_fi": "Tikli",
+"rarity": "common"
+},
+{
+"name": "Eurasian Treecreeper",
+"sci": "Certhia familiaris Linnaeus, 1758",
+"taxonKey": 2487603,
+"coarse": "bird",
+"obs": 525,
+"name_fi": "Puukiipijä",
+"rarity": "common"
+},
+{
+"name": "Brambling",
+"sci": "Fringilla montifringilla Linnaeus, 1758",
+"taxonKey": 2494441,
+"coarse": "bird",
+"obs": 524,
+"name_fi": "Järripeippo",
+"rarity": "common"
+},
+{
+"name": "Northern Wheatear",
+"sci": "Oenanthe oenanthe (Linnaeus, 1758)",
+"taxonKey": 5231240,
+"coarse": "bird",
+"obs": 523,
+"name_fi": "Kivitasku",
+"rarity": "common"
+},
+{
+"name": "Eurasian Coot",
+"sci": "Fulica atra Linnaeus, 1758",
+"taxonKey": 2474377,
+"coarse": "bird",
+"obs": 510,
+"name_fi": "Nokikana",
+"rarity": "common"
+},
+{
+"name": "Black Woodpecker",
+"sci": "Dryocopus martius (Linnaeus, 1758)",
+"taxonKey": 2477872,
+"coarse": "bird",
+"obs": 499,
+"name_fi": "Palokärki",
+"rarity": "common"
+},
+{
+"name": "Bohemian Waxwing",
+"sci": "Bombycilla garrulus (Linnaeus, 1758)",
+"taxonKey": 2484605,
+"coarse": "bird",
+"obs": 482,
+"name_fi": "Tilhi",
+"rarity": "common"
+},
+{
+"name": "Song Thrush",
+"sci": "Turdus philomelos C.L.Brehm, 1831",
+"taxonKey": 7901064,
+"coarse": "bird",
+"obs": 475,
+"name_fi": "Laulurastas",
+"rarity": "common"
+},
+{
+"name": "Common Redpoll",
+"sci": "Acanthis flammea (Linnaeus, 1758)",
+"taxonKey": 5231630,
+"coarse": "bird",
+"obs": 474,
+"name_fi": "Urpiainen",
+"rarity": "common"
+},
+{
+"name": "Spotted Flycatcher",
+"sci": "Muscicapa striata (Pallas, 1764)",
+"taxonKey": 2492576,
+"coarse": "bird",
+"obs": 470,
+"name_fi": "Harmaasieppo",
+"rarity": "common"
+},
+{
+"name": "Common Eider",
+"sci": "Somateria mollissima (Linnaeus, 1758)",
+"taxonKey": 2498352,
+"coarse": "bird",
+"obs": 468,
+"name_fi": "Haahka",
+"rarity": "common"
+},
+{
+"name": "Arctic/Pacific Loon",
+"sci": "Gavia arctica (Linnaeus, 1758)",
+"taxonKey": 2481959,
+"coarse": "bird",
+"obs": 466,
+"name_fi": "Kuikka",
+"rarity": "common"
+},
+{
+"name": "Green-winged Teal",
+"sci": "Anas crecca Linnaeus, 1758",
+"taxonKey": 8214667,
+"coarse": "bird",
+"obs": 463,
+"name_fi": "Tavi",
+"rarity": "common"
+},
+{
+"name": "Reed Bunting",
+"sci": "Emberiza schoeniclus (Linnaeus, 1758)",
+"taxonKey": 2491557,
+"coarse": "bird",
+"obs": 455,
+"name_fi": "Pajusirkku",
+"rarity": "common"
+},
+{
+"name": "Common Raven",
+"sci": "Corvus corax Linnaeus, 1758",
+"taxonKey": 2482492,
+"coarse": "bird",
+"obs": 443,
+"name_fi": "Korppi",
+"rarity": "common"
+},
+{
+"name": "Graylag Goose",
+"sci": "Anser anser (Linnaeus, 1758)",
+"taxonKey": 2498036,
+"coarse": "bird",
+"obs": 437,
+"name_fi": "Merihanhi",
+"rarity": "uncommon"
+},
+{
+"name": "Wood Sandpiper",
+"sci": "Tringa glareola Linnaeus, 1758",
+"taxonKey": 2481713,
+"coarse": "bird",
+"obs": 425,
+"name_fi": "Liro",
+"rarity": "uncommon"
+},
+{
+"name": "Common Sandpiper",
+"sci": "Actitis hypoleucos (Linnaeus, 1758)",
+"taxonKey": 2481800,
+"coarse": "bird",
+"obs": 422,
+"name_fi": "Rantasipi",
+"rarity": "uncommon"
+},
+{
+"name": "Tufted Duck",
+"sci": "Aythya fuligula (Linnaeus, 1758)",
+"taxonKey": 2498261,
+"coarse": "bird",
+"obs": 417,
+"name_fi": "Tukkasotka",
+"rarity": "uncommon"
+},
+{
+"name": "Coal Tit",
+"sci": "Periparus ater (Linnaeus, 1758)",
+"taxonKey": 2487871,
+"coarse": "bird",
+"obs": 412,
+"name_fi": "Kuusitiainen",
+"rarity": "uncommon"
+},
+{
+"name": "Western Capercaillie",
+"sci": "Tetrao urogallus Linnaeus, 1758",
+"taxonKey": 2473577,
+"coarse": "bird",
+"obs": 405,
+"name_fi": "Metso",
+"rarity": "uncommon"
+},
+{
+"name": "Ruff",
+"sci": "Calidris pugnax (Linnaeus, 1758)",
+"taxonKey": 8250742,
+"coarse": "bird",
+"obs": 396,
+"name_fi": "Suokukko",
+"rarity": "uncommon"
+},
+{
+"name": "Willow Warbler",
+"sci": "Phylloscopus trochilus (Linnaeus, 1758)",
+"taxonKey": 2493052,
+"coarse": "bird",
+"obs": 377,
+"name_fi": "Pajulintu",
+"rarity": "uncommon"
+},
+{
+"name": "black grouse",
+"sci": "Lyrurus tetrix (Linnaeus, 1758)",
+"taxonKey": 2473682,
+"coarse": "bird",
+"obs": 374,
+"name_fi": "Teeri",
+"rarity": "uncommon"
+},
+{
+"name": "Goldcrest",
+"sci": "Regulus regulus (Linnaeus, 1758)",
+"taxonKey": 2484596,
+"coarse": "bird",
+"obs": 364,
+"name_fi": "Hippiäinen",
+"rarity": "uncommon"
+},
+{
+"name": "Hazel Grouse",
+"sci": "Tetrastes bonasia (Linnaeus, 1758)",
+"taxonKey": 2473663,
+"coarse": "bird",
+"obs": 356,
+"name_fi": "Pyy",
+"rarity": "uncommon"
+},
+{
+"name": "Eurasian Sparrowhawk",
+"sci": "Accipiter nisus (Linnaeus, 1758)",
+"taxonKey": 2480637,
+"coarse": "bird",
+"obs": 354,
+"name_fi": "Varpushaukka",
+"rarity": "uncommon"
+},
+{
+"name": "Gray-headed Woodpecker",
+"sci": "Picus canus J.F.Gmelin, 1788",
+"taxonKey": 2478548,
+"coarse": "bird",
+"obs": 352,
+"name_fi": "Harmaapäätikka",
+"rarity": "uncommon"
+},
+{
+"name": "Eurasian Curlew",
+"sci": "Numenius arquata (Linnaeus, 1758)",
+"taxonKey": 2481792,
+"coarse": "bird",
+"obs": 352,
+"name_fi": "Isokuovi",
+"rarity": "uncommon"
+},
+{
+"name": "Crested Tit",
+"sci": "Lophophanes cristatus (Linnaeus, 1758)",
+"taxonKey": 2487883,
+"coarse": "bird",
+"obs": 351,
+"name_fi": "Töyhtötiainen",
+"rarity": "uncommon"
+},
+{
+"name": "Lesser Spotted Woodpecker",
+"sci": "Dryobates minor (Linnaeus, 1758)",
+"taxonKey": 9015784,
+"coarse": "bird",
+"obs": 343,
+"name_fi": "Pikkutikka",
+"rarity": "uncommon"
+},
+{
+"name": "Pine Grosbeak",
+"sci": "Pinicola enucleator (Linnaeus, 1758)",
+"taxonKey": 2494771,
+"coarse": "bird",
+"obs": 335,
+"name_fi": "Taviokuurna",
+"rarity": "uncommon"
+},
+{
+"name": "Common Redstart",
+"sci": "Phoenicurus phoenicurus (Linnaeus, 1758)",
+"taxonKey": 5739317,
+"coarse": "bird",
+"obs": 335,
+"name_fi": "Leppälintu",
+"rarity": "uncommon"
+},
+{
+"name": "Tree Pipit",
+"sci": "Anthus trivialis (Linnaeus, 1758)",
+"taxonKey": 2490246,
+"coarse": "bird",
+"obs": 333,
+"name_fi": "Metsäkirvinen",
+"rarity": "uncommon"
+},
+{
+"name": "Arctic Tern",
+"sci": "Sterna paradisaea Pontoppidan, 1763",
+"taxonKey": 5229230,
+"coarse": "bird",
+"obs": 327,
+"name_fi": "Lapintiira",
+"rarity": "uncommon"
+},
+{
+"name": "White-throated Dipper",
+"sci": "Cinclus cinclus (Linnaeus, 1758)",
+"taxonKey": 2495093,
+"coarse": "bird",
+"obs": 319,
+"name_fi": "Koskikara",
+"rarity": "uncommon"
+},
+{
+"name": "Osprey",
+"sci": "Pandion haliaetus (Linnaeus, 1758)",
+"taxonKey": 2480726,
+"coarse": "bird",
+"obs": 316,
+"name_fi": "Sääksi",
+"rarity": "uncommon"
+},
+{
+"name": "Western Yellow Wagtail",
+"sci": "Motacilla flava Linnaeus, 1758",
+"taxonKey": 9701857,
+"coarse": "bird",
+"obs": 311,
+"name_fi": "Keltavästäräkki",
+"rarity": "uncommon"
+},
+{
+"name": "White-backed Woodpecker",
+"sci": "Dendrocopos leucotos (Bechstein, 1802)",
+"taxonKey": 2477927,
+"coarse": "bird",
+"obs": 295,
+"name_fi": "Valkoselkätikka",
+"rarity": "uncommon"
+},
+{
+"name": "Eurasian Marsh-Harrier",
+"sci": "Circus aeruginosus (Linnaeus, 1758)",
+"taxonKey": 2480482,
+"coarse": "bird",
+"obs": 295,
+"name_fi": "Ruskosuohaukka",
+"rarity": "uncommon"
+},
+{
+"name": "Gadwall",
+"sci": "Mareca strepera (Linnaeus, 1758)",
+"taxonKey": 9362027,
+"coarse": "bird",
+"obs": 293,
+"name_fi": "Harmaasorsa",
+"rarity": "uncommon"
+},
+{
+"name": "Red-breasted Merganser",
+"sci": "Mergus serrator Linnaeus, 1758",
+"taxonKey": 2498375,
+"coarse": "bird",
+"obs": 290,
+"name_fi": "Tukkakoskelo",
+"rarity": "uncommon"
+},
+{
+"name": "Eurasian Moorhen",
+"sci": "Gallinula chloropus (Linnaeus, 1758)",
+"taxonKey": 5228199,
+"coarse": "bird",
+"obs": 277,
+"name_fi": "Liejukana",
+"rarity": "uncommon"
+},
+{
+"name": "Long-tailed Tit",
+"sci": "Aegithalos caudatus (Linnaeus, 1758)",
+"taxonKey": 2495000,
+"coarse": "bird",
+"obs": 274,
+"name_fi": "Pyrstötiainen",
+"rarity": "uncommon"
+},
+{
+"name": "Eurasian Kestrel",
+"sci": "Falco tinnunculus Linnaeus, 1758",
+"taxonKey": 9616058,
+"coarse": "bird",
+"obs": 266,
+"name_fi": "Tuulihaukka",
+"rarity": "uncommon"
+},
+{
+"name": "Greater White-fronted Goose",
+"sci": "Anser albifrons (Scopoli, 1769)",
+"taxonKey": 2498017,
+"coarse": "bird",
+"obs": 265,
+"name_fi": "Tundrahanhi",
+"rarity": "uncommon"
+},
+{
+"name": "Common Swift",
+"sci": "Apus apus (Linnaeus, 1758)",
+"taxonKey": 5228676,
+"coarse": "bird",
+"obs": 265,
+"name_fi": "Tervapääsky",
+"rarity": "uncommon"
+},
+{
+"name": "Eurasian Woodcock",
+"sci": "Scolopax rusticola Linnaeus, 1758",
+"taxonKey": 2481700,
+"coarse": "bird",
+"obs": 263,
+"name_fi": "Lehtokurppa",
+"rarity": "uncommon"
+},
+{
+"name": "Sedge Warbler",
+"sci": "Acrocephalus schoenobaenus (Linnaeus, 1758)",
+"taxonKey": 2493129,
+"coarse": "bird",
+"obs": 263,
+"name_fi": "Ruokokerttunen",
+"rarity": "uncommon"
+},
+{
+"name": "Greater Whitethroat",
+"sci": "Sylvia communis Latham, 1787",
+"taxonKey": 2492943,
+"coarse": "bird",
+"obs": 256,
+"name_fi": "Pensaskerttu",
+"rarity": "uncommon"
+},
+{
+"name": "Common Chiffchaff",
+"sci": "Phylloscopus collybita (Vieillot, 1817)",
+"taxonKey": 2493091,
+"coarse": "bird",
+"obs": 256,
+"name_fi": "Tiltaltti",
+"rarity": "uncommon"
+},
+{
+"name": "Eurasian Three-toed Woodpecker",
+"sci": "Picoides tridactylus (Linnaeus, 1758)",
+"taxonKey": 2477804,
+"coarse": "bird",
+"obs": 254,
+"name_fi": "Pohjantikka",
+"rarity": "uncommon"
+},
+{
+"name": "Common Greenshank",
+"sci": "Tringa nebularia (Gunnerus, 1767)",
+"taxonKey": 2481726,
+"coarse": "bird",
+"obs": 252,
+"name_fi": "Valkoviklo",
+"rarity": "uncommon"
+},
+{
+"name": "Eurasian Linnet",
+"sci": "Linaria cannabina (Linnaeus, 1758)",
+"taxonKey": 8104397,
+"coarse": "bird",
+"obs": 244,
+"name_fi": "Hemppo",
+"rarity": "uncommon"
+},
+{
+"name": "Whinchat",
+"sci": "Saxicola rubetra (Linnaeus, 1758)",
+"taxonKey": 2492521,
+"coarse": "bird",
+"obs": 243,
+"name_fi": "Pensastasku",
+"rarity": "uncommon"
+},
+{
+"name": "Northern Shoveler",
+"sci": "Spatula clypeata (Linnaeus, 1758)",
+"taxonKey": 8332393,
+"coarse": "bird",
+"obs": 241,
+"name_fi": "Lapasorsa",
+"rarity": "uncommon"
+},
+{
+"name": "Lesser Whitethroat",
+"sci": "Sylvia curruca (Linnaeus, 1758)",
+"taxonKey": 2492960,
+"coarse": "bird",
+"obs": 240,
+"name_fi": "Hernekerttu",
+"rarity": "uncommon"
+},
+{
+"name": "Common Redshank",
+"sci": "Tringa totanus (Linnaeus, 1758)",
+"taxonKey": 2481714,
+"coarse": "bird",
+"obs": 238,
+"name_fi": "Punajalkaviklo",
+"rarity": "uncommon"
+},
+{
+"name": "Horned Grebe",
+"sci": "Podiceps auritus (Linnaeus, 1758)",
+"taxonKey": 2482059,
+"coarse": "bird",
+"obs": 236,
+"name_fi": "Mustakurkku-uikku",
+"rarity": "uncommon"
+},
+{
+"name": "Red-necked Grebe",
+"sci": "Podiceps grisegena (Boddaert, 1783)",
+"taxonKey": 2482051,
+"coarse": "bird",
+"obs": 231,
+"name_fi": "Härkälintu",
+"rarity": "uncommon"
+},
+{
+"name": "Gray-headed Chickadee",
+"sci": "Poecile cinctus (Boddaert, 1783)",
+"taxonKey": 2487862,
+"coarse": "bird",
+"obs": 227,
+"name_fi": "Lapintiainen",
+"rarity": "uncommon"
+},
+{
+"name": "Common Snipe",
+"sci": "Gallinago gallinago (Linnaeus, 1758)",
+"taxonKey": 2481819,
+"coarse": "bird",
+"obs": 223,
+"name_fi": "Taivaanvuohi",
+"rarity": "uncommon"
+},
+{
+"name": "Common Buzzard",
+"sci": "Buteo buteo (Linnaeus, 1758)",
+"taxonKey": 2480537,
+"coarse": "bird",
+"obs": 221,
+"name_fi": "Hiirihaukka",
+"rarity": "uncommon"
+},
+{
+"name": "Red-backed Shrike",
+"sci": "Lanius collurio Linnaeus, 1758",
+"taxonKey": 7745240,
+"coarse": "bird",
+"obs": 220,
+"name_fi": "Pikkulepinkäinen",
+"rarity": "uncommon"
+},
+{
+"name": "Red Crossbill",
+"sci": "Loxia curvirostra Linnaeus, 1758",
+"taxonKey": 9629160,
+"coarse": "bird",
+"obs": 220,
+"name_fi": "Pikkukäpylintu",
+"rarity": "uncommon"
+},
+{
+"name": "Great Black-backed Gull",
+"sci": "Larus marinus Linnaeus, 1758",
+"taxonKey": 2481172,
+"coarse": "bird",
+"obs": 211,
+"name_fi": "Merilokki",
+"rarity": "rare"
+},
+{
+"name": "Eurasian Skylark",
+"sci": "Alauda arvensis Linnaeus, 1758",
+"taxonKey": 8077224,
+"coarse": "bird",
+"obs": 207,
+"name_fi": "Kiuru",
+"rarity": "rare"
+},
+{
+"name": "Great Egret",
+"sci": "Ardea alba Linnaeus, 1758",
+"taxonKey": 9752617,
+"coarse": "bird",
+"obs": 206,
+"name_fi": "Jalohaikara",
+"rarity": "rare"
+},
+{
+"name": "European Golden-Plover",
+"sci": "Pluvialis apricaria (Linnaeus, 1758)",
+"taxonKey": 2480332,
+"coarse": "bird",
+"obs": 205,
+"name_fi": "Kapustarinta",
+"rarity": "rare"
+},
+{
+"name": "Meadow Pipit",
+"sci": "Anthus pratensis (Linnaeus, 1758)",
+"taxonKey": 2490266,
+"coarse": "bird",
+"obs": 203,
+"name_fi": "Niittykirvinen",
+"rarity": "rare"
+},
+{
+"name": "Northern Hawk Owl",
+"sci": "Surnia ulula (Linnaeus, 1758)",
+"taxonKey": 2497894,
+"coarse": "bird",
+"obs": 200,
+"name_fi": "Hiiripöllö",
+"rarity": "rare"
+},
+{
+"name": "Common Rosefinch",
+"sci": "Carpodacus erythrinus (Pallas, 1770)",
+"taxonKey": 2494459,
+"coarse": "bird",
+"obs": 199,
+"name_fi": "Punavarpunen",
+"rarity": "rare"
+},
+{
+"name": "Dunnock",
+"sci": "Prunella modularis (Linnaeus, 1758)",
+"taxonKey": 5231763,
+"coarse": "bird",
+"obs": 194,
+"name_fi": "Rautiainen",
+"rarity": "rare"
+},
+{
+"name": "Great Gray Shrike",
+"sci": "Lanius excubitor Linnaeus, 1758",
+"taxonKey": 9444556,
+"coarse": "bird",
+"obs": 188,
+"name_fi": "Isolepinkäinen",
+"rarity": "rare"
+},
+{
+"name": "Eurasian Blackcap",
+"sci": "Sylvia atricapilla (Linnaeus, 1758)",
+"taxonKey": 2492956,
+"coarse": "bird",
+"obs": 185,
+"name_fi": "Mustapääkerttu",
+"rarity": "rare"
+},
+{
+"name": "Eurasian Pygmy-Owl",
+"sci": "Glaucidium passerinum (Linnaeus, 1758)",
+"taxonKey": 5232162,
+"coarse": "bird",
+"obs": 184,
+"name_fi": "Varpuspöllö",
+"rarity": "rare"
+},
+{
+"name": "Common Ringed Plover",
+"sci": "Charadrius hiaticula Linnaeus, 1758",
+"taxonKey": 9566659,
+"coarse": "bird",
+"obs": 177,
+"name_fi": "Tylli",
+"rarity": "rare"
+},
+{
+"name": "Eurasian Wren",
+"sci": "Troglodytes troglodytes (Linnaeus, 1758)",
+"taxonKey": 5231438,
+"coarse": "bird",
+"obs": 176,
+"name_fi": "Peukaloinen",
+"rarity": "rare"
+},
+{
+"name": "Smew",
+"sci": "Mergellus albellus (Linnaeus, 1758)",
+"taxonKey": 2498285,
+"coarse": "bird",
+"obs": 175,
+"name_fi": "Uivelo",
+"rarity": "rare"
+},
+{
+"name": "Tawny Owl",
+"sci": "Strix aluco Linnaeus, 1758",
+"taxonKey": 9282206,
+"coarse": "bird",
+"obs": 172,
+"name_fi": "Lehtopöllö",
+"rarity": "rare"
+},
+{
+"name": "Eurasian Hobby",
+"sci": "Falco subbuteo Linnaeus, 1758",
+"taxonKey": 2481035,
+"coarse": "bird",
+"obs": 167,
+"name_fi": "Nuolihaukka",
+"rarity": "rare"
+},
+{
+"name": "Taiga/Tundra Bean-Goose",
+"sci": "Anser fabalis (Latham, 1787)",
+"taxonKey": 2498027,
+"coarse": "bird",
+"obs": 166,
+"name_fi": "Metsähanhi",
+"rarity": "rare"
+},
+{
+"name": "Eurasian Nutcracker",
+"sci": "Nucifraga caryocatactes (Linnaeus, 1758)",
+"taxonKey": 2482613,
+"coarse": "bird",
+"obs": 165,
+"name_fi": "Pähkinähakki",
+"rarity": "rare"
+},
+{
+"name": "Willow Ptarmigan",
+"sci": "Lagopus lagopus (Linnaeus, 1758)",
+"taxonKey": 2473421,
+"coarse": "bird",
+"obs": 164,
+"name_fi": "Riekko",
+"rarity": "rare"
+},
+{
+"name": "Thrush Nightingale",
+"sci": "Luscinia luscinia (Linnaeus, 1758)",
+"taxonKey": 2492542,
+"coarse": "bird",
+"obs": 160,
+"name_fi": "Satakieli",
+"rarity": "rare"
+},
+{
+"name": "Wood Warbler",
+"sci": "Phylloscopus sibillatrix (Bechstein, 1792)",
+"taxonKey": 8128385,
+"coarse": "bird",
+"obs": 159,
+"name_fi": "Sirittäjä",
+"rarity": "rare"
+},
+{
+"name": "Rustic Bunting",
+"sci": "Emberiza rustica Pallas, 1776",
+"taxonKey": 2491582,
+"coarse": "bird",
+"obs": 156,
+"name_fi": "Pohjansirkku",
+"rarity": "rare"
+},
+{
+"name": "Great Gray Owl",
+"sci": "Strix nebulosa J.R.Forster, 1772",
+"taxonKey": 2497522,
+"coarse": "bird",
+"obs": 154,
+"name_fi": "Lapinpöllö",
+"rarity": "rare"
+},
+{
+"name": "Bluethroat",
+"sci": "Luscinia svecica (Linnaeus, 1758)",
+"taxonKey": 4408732,
+"coarse": "bird",
+"obs": 152,
+"name_fi": "Sinirinta",
+"rarity": "rare"
+},
+{
+"name": "Green Sandpiper",
+"sci": "Tringa ochropus Linnaeus, 1758",
+"taxonKey": 2481728,
+"coarse": "bird",
+"obs": 151,
+"name_fi": "Metsäviklo",
+"rarity": "rare"
+},
+{
+"name": "Ural Owl",
+"sci": "Strix uralensis Pallas, 1771",
+"taxonKey": 2497509,
+"coarse": "bird",
+"obs": 151,
+"name_fi": "Viirupöllö",
+"rarity": "rare"
+},
+{
+"name": "Common Pochard",
+"sci": "Aythya ferina (Linnaeus, 1758)",
+"taxonKey": 2498255,
+"coarse": "bird",
+"obs": 148,
+"name_fi": "Punasotka",
+"rarity": "rare"
+},
+{
+"name": "Long-tailed Duck",
+"sci": "Clangula hyemalis (Linnaeus, 1758)",
+"taxonKey": 2498273,
+"coarse": "bird",
+"obs": 145,
+"name_fi": "Alli",
+"rarity": "rare"
+},
+{
+"name": "Hawfinch",
+"sci": "Coccothraustes coccothraustes (Linnaeus, 1758)",
+"taxonKey": 2494329,
+"coarse": "bird",
+"obs": 144,
+"name_fi": "Nokkavarpunen",
+"rarity": "rare"
+},
+{
+"name": "Common Cuckoo",
+"sci": "Cuculus canorus Linnaeus, 1758",
+"taxonKey": 5231918,
+"coarse": "bird",
+"obs": 140,
+"name_fi": "Käki",
+"rarity": "rare"
+},
+{
+"name": "Common House-Martin",
+"sci": "Delichon urbicum (Linnaeus, 1758)",
+"taxonKey": 2489214,
+"coarse": "bird",
+"obs": 139,
+"name_fi": "Räystäspääsky",
+"rarity": "rare"
+},
+{
+"name": "Mistle Thrush",
+"sci": "Turdus viscivorus Linnaeus, 1758",
+"taxonKey": 2490774,
+"coarse": "bird",
+"obs": 138,
+"name_fi": "Kulorastas",
+"rarity": "rare"
+},
+{
+"name": "Little Gull",
+"sci": "Hydrocoloeus minutus (Pallas, 1776)",
+"taxonKey": 6065841,
+"coarse": "bird",
+"obs": 131,
+"name_fi": "Pikkulokki",
+"rarity": "rare"
+},
+{
+"name": "Snow Bunting",
+"sci": "Plectrophenax nivalis (Linnaeus, 1758)",
+"taxonKey": 2491719,
+"coarse": "bird",
+"obs": 130,
+"name_fi": "Pulmunen",
+"rarity": "rare"
+},
+{
+"name": "Northern Pintail",
+"sci": "Anas acuta Linnaeus, 1758",
+"taxonKey": 2498112,
+"coarse": "bird",
+"obs": 130,
+"name_fi": "Jouhisorsa",
+"rarity": "rare"
+},
+{
+"name": "Spotted Redshank",
+"sci": "Tringa erythropus (Pallas, 1764)",
+"taxonKey": 2481725,
+"coarse": "bird",
+"obs": 129,
+"name_fi": "Mustaviklo",
+"rarity": "rare"
+},
+{
+"name": "Dunlin",
+"sci": "Calidris alpina (Linnaeus, 1758)",
+"taxonKey": 2481759,
+"coarse": "bird",
+"obs": 128,
+"name_fi": "Suosirri",
+"rarity": "rare"
+},
+{
+"name": "Red-throated Loon",
+"sci": "Gavia stellata (Pontoppidan, 1763)",
+"taxonKey": 2481958,
+"coarse": "bird",
+"obs": 128,
+"name_fi": "Kaakkuri",
+"rarity": "rare"
+},
+{
+"name": "Parrot Crossbill",
+"sci": "Loxia pytyopsittacus von Borkhausen, 1793",
+"taxonKey": 2494154,
+"coarse": "bird",
+"obs": 127,
+"name_fi": "Isokäpylintu",
+"rarity": "rare"
+},
+{
+"name": "Caspian Tern",
+"sci": "Hydroprogne caspia (Pallas, 1770)",
+"taxonKey": 2481236,
+"coarse": "bird",
+"obs": 122,
+"name_fi": "Räyskä",
+"rarity": "rare"
+},
+{
+"name": "Red-flanked Bluetail",
+"sci": "Tarsiger cyanurus (Pallas, 1773)",
+"taxonKey": 2492509,
+"coarse": "bird",
+"obs": 121,
+"name_fi": "Sinipyrstö",
+"rarity": "rare"
+},
+{
+"name": "Stock Dove",
+"sci": "Columba oenas Linnaeus, 1758",
+"taxonKey": 2495471,
+"coarse": "bird",
+"obs": 118,
+"name_fi": "Uuttukyyhky",
+"rarity": "epic"
+},
+{
+"name": "European Honey-buzzard",
+"sci": "Pernis apivorus (Linnaeus, 1758)",
+"taxonKey": 2480420,
+"coarse": "bird",
+"obs": 116,
+"name_fi": "Mehiläishaukka",
+"rarity": "epic"
+},
+{
+"name": "Hen Harrier",
+"sci": "Circus cyaneus (Linnaeus, 1766)",
+"taxonKey": 2480487,
+"coarse": "bird",
+"obs": 116,
+"name_fi": "Sinisuohaukka",
+"rarity": "epic"
+},
+{
+"name": "Eurasian Nuthatch",
+"sci": "Sitta europaea Linnaeus, 1758",
+"taxonKey": 2484916,
+"coarse": "bird",
+"obs": 115,
+"name_fi": "Pähkinänakkeli",
+"rarity": "epic"
+},
+{
+"name": "Boreal Owl",
+"sci": "Aegolius funereus (Linnaeus, 1758)",
+"taxonKey": 5739298,
+"coarse": "bird",
+"obs": 114,
+"name_fi": "Helmipöllö",
+"rarity": "epic"
+},
+{
+"name": "Bank Swallow",
+"sci": "Riparia riparia (Linnaeus, 1758)",
+"taxonKey": 2489160,
+"coarse": "bird",
+"obs": 113,
+"name_fi": "Törmäpääsky",
+"rarity": "epic"
+},
+{
+"name": "Rough-legged Hawk",
+"sci": "Buteo lagopus (Pontoppidan, 1763)",
+"taxonKey": 2480524,
+"coarse": "bird",
+"obs": 110,
+"name_fi": "Piekana",
+"rarity": "epic"
+},
+{
+"name": "White-winged Scoter",
+"sci": "Melanitta fusca (Linnaeus, 1758)",
+"taxonKey": 2498238,
+"coarse": "bird",
+"obs": 107,
+"name_fi": "Pilkkasiipi",
+"rarity": "epic"
+},
+{
+"name": "Rook",
+"sci": "Corvus frugilegus Linnaeus, 1758",
+"taxonKey": 2482513,
+"coarse": "bird",
+"obs": 105,
+"name_fi": "Mustavaris",
+"rarity": "epic"
+},
+{
+"name": "Eurasian Eagle-Owl",
+"sci": "Bubo bubo (Linnaeus, 1758)",
+"taxonKey": 5959092,
+"coarse": "bird",
+"obs": 101,
+"name_fi": "Huuhkaja",
+"rarity": "epic"
+},
+{
+"name": "Red-breasted Flycatcher",
+"sci": "Ficedula parva (Bechstein, 1792)",
+"taxonKey": 2492605,
+"coarse": "bird",
+"obs": 97,
+"name_fi": "Pikkusieppo",
+"rarity": "epic"
+},
+{
+"name": "Tundra Bean-Goose",
+"sci": "Anser serrirostris Gould, 1852",
+"taxonKey": 7340170,
+"coarse": "bird",
+"obs": 95,
+"name_fi": "Tundrametsähanhi",
+"rarity": "epic"
+},
+{
+"name": "Blyth's Reed Warbler",
+"sci": "Acrocephalus dumetorum Blyth, 1849",
+"taxonKey": 2493145,
+"coarse": "bird",
+"obs": 86,
+"name_fi": "Viitakerttunen",
+"rarity": "epic"
+},
+{
+"name": "Garden Warbler",
+"sci": "Sylvia borin (Boddaert, 1783)",
+"taxonKey": 2492942,
+"coarse": "bird",
+"obs": 85,
+"name_fi": "Lehtokerttu",
+"rarity": "epic"
+},
+{
+"name": "Icterine Warbler",
+"sci": "Hippolais icterina (Vieillot, 1817)",
+"taxonKey": 2493220,
+"coarse": "bird",
+"obs": 82,
+"name_fi": "Kultarinta",
+"rarity": "epic"
+},
+{
+"name": "Eurasian Wryneck",
+"sci": "Jynx torquilla Linnaeus, 1758",
+"taxonKey": 8012314,
+"coarse": "bird",
+"obs": 81,
+"name_fi": "Käenpiika",
+"rarity": "epic"
+},
+{
+"name": "Little Bunting",
+"sci": "Emberiza pusilla Pallas, 1776",
+"taxonKey": 2491544,
+"coarse": "bird",
+"obs": 79,
+"name_fi": "Pikkusirkku",
+"rarity": "epic"
+},
+{
+"name": "Mandarin Duck",
+"sci": "Aix galericulata (Linnaeus, 1758)",
+"taxonKey": 2498388,
+"coarse": "bird",
+"obs": 78,
+"name_fi": "Mandariinisorsa",
+"rarity": "epic"
+},
+{
+"name": "Eurasian Collared-Dove",
+"sci": "Streptopelia decaocto (Frivaldszky, 1838)",
+"taxonKey": 2495696,
+"coarse": "bird",
+"obs": 77,
+"name_fi": "Turkinkyyhky",
+"rarity": "epic"
+},
+{
+"name": "Common Scoter",
+"sci": "Melanitta nigra (Linnaeus, 1758)",
+"taxonKey": 2498247,
+"coarse": "bird",
+"obs": 77,
+"name_fi": "Mustalintu",
+"rarity": "epic"
+},
+{
+"name": "Long-eared Owl",
+"sci": "Asio otus (Linnaeus, 1758)",
+"taxonKey": 2497306,
+"coarse": "bird",
+"obs": 76,
+"name_fi": "Sarvipöllö",
+"rarity": "epic"
+},
+{
+"name": "Lapland Longspur",
+"sci": "Calcarius lapponicus (Linnaeus, 1758)",
+"taxonKey": 2491678,
+"coarse": "bird",
+"obs": 75,
+"name_fi": "Lapinsirkku",
+"rarity": "epic"
+},
+{
+"name": "Water Rail",
+"sci": "Rallus aquaticus Linnaeus, 1758",
+"taxonKey": 2474831,
+"coarse": "bird",
+"obs": 74,
+"name_fi": "Luhtakana",
+"rarity": "epic"
+},
+{
+"name": "Temminck's Stint",
+"sci": "Calidris temminckii (Leisler, 1812)",
+"taxonKey": 2481740,
+"coarse": "bird",
+"obs": 74,
+"name_fi": "Lapinsirri",
+"rarity": "epic"
+},
+{
+"name": "Short-eared Owl",
+"sci": "Asio flammeus (Pontoppidan, 1763)",
+"taxonKey": 2497295,
+"coarse": "bird",
+"obs": 72,
+"name_fi": "Suopöllö",
+"rarity": "epic"
+},
+{
+"name": "Common Shelduck",
+"sci": "Tadorna tadorna (Linnaeus, 1758)",
+"taxonKey": 2498009,
+"coarse": "bird",
+"obs": 72,
+"name_fi": "Ristisorsa",
+"rarity": "epic"
+},
+{
+"name": "Rock Ptarmigan",
+"sci": "Lagopus muta (Montin, 1781)",
+"taxonKey": 5227679,
+"coarse": "bird",
+"obs": 71,
+"name_fi": "Kiiruna",
+"rarity": "epic"
+},
+{
+"name": "Garganey",
+"sci": "Spatula querquedula (Linnaeus, 1758)",
+"taxonKey": 9274012,
+"coarse": "bird",
+"obs": 71,
+"name_fi": "Heinätavi",
+"rarity": "epic"
+},
+{
+"name": "Whimbrel",
+"sci": "Numenius phaeopus (Linnaeus, 1758)",
+"taxonKey": 2481784,
+"coarse": "bird",
+"obs": 70,
+"name_fi": "Pikkukuovi",
+"rarity": "epic"
+},
+{
+"name": "Golden Eagle",
+"sci": "Aquila chrysaetos (Linnaeus, 1758)",
+"taxonKey": 2480506,
+"coarse": "bird",
+"obs": 69,
+"name_fi": "Maakotka",
+"rarity": "legendary"
+},
+{
+"name": "Eurasian Nightjar",
+"sci": "Caprimulgus europaeus Linnaeus, 1758",
+"taxonKey": 8109681,
+"coarse": "bird",
+"obs": 69,
+"name_fi": "Kehrääjä",
+"rarity": "legendary"
+},
+{
+"name": "Ortolan Bunting",
+"sci": "Emberiza hortulana Linnaeus, 1758",
+"taxonKey": 2491482,
+"coarse": "bird",
+"obs": 68,
+"name_fi": "Peltosirkku",
+"rarity": "legendary"
+},
+{
+"name": "Great Bittern",
+"sci": "Botaurus stellaris (Linnaeus, 1758)",
+"taxonKey": 2480910,
+"coarse": "bird",
+"obs": 67,
+"name_fi": "Kaulushaikara",
+"rarity": "legendary"
+},
+{
+"name": "Bearded Reedling",
+"sci": "Panurus biarmicus (Linnaeus, 1758)",
+"taxonKey": 2493367,
+"coarse": "bird",
+"obs": 66,
+"name_fi": "Viiksitimali",
+"rarity": "legendary"
+},
+{
+"name": "Merlin",
+"sci": "Falco columbarius Linnaeus, 1758",
+"taxonKey": 9813242,
+"coarse": "bird",
+"obs": 65,
+"name_fi": "Ampuhaukka",
+"rarity": "legendary"
+},
+{
+"name": "Black-tailed Godwit",
+"sci": "Limosa limosa (Linnaeus, 1758)",
+"taxonKey": 2481685,
+"coarse": "bird",
+"obs": 63,
+"name_fi": "Mustapyrstökuiri",
+"rarity": "legendary"
+},
+{
+"name": "Bar-tailed Godwit",
+"sci": "Limosa lapponica (Linnaeus, 1758)",
+"taxonKey": 2481681,
+"coarse": "bird",
+"obs": 60,
+"name_fi": "Punakuiri",
+"rarity": "legendary"
+},
+{
+"name": "Eurasian Dotterel",
+"sci": "Charadrius morinellus Linnaeus, 1758",
+"taxonKey": 2480281,
+"coarse": "bird",
+"obs": 55,
+"name_fi": "Keräkurmitsa",
+"rarity": "legendary"
+},
+{
+"name": "Ruddy Turnstone",
+"sci": "Arenaria interpres (Linnaeus, 1758)",
+"taxonKey": 2481776,
+"coarse": "bird",
+"obs": 55,
+"name_fi": "Karikukko",
+"rarity": "legendary"
+},
+{
+"name": "Gray Wagtail",
+"sci": "Motacilla cinerea Tunstall, 1771",
+"taxonKey": 2490310,
+"coarse": "bird",
+"obs": 55,
+"name_fi": "Vuoristovästäräkki",
+"rarity": "legendary"
+},
+{
+"name": "Gray Partridge",
+"sci": "Perdix perdix (Linnaeus, 1758)",
+"taxonKey": 2473958,
+"coarse": "bird",
+"obs": 52,
+"name_fi": "Peltopyy",
+"rarity": "legendary"
+},
+{
+"name": "Brant",
+"sci": "Branta bernicla (Linnaeus, 1758)",
+"taxonKey": 5232446,
+"coarse": "bird",
+"obs": 51,
+"name_fi": "Sepelhanhi",
+"rarity": "legendary"
+},
+{
+"name": "Ring Ouzel",
+"sci": "Turdus torquatus Linnaeus, 1758",
+"taxonKey": 7865305,
+"coarse": "bird",
+"obs": 50,
+"name_fi": "Sepelrastas",
+"rarity": "legendary"
+},
+{
+"name": "Carrion Crow",
+"sci": "Corvus corone Linnaeus, 1758",
+"taxonKey": 9409796,
+"coarse": "bird",
+"obs": 49,
+"name_fi": "Mustavaris (Carrion Crow)",
+"rarity": "legendary"
+},
+{
+"name": "Red-necked Phalarope",
+"sci": "Phalaropus lobatus (Linnaeus, 1758)",
+"taxonKey": 5739290,
+"coarse": "bird",
+"obs": 48,
+"name_fi": "Vesipääsky",
+"rarity": "legendary"
+},
+{
+"name": "Long-tailed Jaeger",
+"sci": "Stercorarius longicaudus Vieillot, 1819",
+"taxonKey": 2481613,
+"coarse": "bird",
+"obs": 47,
+"name_fi": "Tunturikihu",
+"rarity": "legendary"
+},
+{
+"name": "White Stork",
+"sci": "Ciconia ciconia (Linnaeus, 1758)",
+"taxonKey": 2481912,
+"coarse": "bird",
+"obs": 45,
+"name_fi": "Kattohaikara",
+"rarity": "legendary"
+},
+{
+"name": "Black Guillemot",
+"sci": "Cepphus grylle (Linnaeus, 1758)",
+"taxonKey": 2481312,
+"coarse": "bird",
+"obs": 42,
+"name_fi": "Riskilä",
+"rarity": "legendary"
+},
+{
+"name": "Pink-footed Goose",
+"sci": "Anser brachyrhynchus Baillon, 1834",
+"taxonKey": 2498024,
+"coarse": "bird",
+"obs": 42,
+"name_fi": "Lyhytnokkahanhi",
+"rarity": "legendary"
+},
+{
+"name": "Little Stint",
+"sci": "Calidris minuta (Leisler, 1812)",
+"taxonKey": 2481749,
+"coarse": "bird",
+"obs": 41,
+"name_fi": "Pikkusirri",
+"rarity": "legendary"
+},
+{
+"name": "Black Redstart",
+"sci": "Phoenicurus ochruros (S.G.Gmelin, 1774)",
+"taxonKey": 5739315,
+"coarse": "bird",
+"obs": 41,
+"name_fi": "Mustaleppälintu",
+"rarity": "legendary"
+},
+{
+"name": "Parasitic Jaeger",
+"sci": "Stercorarius parasiticus (Linnaeus, 1758)",
+"taxonKey": 2481621,
+"coarse": "bird",
+"obs": 40,
+"name_fi": "Merikihu",
+"rarity": "legendary"
+},
+{
+"name": "Citrine Wagtail",
+"sci": "Motacilla citreola Pallas, 1776",
+"taxonKey": 2490307,
+"coarse": "bird",
+"obs": 40,
+"name_fi": "Sitruunavästäräkki",
+"rarity": "legendary"
+},
+{
+"name": "Steller's Eider",
+"sci": "Polysticta stelleri",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Allihaahka",
+"rarity": "rare"
+},
+{
+"name": "Pallid Harrier",
+"sci": "Circus macrourus",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Arosuohaukka",
+"rarity": "rare"
+},
+{
+"name": "Pied Avocet",
+"sci": "Recurvirostra avosetta",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Avosetti",
+"rarity": "rare"
+},
+{
+"name": "Common Murre",
+"sci": "Uria aalge",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Etelänkiisla",
+"rarity": "uncommon"
+},
+{
+"name": "Black Kite",
+"sci": "Milvus migrans",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Haarahaukka",
+"rarity": "epic"
+},
+{
+"name": "Eurasian Hoopoe",
+"sci": "Upupa epops",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Harjalintu",
+"rarity": "epic"
+},
+{
+"name": "Great Snipe",
+"sci": "Gallinago media",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Heinäkurppa",
+"rarity": "uncommon"
+},
+{
+"name": "Pallas's Leaf Warbler",
+"sci": "Phylloscopus proregulus",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Hippiäisuunilintu",
+"rarity": "uncommon"
+},
+{
+"name": "Greenish Warbler",
+"sci": "Phylloscopus trochiloides",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Idänuunilintu",
+"rarity": "rare"
+},
+{
+"name": "Glaucous Gull",
+"sci": "Larus hyperboreus",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Isolokki",
+"rarity": "epic"
+},
+{
+"name": "Red Knot",
+"sci": "Calidris canutus",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Isosirri",
+"rarity": "rare"
+},
+{
+"name": "Jack Snipe",
+"sci": "Lymnocryptes minimus",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Jänkäkurppa",
+"rarity": "uncommon"
+},
+{
+"name": "Broad-billed Sandpiper",
+"sci": "Calidris falcinellus",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Jänkäsirriäinen",
+"rarity": "uncommon"
+},
+{
+"name": "Northern Goshawk",
+"sci": "Accipiter gentilis",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Kanahaukka",
+"rarity": "epic"
+},
+{
+"name": "Woodlark",
+"sci": "Lullula arborea",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Kangaskiuru",
+"rarity": "rare"
+},
+{
+"name": "European Serin",
+"sci": "Serinus serinus",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Keltahemppo",
+"rarity": "rare"
+},
+{
+"name": "Two-barred Crossbill",
+"sci": "Loxia leucoptera",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Kirjosiipikäpylintu",
+"rarity": "rare"
+},
+{
+"name": "Eurasian Golden Oriole",
+"sci": "Oriolus oriolus",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Kuhankeittäjä",
+"rarity": "epic"
+},
+{
+"name": "Common Kingfisher",
+"sci": "Alcedo atthis",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Kuningaskalastaja",
+"rarity": "rare"
+},
+{
+"name": "Curlew Sandpiper",
+"sci": "Calidris ferruginea",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Kuovisirri",
+"rarity": "rare"
+},
+{
+"name": "King Eider",
+"sci": "Somateria spectabilis",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Kyhmyhaahka",
+"rarity": "rare"
+},
+{
+"name": "Marsh Sandpiper",
+"sci": "Tringa stagnatilis",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Lampiviklo",
+"rarity": "rare"
+},
+{
+"name": "Greater Scaup",
+"sci": "Aythya marila",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Lapasotka",
+"rarity": "rare"
+},
+{
+"name": "Red-throated Pipit",
+"sci": "Anthus cervinus",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Lapinkirvinen",
+"rarity": "rare"
+},
+{
+"name": "Spotted Crake",
+"sci": "Porzana porzana",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Luhtahuitti",
+"rarity": "uncommon"
+},
+{
+"name": "Eurasian Rock Pipit",
+"sci": "Anthus petrosus",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Luotokirvinen",
+"rarity": "rare"
+},
+{
+"name": "European Bee-eater",
+"sci": "Merops apiaster",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Mehiläissyöjä",
+"rarity": "epic"
+},
+{
+"name": "Purple Sandpiper",
+"sci": "Calidris maritima",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Merisirri",
+"rarity": "epic"
+},
+{
+"name": "Wood Duck",
+"sci": "Aix sponsa",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Amerikanpuusorsa",
+"rarity": "rare"
+},
+{
+"name": "Black Swan",
+"sci": "Cygnus atratus",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Mustajoutsen",
+"rarity": "rare"
+},
+{
+"name": "Black Tern",
+"sci": "Chlidonias niger",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Mustatiira",
+"rarity": "rare"
+},
+{
+"name": "Peregrine Falcon",
+"sci": "Falco peregrinus",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Muuttohaukka",
+"rarity": "epic"
+},
+{
+"name": "Montagu's Harrier",
+"sci": "Circus pygargus",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Niittysuohaukka",
+"rarity": "epic"
+},
+{
+"name": "Tundra Swan",
+"sci": "Cygnus columbianus",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Pikkujoutsen",
+"rarity": "rare"
+},
+{
+"name": "Black-legged Kittiwake",
+"sci": "Rissa tridactyla",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Pikkukajava",
+"rarity": "rare"
+},
+{
+"name": "Little Auk",
+"sci": "Alle alle",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Pikkuruokki",
+"rarity": "uncommon"
+},
+{
+"name": "Little Bunting",
+"sci": "Schoeniclus pusillus",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Pikkusirkku",
+"rarity": "uncommon"
+},
+{
+"name": "Little Ringed Plover",
+"sci": "Charadrius dubius",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Pikkutylli",
+"rarity": "rare"
+},
+{
+"name": "Little Grebe",
+"sci": "Tachybaptus ruficollis",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Pikku-uikku",
+"rarity": "rare"
+},
+{
+"name": "Rustic Bunting",
+"sci": "Schoeniclus rusticus",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Pohjansirkku",
+"rarity": "epic"
+},
+{
+"name": "Red-footed Falcon",
+"sci": "Falco vespertinus",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Punajalkahaukka",
+"rarity": "rare"
+},
+{
+"name": "Red-breasted Goose",
+"sci": "Branta ruficollis",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Punakaulahanhi",
+"rarity": "epic"
+},
+{
+"name": "Terek Sandpiper",
+"sci": "Xenus cinereus",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Rantakurvi",
+"rarity": "rare"
+},
+{
+"name": "Corn Crake",
+"sci": "Crex crex",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Ruisrääkkä",
+"rarity": "epic"
+},
+{
+"name": "Razorbill",
+"sci": "Alca torda",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Ruokki",
+"rarity": "uncommon"
+},
+{
+"name": "Bar-headed Goose",
+"sci": "Anser indicus",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Tiibetinhanhi",
+"rarity": "epic"
+},
+{
+"name": "Grey Plover",
+"sci": "Pluvialis squatarola",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Tundrakurmitsa",
+"rarity": "uncommon"
+},
+{
+"name": "Arctic Redpoll",
+"sci": "Acanthis hornemanni",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Tundraurpiainen",
+"rarity": "uncommon"
+},
+{
+"name": "Gyrfalcon",
+"sci": "Falco rusticolus",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Tunturihaukka",
+"rarity": "rare"
+},
+{
+"name": "Horned Lark",
+"sci": "Eremophila alpestris",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Tunturikiuru",
+"rarity": "uncommon"
+},
+{
+"name": "Snowy Owl",
+"sci": "Bubo scandiacus",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Tunturipöllö",
+"rarity": "rare"
+},
+{
+"name": "European Turtle Dove",
+"sci": "Streptopelia turtur",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Turturikyyhky",
+"rarity": "rare"
+},
+{
+"name": "Common Quail",
+"sci": "Coturnix coturnix",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Viiriäinen",
+"rarity": "rare"
+},
+{
+"name": "Marsh Tit",
+"sci": "Poecile palustris",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Viitatiainen",
+"rarity": "uncommon"
+},
+{
+"name": "Twite",
+"sci": "Linaria flavirostris",
+"taxonKey": null,
+"coarse": "bird",
+"obs": null,
+"added": true,
+"name_fi": "Vuorihemppo",
+"rarity": "uncommon"
+},
+{
+"name": "Eurasian red squirrel",
+"sci": "Sciurus vulgaris Linnaeus, 1758",
+"taxonKey": 8211070,
+"coarse": "mammal",
+"obs": 2327,
+"name_fi": "Orava",
+"rarity": "common"
+},
+{
+"name": "Siberian Flying Squirrel",
+"sci": "Pteromys volans (Linnaeus, 1758)",
+"taxonKey": 2437258,
+"coarse": "mammal",
+"obs": 1862,
+"name_fi": "Liito-orava",
+"rarity": "common"
+},
+{
+"name": "European hare",
+"sci": "Lepus europaeus Pallas, 1778",
+"taxonKey": 7952072,
+"coarse": "mammal",
+"obs": 1549,
+"name_fi": "Rusakko",
+"rarity": "common"
+},
+{
+"name": "European roe deer",
+"sci": "Capreolus capreolus (Linnaeus, 1758)",
+"taxonKey": 5220126,
+"coarse": "mammal",
+"obs": 1297,
+"name_fi": "Metsäkauris",
+"rarity": "common"
+},
+{
+"name": "hedgehog",
+"sci": "Erinaceus europaeus Linnaeus, 1758",
+"taxonKey": 5219616,
+"coarse": "mammal",
+"obs": 779,
+"name_fi": "Siili",
+"rarity": "common"
+},
+{
+"name": "red fox",
+"sci": "Vulpes vulpes (Linnaeus, 1758)",
+"taxonKey": 5219243,
+"coarse": "mammal",
+"obs": 752,
+"name_fi": "Kettu",
+"rarity": "common"
+},
+{
+"name": "moose",
+"sci": "Alces alces (Linnaeus, 1758)",
+"taxonKey": 2440940,
+"coarse": "mammal",
+"obs": 696,
+"name_fi": "Hirvi",
+"rarity": "common"
+},
+{
+"name": "reindeer",
+"sci": "Rangifer tarandus (Linnaeus, 1758)",
+"taxonKey": 5220114,
+"coarse": "mammal",
+"obs": 633,
+"name_fi": "Poro",
+"rarity": "common"
+},
+{
+"name": "white-tailed deer",
+"sci": "Odocoileus virginianus (Zimmermann, 1780)",
+"taxonKey": 2440965,
+"coarse": "mammal",
+"obs": 591,
+"name_fi": "Valkohäntäpeura",
+"rarity": "common"
+},
+{
+"name": "mountain hare",
+"sci": "Lepus timidus Linnaeus, 1758",
+"taxonKey": 2436756,
+"coarse": "mammal",
+"obs": 453,
+"name_fi": "Metsäjänis",
+"rarity": "common"
+},
+{
+"name": "European otter",
+"sci": "Lutra lutra (Linnaeus, 1758)",
+"taxonKey": 2433753,
+"coarse": "mammal",
+"obs": 392,
+"name_fi": "Saukko",
+"rarity": "uncommon"
+},
+{
+"name": "brown bear",
+"sci": "Ursus arctos Linnaeus, 1758",
+"taxonKey": 2433433,
+"coarse": "mammal",
+"obs": 255,
+"name_fi": "Karhu",
+"rarity": "uncommon"
+},
+{
+"name": "Eurasian lynx",
+"sci": "Lynx lynx (Linnaeus, 1758)",
+"taxonKey": 2435240,
+"coarse": "mammal",
+"obs": 254,
+"name_fi": "Ilves",
+"rarity": "uncommon"
+},
+{
+"name": "European pine marten",
+"sci": "Martes martes (Linnaeus, 1758)",
+"taxonKey": 5218878,
+"coarse": "mammal",
+"obs": 199,
+"name_fi": "Näätä",
+"rarity": "rare"
+},
+{
+"name": "Yellow-necked Mouse",
+"sci": "Apodemus flavicollis (Melchior, 1834)",
+"taxonKey": 2437756,
+"coarse": "mammal",
+"obs": 194,
+"name_fi": "Metsähiiri",
+"rarity": "rare"
+},
+{
+"name": "raccoon dog",
+"sci": "Nyctereutes procyonoides (Gray, 1834)",
+"taxonKey": 2434552,
+"coarse": "mammal",
+"obs": 159,
+"name_fi": "Supikoira",
+"rarity": "rare"
+},
+{
+"name": "European rabbit",
+"sci": "Oryctolagus cuniculus (Linnaeus, 1758)",
+"taxonKey": 2436940,
+"coarse": "mammal",
+"obs": 159,
+"name_fi": "Kaniini",
+"rarity": "rare"
+},
+{
+"name": "European badger",
+"sci": "Meles meles (Linnaeus, 1758)",
+"taxonKey": 2433875,
+"coarse": "mammal",
+"obs": 157,
+"name_fi": "Mäyrä",
+"rarity": "rare"
+},
+{
+"name": "Asian Minute Shrew",
+"sci": "Sorex minutissimus Zimmermann, 1780",
+"taxonKey": 2435959,
+"coarse": "mammal",
+"obs": 153,
+"name_fi": "Kääpiöpäästäinen",
+"rarity": "rare"
+},
+{
+"name": "Bank Vole",
+"sci": "Myodes glareolus (Schreber, 1780)",
+"taxonKey": 5706764,
+"coarse": "mammal",
+"obs": 129,
+"name_fi": "Metsämyyrä",
+"rarity": "rare"
+},
+{
+"name": "wolverine",
+"sci": "Gulo gulo (Linnaeus, 1758)",
+"taxonKey": 5219073,
+"coarse": "mammal",
+"obs": 125,
+"name_fi": "Ahma",
+"rarity": "rare"
+},
+{
+"name": "grey seal",
+"sci": "Halichoerus grypus (Fabricius, 1791)",
+"taxonKey": 2434806,
+"coarse": "mammal",
+"obs": 122,
+"name_fi": "Halli",
+"rarity": "rare"
+},
+{
+"name": "least weasel",
+"sci": "Mustela nivalis Linnaeus, 1766",
+"taxonKey": 5218987,
+"coarse": "mammal",
+"obs": 106,
+"name_fi": "Lumikko",
+"rarity": "epic"
+},
+{
+"name": "European water vole",
+"sci": "Arvicola amphibius (Linnaeus, 1758)",
+"taxonKey": 4265185,
+"coarse": "mammal",
+"obs": 101,
+"name_fi": "Vesimyyrä",
+"rarity": "epic"
+},
+{
+"name": "brown rat",
+"sci": "Rattus norvegicus (Berkenhout, 1769)",
+"taxonKey": 2439261,
+"coarse": "mammal",
+"obs": 100,
+"name_fi": "Rotta",
+"rarity": "epic"
+},
+{
+"name": "stoat",
+"sci": "Mustela erminea Linnaeus, 1758",
+"taxonKey": 5219019,
+"coarse": "mammal",
+"obs": 100,
+"name_fi": "Kärppä",
+"rarity": "epic"
+},
+{
+"name": "European mole",
+"sci": "Talpa europaea Linnaeus, 1758",
+"taxonKey": 7872906,
+"coarse": "mammal",
+"obs": 86,
+"name_fi": "Maamyyrä",
+"rarity": "epic"
+},
+{
+"name": "Northern Bat",
+"sci": "Eptesicus nilssonii (Keyserling & Blasius, 1839)",
+"taxonKey": 7261816,
+"coarse": "mammal",
+"obs": 79,
+"name_fi": "Pohjanlepakko",
+"rarity": "epic"
+},
+{
+"name": "common shrew",
+"sci": "Sorex araneus Linnaeus, 1758",
+"taxonKey": 8316400,
+"coarse": "mammal",
+"obs": 68,
+"name_fi": "Metsäpäästäinen",
+"rarity": "legendary"
+},
+{
+"name": "gray wolf",
+"sci": "Canis lupus Linnaeus, 1758",
+"taxonKey": 5219173,
+"coarse": "mammal",
+"obs": 66,
+"name_fi": "Susi",
+"rarity": "legendary"
+},
+{
+"name": "ringed seal",
+"sci": "Pusa hispida (Schreber, 1775)",
+"taxonKey": 5219369,
+"coarse": "mammal",
+"obs": 64,
+"name_fi": "Norppa",
+"rarity": "legendary"
+},
+{
+"name": "muskrat",
+"sci": "Ondatra zibethicus (Linnaeus, 1766)",
+"taxonKey": 5219858,
+"coarse": "mammal",
+"obs": 58,
+"name_fi": "Piisami",
+"rarity": "legendary"
+},
+{
+"name": "fallow deer",
+"sci": "Dama dama (Linnaeus, 1758)",
+"taxonKey": 5220136,
+"coarse": "mammal",
+"obs": 49,
+"name_fi": "Kuusipeura",
+"rarity": "legendary"
+},
+{
+"name": "American beaver",
+"sci": "Castor canadensis Kuhl, 1820",
+"taxonKey": 2439838,
+"coarse": "mammal",
+"obs": 45,
+"name_fi": "Kanadanmajava",
+"rarity": "legendary"
+},
+{
+"name": "field vole",
+"sci": "Microtus agrestis (Linnaeus, 1761)",
+"taxonKey": 2438616,
+"coarse": "mammal",
+"obs": 44,
+"name_fi": "Peltomyyrä",
+"rarity": "legendary"
+},
+{
+"name": "Harvest Mouse",
+"sci": "Micromys minutus (Pallas, 1771)",
+"taxonKey": 5219833,
+"coarse": "mammal",
+"obs": 43,
+"name_fi": "Vaivaishiiri",
+"rarity": "legendary"
+},
+{
+"name": "Eurasian Beaver",
+"sci": "Castor fiber",
+"taxonKey": null,
+"coarse": "mammal",
+"obs": null,
+"added": true,
+"name_fi": "Euroopanmajava",
+"rarity": "rare"
+},
+{
+"name": "Grey Red-backed Vole",
+"sci": "Myodes rufocanus",
+"taxonKey": null,
+"coarse": "mammal",
+"obs": null,
+"added": true,
+"name_fi": "Harmaakuvemyyrä",
+"rarity": "rare"
+},
+{
+"name": "European Polecat",
+"sci": "Mustela putorius",
+"taxonKey": null,
+"coarse": "mammal",
+"obs": null,
+"added": true,
+"name_fi": "Hilleri",
+"rarity": "epic"
+},
+{
+"name": "Laxmann's Shrew",
+"sci": "Sorex caecutiens",
+"taxonKey": null,
+"coarse": "mammal",
+"obs": null,
+"added": true,
+"name_fi": "Idänpäästäinen",
+"rarity": "rare"
+},
+{
+"name": "Common Vole",
+"sci": "Microtus arvalis",
+"taxonKey": null,
+"coarse": "mammal",
+"obs": null,
+"added": true,
+"name_fi": "Kenttämyyrä",
+"rarity": "uncommon"
+},
+{
+"name": "Northern Birch Mouse",
+"sci": "Sicista betulina",
+"taxonKey": null,
+"coarse": "mammal",
+"obs": null,
+"added": true,
+"name_fi": "Koivuhiiri",
+"rarity": "rare"
+},
+{
+"name": "House Mouse",
+"sci": "Mus musculus",
+"taxonKey": null,
+"coarse": "mammal",
+"obs": null,
+"added": true,
+"name_fi": "Kotihiiri",
+"rarity": "rare"
+},
+{
+"name": "Root Vole",
+"sci": "Microtus oeconomus",
+"taxonKey": null,
+"coarse": "mammal",
+"obs": null,
+"added": true,
+"name_fi": "Lapinmyyrä",
+"rarity": "rare"
+},
+{
+"name": "Wood Lemming",
+"sci": "Myopus schisticolor",
+"taxonKey": null,
+"coarse": "mammal",
+"obs": null,
+"added": true,
+"name_fi": "Metsäsopuli",
+"rarity": "rare"
+},
+{
+"name": "American Mink",
+"sci": "Neovison vison",
+"taxonKey": null,
+"coarse": "mammal",
+"obs": null,
+"added": true,
+"name_fi": "Minkki",
+"rarity": "epic"
+},
+{
+"name": "Taiga Shrew",
+"sci": "Sorex isodon",
+"taxonKey": null,
+"coarse": "mammal",
+"obs": null,
+"added": true,
+"name_fi": "Korpipäästäinen",
+"rarity": "rare"
+},
+{
+"name": "Striped Field Mouse",
+"sci": "Apodemus agrarius",
+"taxonKey": null,
+"coarse": "mammal",
+"obs": null,
+"added": true,
+"name_fi": "Pikkumetsähiiri",
+"rarity": "rare"
+},
+{
+"name": "Northern Red-backed Vole",
+"sci": "Myodes rutilus",
+"taxonKey": null,
+"coarse": "mammal",
+"obs": null,
+"added": true,
+"name_fi": "Punamyyrä",
+"rarity": "epic"
+},
+{
+"name": "Norway Lemming",
+"sci": "Lemmus lemmus",
+"taxonKey": null,
+"coarse": "mammal",
+"obs": null,
+"added": true,
+"name_fi": "Tunturisopuli",
+"rarity": "rare"
+},
+{
+"name": "Eurasian Water Shrew",
+"sci": "Neomys fodiens",
+"taxonKey": null,
+"coarse": "mammal",
+"obs": null,
+"added": true,
+"name_fi": "Vesipäästäinen",
+"rarity": "epic"
+},
+{
+"name": "Wild Boar",
+"sci": "Sus scrofa",
+"taxonKey": null,
+"coarse": "mammal",
+"obs": null,
+"added": true,
+"name_fi": "Villisika",
+"rarity": "uncommon"
+}
 ]
