@@ -380,7 +380,7 @@
     <input type="file" id="nativeCamInput" accept="image/*" capture="environment">
     <input type="file" id="audioInput" accept="audio/*,video/*">
     <footer>
-      Detector: <b id="modelTag">Fieldmark-s · 313 Finnish species</b>.
+      Detector: <b id="modelTag">Fieldmark-s v3 · 313 Finnish species</b>.
     </footer>
   </main>
 </div>
@@ -467,7 +467,7 @@ const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let session = null;
 
 /* ===================================================================== */
-const MODEL_URL = './fieldmark-s-v2.onnx';   // tracked model name; bump version on retrain
+const MODEL_URL = './fieldmark-s-v3.onnx';   // tracked model name; bump version on retrain
 let LABELS = [];   // filled from species.json (313 Finnish species, in class-index order)
 let FI_NAMES = {}; // english-name(lowercased) -> finnish name, from species.json
 let SPECIES_RARITY = {}; // english-name(lowercased) -> rarity tier, from species.json
