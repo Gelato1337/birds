@@ -519,7 +519,7 @@ const I18N = {
     sound_pick:"vedä ikkuna kutsun kohdalle, sitten Tunnista", sound_identify:"Tunnista valinta",
     sound_start:"Alku", sound_len:"Ikkunan pituus",
     sound_play:"Toista valinta", sound_stopplay:"Pysäytä",
-    sound_none:"ei tunnistettua lintua", sound_decodefail:"ääntä ei voitu lukea",
+    sound_none:"ei tunnistettua lintua", sound_best:"Paras arvaus", sound_decodefail:"ääntä ei voitu lukea",
     sound_micfail:"mikrofoni ei käytettävissä",
     zoom:"Zoom", recent_head:"Viimeisimmät havainnot", recent_empty:"Ei vielä havaintoja. Tee ensimmäinen löytösi!",
     findings_seen:"Mitä malli näki", findings_heard:"Mitä kuulit",
@@ -605,7 +605,7 @@ const I18N = {
     sound_pick:"slide the window onto the call, then Identify", sound_identify:"Identify selection",
     sound_start:"Start", sound_len:"Window length",
     sound_play:"Play selection", sound_stopplay:"Stop",
-    sound_none:"no bird recognized", sound_decodefail:"couldn't read the audio",
+    sound_none:"no bird recognized", sound_best:"Best guess", sound_decodefail:"couldn't read the audio",
     sound_micfail:"microphone unavailable",
     zoom:"Zoom", recent_head:"Recent findings", recent_empty:"No findings yet. Make your first spot!",
     findings_seen:"What the model saw", findings_heard:"What you heard",
@@ -1321,7 +1321,7 @@ window.addEventListener("resize",()=>{ if(lastDets&&lastImg&&$("#photo").style.d
 let bn_session=null, bn_map=null, recRec=null, recChunks=[], recStream=null;
 let AUD=null;   // {pcm:Float32(48k mono), dur:sec, specImg:ImageData, start:sec, len:sec}
 let playCtx=null, playSrc=null;   // preview playback of the selected window
-const BN_URL='./birdnet.onnx', BN_WIN=144000, BN_SR=48000, BN_CONF=0.5, REC_MS=120000;  // 2-min safety cap; you stop with the button
+const BN_URL='./birdnet.onnx', BN_WIN=144000, BN_SR=48000, BN_CONF=0.4, REC_MS=120000;  // 0.4 log threshold; 2-min rec safety cap (stop with button)
 const sigmoid=x=>1/(1+Math.exp(-x));
 // scale so the loudest sample hits `target`. maxGain caps how much a quiet clip
 // is boosted (so near-silence isn't amplified into noise). Returns a new array.
@@ -1466,7 +1466,13 @@ async function identify(){
       nwin++; if(off+BN_WIN>=spanS) break; off+=hop;
     }
     let key=null,conf=0; for(const nm in best){ if(best[nm]>conf){conf=best[nm];key=nm;} }
-    if(!key || conf<BN_CONF){ setStatus(t("sound_none"),""); toast(t("sound_none")); return; }
+    if(!key || conf<BN_CONF){
+      // not confident enough to log — but tell the user the best guess so a quiet
+      // bird reads differently from a dead/birdless clip.
+      if(key && conf>=0.12){ const msg=`${t("sound_best")}: ${dn(key)} ${Math.round(conf*100)}%`; setStatus(msg,""); toast(msg); }
+      else { setStatus(t("sound_none"),""); toast(t("sound_none")); }
+      return;
+    }
     await award([key],[{key,conf,viaSound:true}], spectroThumb());   // save the spectrogram
     setStatus(t("heard",dn(key)),"ok");
   }catch(e){ setStatus(t("sound_decodefail"),"err"); }
