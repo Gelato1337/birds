@@ -309,6 +309,15 @@
           <button class="btn" id="recBtn"><svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 00-3 3v7a3 3 0 006 0V5a3 3 0 00-3-3z"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>Record</button>
           <button class="btn ghost" id="audioUploadBtn"><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L8 8m4-4l4 4M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>Upload audio/video</button>
         </div>
+        <div id="soundPick" style="display:none;margin-top:10px">
+          <label style="font-size:11px;color:var(--ink-soft)" id="soundStartLbl">Start</label>
+          <input type="range" id="soundStart" min="0" max="0" step="0.05" value="0" style="width:100%">
+          <label style="font-size:11px;color:var(--ink-soft)" id="soundLenLbl">Window length</label>
+          <input type="range" id="soundLen" min="3" max="3" step="1" value="3" style="width:100%">
+          <div id="soundWindowLbl" style="font-size:11px;color:var(--ink-soft);text-align:center;margin:2px 0 6px"></div>
+          <button class="btn ghost" id="playBtn" style="width:100%;margin-bottom:6px"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Play selection</button>
+          <button class="btn wide" id="identifyBtn">Identify</button>
+        </div>
       </div>
 
       <div class="findings" id="findings" style="display:none">
@@ -505,8 +514,11 @@ const I18N = {
     sound_soon:"Linnunlaulun tunnistus tulossa pian.",
     sound_rec:"Äänitä", sound_stop:"Lopeta", sound_upload:"Lataa ääni/video",
     sound_loading:"ladataan äänimallia…", sound_loadfail:"äänimallin lataus epäonnistui",
-    sound_analyzing:"tunnistetaan ääntä…", sound_recording:"äänitetään… (n. 6 s)",
-    sound_locating:"haetaan sijaintia…",
+    sound_analyzing:"tunnistetaan ääntä…", sound_recording:"äänitetään…",
+    sound_locating:"haetaan sijaintia…", sound_decoding:"puretaan ääntä…",
+    sound_pick:"vedä ikkuna kutsun kohdalle, sitten Tunnista", sound_identify:"Tunnista valinta",
+    sound_start:"Alku", sound_len:"Ikkunan pituus",
+    sound_play:"Toista valinta", sound_stopplay:"Pysäytä",
     sound_none:"ei tunnistettua lintua", sound_decodefail:"ääntä ei voitu lukea",
     sound_micfail:"mikrofoni ei käytettävissä",
     zoom:"Zoom", recent_head:"Viimeisimmät havainnot", recent_empty:"Ei vielä havaintoja. Tee ensimmäinen löytösi!",
@@ -553,6 +565,7 @@ const I18N = {
     found_pts:n=>`+${n} pistettä`, found_repeat:"jo päiväkirjassa — ei uusia pisteitä",
     found_newarea:" · uusi alue!", found_fresh:n=>` · tuore +${n}`,
     found_library:" · kirjastosta", found_quest:n=>` · +${n} tehtävä`,
+    bonus_seenheard:n=>`Nähty + kuultu! +${n}`,
     found_elsewhere:km=>`kirjattu (otettu ~${km} km päässä — ei pisteitä)`,
     new_species:"uusi laji", match:"osuma", call_match:"ääniosuma",
     coop:n=>`Yhteistyö! Sama laji toisen havaitsijan kanssa · +${n}`,
@@ -587,8 +600,11 @@ const I18N = {
     sound_soon:"Bird-call identification coming soon.",
     sound_rec:"Record", sound_stop:"Stop", sound_upload:"Upload audio/video",
     sound_loading:"loading audio model…", sound_loadfail:"audio model failed to load",
-    sound_analyzing:"identifying call…", sound_recording:"recording… (~6s)",
-    sound_locating:"getting location…",
+    sound_analyzing:"identifying call…", sound_recording:"recording…",
+    sound_locating:"getting location…", sound_decoding:"decoding audio…",
+    sound_pick:"slide the window onto the call, then Identify", sound_identify:"Identify selection",
+    sound_start:"Start", sound_len:"Window length",
+    sound_play:"Play selection", sound_stopplay:"Stop",
     sound_none:"no bird recognized", sound_decodefail:"couldn't read the audio",
     sound_micfail:"microphone unavailable",
     zoom:"Zoom", recent_head:"Recent findings", recent_empty:"No findings yet. Make your first spot!",
@@ -635,6 +651,7 @@ const I18N = {
     found_pts:n=>`+${n} points`, found_repeat:"already in your journal — no new points",
     found_newarea:" · new area!", found_fresh:n=>` · fresh +${n}`,
     found_library:" · from library", found_quest:n=>` · +${n} quest`,
+    bonus_seenheard:n=>`Seen + heard! +${n}`,
     found_elsewhere:km=>`logged (taken ~${km} km away — no points)`,
     new_species:"new species", match:"match", call_match:"call match",
     coop:n=>`Co-op! Same species as another spotter · +${n}`,
@@ -1240,19 +1257,13 @@ function closeAIPanel(){ $("#aiPanel").style.display="none"; $("#aiPromptText").
 $("#aiClose").onclick = ()=>{ closeAIPanel(); setStatus(t("cancelled"),""); };
 
 function makeThumb(img, dets){
+  // Save a CLEAN thumbnail (no boxes burned in) so the image can be re-run
+  // through a better model later. Boxes still show live on #overlay at capture
+  // time — we just don't bake them into the stored picture.
   const maxW=480; const r=Math.min(1, maxW/img.naturalWidth);
   const w=Math.round(img.naturalWidth*r), h=Math.round(img.naturalHeight*r);
   const c=document.createElement("canvas"); c.width=w; c.height=h;
-  const ctx=c.getContext("2d"); ctx.drawImage(img,0,0,w,h);
-  ctx.lineWidth=Math.max(2,w/200); ctx.font=`600 ${Math.max(11,w/34)}px Inter,sans-serif`; ctx.textBaseline="top";
-  (dets||[]).forEach(d=>{
-    const col=COLORS[d.cls%COLORS.length];
-    const x=d.x*r,y=d.y*r,bw=d.w*r,bh=d.h*r;
-    ctx.strokeStyle=col; ctx.strokeRect(x,y,bw,bh);
-    const lab=LABELS[d.cls]; const tw=ctx.measureText(lab).width;
-    ctx.fillStyle=col; ctx.fillRect(x,y-Math.max(14,w/26),tw+8,Math.max(14,w/26));
-    ctx.fillStyle="#fff"; ctx.fillText(lab,x+4,y-Math.max(13,w/27));
-  });
+  c.getContext("2d").drawImage(img,0,0,w,h);
   try{ return c.toDataURL("image/jpeg",0.7); }catch{ return null; }
 }
 
@@ -1303,11 +1314,24 @@ function drawDetections(dets,img){
 function clearOverlay(){const cv=$("#overlay");cv.getContext("2d").clearRect(0,0,cv.width,cv.height);}
 window.addEventListener("resize",()=>{ if(lastDets&&lastImg&&$("#photo").style.display!=="none") drawDetections(lastDets,lastImg); });
 
-// ============ AUDIO mode — real bird-call ID via BirdNET (onnxruntime-web) ============
-// BirdNET GLOBAL 6K v2.4 (ONNX): input [1,144000] = 3s @ 48kHz mono raw waveform;
-// output 6522 logits -> sigmoid. birdnet_map.json maps its classes to our 313.
+// ============ AUDIO mode — BirdNET ID with a spectrogram + draggable window ============
+// Record or upload (audio OR video). We decode the whole clip to 48kHz mono, draw a
+// spectrogram, and you slide a 3-second window onto the call, then Identify.
+// BirdNET GLOBAL 6K v2.4 (ONNX): input [1,144000] raw 48kHz mono -> 6522 logits.
 let bn_session=null, bn_map=null, recRec=null, recChunks=[], recStream=null;
-const BN_URL='./birdnet.onnx', BN_WIN=144000, BN_SR=48000, BN_CONF=0.5, REC_MS=6000;
+let AUD=null;   // {pcm:Float32(48k mono), dur:sec, specImg:ImageData, start:sec, len:sec}
+let playCtx=null, playSrc=null;   // preview playback of the selected window
+const BN_URL='./birdnet.onnx', BN_WIN=144000, BN_SR=48000, BN_CONF=0.5, REC_MS=8000;
+const sigmoid=x=>1/(1+Math.exp(-x));
+// scale so the loudest sample hits `target`. maxGain caps how much a quiet clip
+// is boosted (so near-silence isn't amplified into noise). Returns a new array.
+function peakNorm(arr, target=0.9, maxGain=Infinity){
+  let m=0; for(let i=0;i<arr.length;i++){ const a=arr[i]<0?-arr[i]:arr[i]; if(a>m)m=a; }
+  if(m<1e-5) return arr;
+  let g=target/m; if(g>maxGain) g=maxGain;
+  const out=new Float32Array(arr.length); for(let i=0;i<arr.length;i++) out[i]=arr[i]*g;
+  return out;
+}
 
 async function bnLoad(){
   if(bn_session) return true;
@@ -1320,75 +1344,179 @@ async function bnLoad(){
     return true;
   }catch(e){ setStatus(t("sound_loadfail"),"err"); return false; }
 }
-// decode any audio OR video file/blob to 48kHz mono Float32 (extracts the audio track)
-async function decodeMono48k(arrayBuf, blob){
-  // fast path: decodeAudioData handles wav/mp3/ogg/flac/webm everywhere.
+
+// ---- decode audio OR video to 48kHz mono Float32 (whole clip) ----
+async function decodeMono48k(blob){
+  const buf=await blob.arrayBuffer();
   try{
     const ac=new (window.AudioContext||window.webkitAudioContext)();
-    const decoded=await ac.decodeAudioData(arrayBuf); ac.close();
-    const off=new OfflineAudioContext(1, Math.max(1,Math.ceil(decoded.duration*BN_SR)), BN_SR);
-    const src=off.createBufferSource(); src.buffer=decoded; src.connect(off.destination); src.start();
+    const dec=await ac.decodeAudioData(buf.slice(0)); ac.close();
+    const off=new OfflineAudioContext(1, Math.max(1,Math.ceil(dec.duration*BN_SR)), BN_SR);
+    const s=off.createBufferSource(); s.buffer=dec; s.connect(off.destination); s.start();
     return (await off.startRendering()).getChannelData(0);
-  }catch(e){
-    // fallback for formats/containers decodeAudioData can't handle (m4a/AAC, video):
-    // play it (muted) through Web Audio at 48k and capture the PCM. Real-time.
-    return decodeViaElement(blob);
+  }catch(_){
+    return decodeViaElement(blob);     // m4a / some video containers decodeAudioData can't handle
   }
 }
+// fallback: play (silent) through Web Audio at 48k and capture PCM. Real-time.
 function decodeViaElement(blob){
   return new Promise((resolve,reject)=>{
-    const el=document.createElement((blob.type||'').startsWith('video')?'video':'audio');
-    el.src=URL.createObjectURL(blob); el.muted=true; el.playsInline=true;
+    const vid=(blob.type||'').startsWith('video');
+    const el=document.createElement(vid?'video':'audio');
+    el.muted=true; el.playsInline=true; el.preload="auto"; el.src=URL.createObjectURL(blob);
+    el.style.cssText="position:fixed;width:1px;height:1px;opacity:0;pointer-events:none";
+    document.body.appendChild(el);                       // some browsers need it in the DOM
     const ac=new (window.AudioContext||window.webkitAudioContext)({sampleRate:BN_SR});
-    let node; try{ node=ac.createMediaElementSource(el); }catch(err){ reject(err); return; }
-    const gain=ac.createGain(); gain.gain.value=0;            // keep it silent
-    const sp=ac.createScriptProcessor(4096,1,1), chunks=[];
-    sp.onaudioprocess=ev=>chunks.push(new Float32Array(ev.inputBuffer.getChannelData(0)));
-    node.connect(sp); sp.connect(gain); gain.connect(ac.destination);
-    el.onended=()=>{ try{sp.disconnect();node.disconnect();gain.disconnect();ac.close();}catch(_){}
-      URL.revokeObjectURL(el.src);
-      const len=chunks.reduce((a,c)=>a+c.length,0), out=new Float32Array(len); let o=0;
-      for(const c of chunks){ out.set(c,o); o+=c.length; } resolve(out); };
-    el.onerror=()=>{ try{ac.close();}catch(_){} reject(new Error('media decode failed')); };
-    el.play().catch(reject);
+    const sp=ac.createScriptProcessor(4096,1,1), gain=ac.createGain(), chunks=[];
+    gain.gain.value=0; sp.onaudioprocess=ev=>chunks.push(new Float32Array(ev.inputBuffer.getChannelData(0)));
+    const cleanup=()=>{ try{sp.disconnect();gain.disconnect();ac.close();}catch(_){} URL.revokeObjectURL(el.src); el.remove(); };
+    el.oncanplay=()=>{ try{ ac.createMediaElementSource(el).connect(sp); sp.connect(gain); gain.connect(ac.destination); el.play(); }catch(e){ cleanup(); reject(e); } };
+    el.onended=()=>{ cleanup(); const len=chunks.reduce((a,c)=>a+c.length,0), out=new Float32Array(len); let o=0; for(const c of chunks){out.set(c,o);o+=c.length;} resolve(out); };
+    el.onerror=()=>{ cleanup(); reject(new Error('media decode failed')); };
   });
 }
-const sigmoid=x=>1/(1+Math.exp(-x));
-// run BirdNET over the audio in 3s windows; return best of OUR species (or null)
-async function bnAnalyze(samples){
-  const best={};
-  const n=Math.min(20, Math.max(1, Math.ceil(samples.length/BN_WIN)));   // cap ~60s to bound runtime
-  for(let w=0; w<n; w++){
-    const chunk=new Float32Array(BN_WIN);
-    chunk.set(samples.subarray(w*BN_WIN, w*BN_WIN+BN_WIN));
-    const out=await bn_session.run({INPUT:new ort.Tensor('float32',chunk,[1,BN_WIN])});
-    const logits=out[Object.keys(out)[0]].data;
-    for(const idx in bn_map){ const c=sigmoid(logits[idx]), nm=bn_map[idx];
-      if(c>(best[nm]||0)) best[nm]=c; }
+
+// ---- tiny radix-2 FFT (in place) for the spectrogram only ----
+function fft(re,im){
+  const n=re.length;
+  for(let i=1,j=0;i<n;i++){ let bit=n>>1; for(;j&bit;bit>>=1) j^=bit; j^=bit;
+    if(i<j){ const tr=re[i];re[i]=re[j];re[j]=tr; const ti=im[i];im[i]=im[j];im[j]=ti; } }
+  for(let len=2;len<=n;len<<=1){
+    const ang=-2*Math.PI/len, wr=Math.cos(ang), wi=Math.sin(ang);
+    for(let i=0;i<n;i+=len){ let cr=1,ci=0;
+      for(let k=0;k<len>>1;k++){ const a=i+k,b=a+(len>>1);
+        const tr=re[b]*cr-im[b]*ci, ti=re[b]*ci+im[b]*cr;
+        re[b]=re[a]-tr; im[b]=im[a]-ti; re[a]+=tr; im[a]+=ti;
+        const nr=cr*wr-ci*wi; ci=cr*wi+ci*wr; cr=nr; } }
   }
-  let key=null,conf=0; for(const nm in best){ if(best[nm]>conf){conf=best[nm];key=nm;} }
-  return (key && conf>=BN_CONF) ? {key,conf} : null;
 }
-async function analyzeAudioBlob(blob){
+function renderSpectro(pcm){
+  const cv=$("#spectro"), stage=$("#stage");
+  cv.width=stage.clientWidth||640; cv.height=stage.clientHeight||320; cv.style.display="block"; cv.style.cursor="ew-resize";
+  $("#placeholder").style.display="none";
+  const ctx=cv.getContext("2d"), W=cv.width, H=cv.height, N=1024;
+  const win=new Float32Array(N); for(let i=0;i<N;i++) win[i]=0.5-0.5*Math.cos(2*Math.PI*i/(N-1));
+  const re=new Float32Array(N), im=new Float32Array(N);
+  const binMax=Math.floor(12000/(BN_SR/N));            // show ~0–12 kHz (bird range)
+  const hop=Math.max(1,Math.floor((pcm.length-N)/W));
+  const img=ctx.createImageData(W,H);
+  for(let x=0;x<W;x++){
+    const s0=x*hop; if(s0+N>pcm.length) break;
+    for(let i=0;i<N;i++){ re[i]=pcm[s0+i]*win[i]; im[i]=0; }
+    fft(re,im);
+    for(let y=0;y<H;y++){
+      const bin=Math.floor((1-y/H)*binMax);
+      const v=Math.min(1, Math.log10(1+Math.hypot(re[bin],im[bin])*40)/2.2);
+      const p=(y*W+x)*4;
+      img.data[p]=176*v+26; img.data[p+1]=131*v+24; img.data[p+2]=47*v+19; img.data[p+3]=255;
+    }
+  }
+  ctx.putImageData(img,0,0); AUD.specImg=img;
+}
+function drawWindow(){
+  if(!AUD||!AUD.specImg) return;
+  const cv=$("#spectro"), ctx=cv.getContext("2d"); ctx.putImageData(AUD.specImg,0,0);
+  const wsec=Math.min(AUD.len, AUD.dur), x0=(AUD.start/AUD.dur)*cv.width, x1=((AUD.start+wsec)/AUD.dur)*cv.width;
+  ctx.fillStyle="rgba(176,131,47,.25)"; ctx.fillRect(x0,0,x1-x0,cv.height);
+  ctx.strokeStyle="#b0832f"; ctx.lineWidth=2; ctx.strokeRect(x0,0,x1-x0,cv.height);
+  $("#soundWindowLbl").textContent=`${wsec.toFixed(1)} s window`;
+}
+async function loadClip(blob){
+  setStatus(t("sound_decoding"),"busy");
+  try{
+    const pcm=await decodeMono48k(blob);
+    if(!pcm || pcm.length<BN_SR*0.4){ setStatus(t("sound_decodefail"),"err"); return; }
+    const dur=pcm.length/BN_SR;
+    AUD={pcm, dur, start:0, len:Math.min(5,dur), specImg:null};   // default 5s window
+    renderSpectro(pcm);
+    const ls=$("#soundLen"); ls.min=Math.min(3,dur).toFixed(2); ls.max=Math.min(30,dur).toFixed(2); ls.step="1"; ls.value=AUD.len.toFixed(2); ls.disabled=dur<=3;
+    const sl=$("#soundStart"); sl.max=Math.max(0,(dur-AUD.len)).toFixed(2); sl.step="0.05"; sl.value="0"; sl.disabled=dur<=AUD.len;
+    $("#soundPick").style.display="block"; drawWindow();
+    setStatus(t("sound_pick"),"");
+  }catch(e){ setStatus(t("sound_decodefail"),"err"); }
+}
+async function identify(){
+  if(!AUD){ return; }
   if(!await bnLoad()) return;
   setStatus(t("sound_analyzing"),"busy");
   try{
-    const res=await bnAnalyze(await decodeMono48k(await blob.arrayBuffer(), blob));
-    if(!res){ setStatus(t("sound_none"),""); toast(t("sound_none")); return; }
-    await award([res.key], [{key:res.key, conf:res.conf, viaSound:true}]);
-    setStatus(t("heard", dn(res.key)),"ok");
+    // model takes a fixed 3s; scan the selected span in overlapping 3s windows
+    // (hop 1.5s) and keep the best confidence per species.
+    const startS=Math.floor(AUD.start*BN_SR);
+    const spanS=Math.max(BN_WIN, Math.floor(Math.min(AUD.len, AUD.dur-AUD.start)*BN_SR));
+    const hop=Math.floor(BN_WIN/2), best={};
+    let off=0, nwin=0;
+    while(off<spanS && nwin<24){
+      const s0=startS+off, chunk=new Float32Array(BN_WIN);
+      chunk.set(AUD.pcm.subarray(s0, s0+BN_WIN));
+      const inp=peakNorm(chunk, 0.9, 10);   // normalize quiet clips; cap so silence isn't blown up
+      const out=await bn_session.run({INPUT:new ort.Tensor('float32',inp,[1,BN_WIN])});
+      const logits=out[Object.keys(out)[0]].data;
+      for(const idx in bn_map){ const c=sigmoid(logits[idx]), nm=bn_map[idx]; if(c>(best[nm]||0)) best[nm]=c; }
+      nwin++; if(off+BN_WIN>=spanS) break; off+=hop;
+    }
+    let key=null,conf=0; for(const nm in best){ if(best[nm]>conf){conf=best[nm];key=nm;} }
+    if(!key || conf<BN_CONF){ setStatus(t("sound_none"),""); toast(t("sound_none")); return; }
+    await award([key],[{key,conf,viaSound:true}], spectroThumb());   // save the spectrogram
+    setStatus(t("heard",dn(key)),"ok");
   }catch(e){ setStatus(t("sound_decodefail"),"err"); }
 }
-// upload an audio OR video file from the device
+// preview: play exactly the selected window from the decoded audio
+function setPlayBtn(on){ const b=$("#playBtn"); if(!b) return;
+  b.innerHTML=(on ? '<svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12"/></svg>'+t("sound_stopplay")
+                  : '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'+t("sound_play")); }
+function stopPlay(){ if(playSrc){ try{playSrc.stop();}catch(_){} playSrc=null; } setPlayBtn(false); }
+function playSelection(){
+  if(!AUD){ return; }
+  if(playSrc){ stopPlay(); return; }                 // toggle off
+  playCtx = playCtx || new (window.AudioContext||window.webkitAudioContext)();
+  if(playCtx.state==="suspended") playCtx.resume();
+  const s0=Math.floor(AUD.start*BN_SR);
+  const n=Math.floor(Math.min(AUD.len, AUD.dur-AUD.start)*BN_SR);
+  const seg=peakNorm(AUD.pcm.subarray(s0, s0+n), 0.97);   // loud enough to actually hear
+  const buf=playCtx.createBuffer(1, Math.max(1,seg.length), BN_SR);
+  buf.getChannelData(0).set(seg);
+  playSrc=playCtx.createBufferSource(); playSrc.buffer=buf; playSrc.connect(playCtx.destination);
+  playSrc.onended=()=>{ playSrc=null; setPlayBtn(false); };
+  playSrc.start(); setPlayBtn(true);
+}
+$("#playBtn").onclick=playSelection;
+$("#soundStart").oninput=()=>{ if(AUD){ stopPlay(); AUD.start=+$("#soundStart").value; drawWindow(); } };
+$("#soundLen").oninput=()=>{ if(!AUD) return; stopPlay();
+  AUD.len=+$("#soundLen").value;
+  const sl=$("#soundStart"); sl.max=Math.max(0,(AUD.dur-AUD.len)).toFixed(2); sl.disabled=AUD.dur<=AUD.len;
+  if(AUD.start > +sl.max){ AUD.start=+sl.max; sl.value=sl.max; }
+  drawWindow(); };
+$("#identifyBtn").onclick=identify;
+// clean spectrogram (no window overlay) as a JPEG — saved as the sound sighting's image
+function spectroThumb(){
+  if(!AUD||!AUD.specImg) return null;
+  const c=document.createElement("canvas"); c.width=AUD.specImg.width; c.height=AUD.specImg.height;
+  c.getContext("2d").putImageData(AUD.specImg,0,0);
+  try{ return c.toDataURL("image/jpeg",0.7); }catch{ return null; }
+}
+// drag the highlighted window left/right on the spectrogram to move the start
+let _specDrag=null;
+function _specTime(e){ const cv=$("#spectro"), r=cv.getBoundingClientRect();
+  const x=(e.touches?e.touches[0].clientX:e.clientX)-r.left;
+  return Math.max(0, Math.min(AUD.dur, (x/cv.width)*AUD.dur)); }
+function _specDown(e){ if(!AUD) return; e.preventDefault(); stopPlay(); _specDrag=_specTime(e)-AUD.start; _specMove(e); }
+function _specMove(e){ if(_specDrag===null||!AUD) return; e.preventDefault();
+  const maxStart=Math.max(0, AUD.dur-Math.min(AUD.len,AUD.dur));
+  AUD.start=Math.max(0, Math.min(maxStart, _specTime(e)-_specDrag));
+  $("#soundStart").value=AUD.start.toFixed(2); drawWindow(); }
+(function(){ const cv=$("#spectro"); if(!cv) return;
+  cv.addEventListener("mousedown",_specDown); window.addEventListener("mousemove",_specMove); window.addEventListener("mouseup",()=>{_specDrag=null;});
+  cv.addEventListener("touchstart",_specDown,{passive:false}); cv.addEventListener("touchmove",_specMove,{passive:false}); cv.addEventListener("touchend",()=>{_specDrag=null;}); })();
+
+// upload an audio OR video file
 $("#audioUploadBtn").onclick=()=>$("#audioInput").click();
 $("#audioInput").onchange=async e=>{ const f=e.target.files[0]; if(!f) return;
-  await ensureGps();                                  // ask GPS first, then identify
-  $("#placeholder").style.display="block";
-  await analyzeAudioBlob(f); e.target.value=""; };
-// live record (auto-stops after REC_MS, or tap again to stop early) then analyze
+  ensureGps(); await loadClip(f); e.target.value=""; };   // GPS resolves while we decode
+// live record (auto-stops after REC_MS, or tap again) -> spectrogram + pick window
 $("#recBtn").onclick=async ()=>{
   if(recRec){ stopRec(); return; }
-  await ensureGps();                                  // ask GPS first, then record
+  ensureGps();   // prompt now (in the gesture); resolves while you record
   try{
     recStream=await navigator.mediaDevices.getUserMedia({audio:true});
     recChunks=[]; recRec=new MediaRecorder(recStream);
@@ -1396,7 +1524,7 @@ $("#recBtn").onclick=async ()=>{
     recRec.onstop=async ()=>{
       const blob=new Blob(recChunks,{type:recRec&&recRec.mimeType||'audio/webm'});
       if(recStream){ recStream.getTracks().forEach(t=>t.stop()); recStream=null; } recRec=null;
-      setRecBtn(false); await analyzeAudioBlob(blob);
+      setRecBtn(false); await loadClip(blob);
     };
     recRec.start(); setRecBtn(true); setStatus(t("sound_recording"),"busy");
     clearTimeout(window._recstop); window._recstop=setTimeout(()=>{ if(recRec) stopRec(); }, REC_MS);
@@ -1408,7 +1536,8 @@ function setRecBtn(on){ const b=$("#recBtn"); if(!b) return;
     ? '<svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12"/></svg>'+t("sound_stop")
     : '<svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 00-3 3v7a3 3 0 006 0V5a3 3 0 00-3-3z"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>'+t("sound_rec")); }
 // called by setMode when leaving sound mode
-function stopAudio(){ stopRec(); if(recStream){ recStream.getTracks().forEach(t=>t.stop()); recStream=null; } }
+function stopAudio(){ stopRec(); stopPlay(); if(recStream){ recStream.getTracks().forEach(t=>t.stop()); recStream=null; }
+  AUD=null; const sp=$("#spectro"); if(sp) sp.style.display="none"; const pk=$("#soundPick"); if(pk) pk.style.display="none"; }
 
 // ============ SCORING ============
 function cellId(lat,lon){ return `${Math.round(lat*100)}_${Math.round(lon*100)}`; }
@@ -1439,6 +1568,17 @@ async function award(keys, finds, thumb=null){
   log.finds.unshift(sighting);
   log.finds = log.finds.slice(0,300);
   log.finds.forEach((f,i)=>{ if(i>=60) f.thumb=null; });
+
+  // bonus: caught a species BOTH on camera and by sound (+10, once per species)
+  try{
+    const sh=JSON.parse(localStorage.getItem("fieldmark_seenheard")||"{}");
+    let shPts=0;
+    keys.forEach(k=>{ if(sh[k]) return;
+      const fs=log.finds.filter(f=>f.species.includes(k));
+      if(fs.some(f=>!f.viaSound) && fs.some(f=>f.viaSound)){ sh[k]=1; shPts+=10; } });
+    if(shPts){ localStorage.setItem("fieldmark_seenheard",JSON.stringify(sh));
+      log.bonusPoints=(log.bonusPoints||0)+shPts; toast(t("bonus_seenheard",shPts)); }
+  }catch(_){}
 
   // co-op + quests only count for on-location sightings; their rewards are
   // bonus points added on top of the DB-computed entry points.
@@ -1733,6 +1873,10 @@ function applyStaticI18n(){
   setBtnText($("#uploadBtn"), t("btn_upload"));
   setBtnText($("#shootBtn"), t("btn_capture"));
   setBtnText($("#audioUploadBtn"), t("sound_upload"));
+  setText("#identifyBtn", t("sound_identify"));
+  setText("#soundStartLbl", t("sound_start"));
+  setText("#soundLenLbl", t("sound_len"));
+  if(typeof setPlayBtn==="function") setPlayBtn(false);
   if(typeof setRecBtn==="function") setRecBtn(false);
   setText("#zoomWrap span", t("zoom"));
   setText("#recentHead", t("recent_head"));
@@ -1938,9 +2082,16 @@ function openSpecies(key, override=null){
     $("#dCount").textContent = t("detail_seen", log.species[key]||0, basePts(key));
   }
   populateWiki(key);
+  // show every image we have for this species — a photo AND a sound spectrogram if
+  // both exist — full size, stacked (scroll down). No placeholder when there's none.
+  const photo = sightings.find(f=>f.thumb && !f.viaSound);
+  const sound = sightings.find(f=>f.thumb && f.viaSound);
+  const thumbs=[]; const add=u=>{ if(u && !thumbs.includes(u)) thumbs.push(u); };
+  if(override && override.thumb) add(override.thumb);
+  add(photo&&photo.thumb); add(sound&&sound.thumb);
   const imgWrap=$("#dPhoto");
-  if(withThumb){ imgWrap.innerHTML=`<img src="${withThumb.thumb}" alt="">`; imgWrap.style.display="block"; }
-  else { imgWrap.innerHTML=`<div class="dnophoto">${t("detail_nophoto")}${heard?t("detail_heard"):""}.</div>`; imgWrap.style.display="block"; }
+  imgWrap.innerHTML = thumbs.map(u=>`<img src="${u}" alt="" style="width:100%;display:block;margin-bottom:8px">`).join("");
+  imgWrap.style.display = thumbs.length ? "block" : "none";
   $("#speciesDetail").classList.add("open");
   const mapBox=$("#dMap");
   if(withGeo){
