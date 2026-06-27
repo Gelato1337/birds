@@ -1373,7 +1373,7 @@ function decodeViaElement(blob){
     const collect=()=>{ const len=chunks.reduce((a,c)=>a+c.length,0), out=new Float32Array(len); let o=0; for(const c of chunks){out.set(c,o);o+=c.length;} return out; };
     const finish=(fn,arg)=>{ if(done) return; done=true; clearTimeout(timer);
       try{sp.disconnect();gain.disconnect();ac.close();}catch(_){} URL.revokeObjectURL(el.src); el.remove(); fn(arg); };
-    el.oncanplay=()=>{ try{
+    el.oncanplay=()=>{ el.oncanplay=null; try{   // run once: canplay can fire repeatedly
         if(ac.state==='suspended') ac.resume();          // mobile: context starts suspended
         ac.createMediaElementSource(el).connect(sp); sp.connect(gain); gain.connect(ac.destination); el.play();
         // hard cap: if 'ended' never fires (common on mobile video), grab what we captured
@@ -1458,8 +1458,9 @@ async function identify(){
     while(off<spanS && nwin<24){
       const s0=startS+off, chunk=new Float32Array(BN_WIN);
       chunk.set(AUD.pcm.subarray(s0, s0+BN_WIN));
-      const inp=peakNorm(chunk, 0.9, 10);   // normalize quiet clips; cap so silence isn't blown up
-      const out=await bn_session.run({INPUT:new ort.Tensor('float32',inp,[1,BN_WIN])});
+      // feed RAW audio — BirdNET is amplitude-robust and was validated on raw;
+      // normalizing here pushed clips out of its training range and killed confidence.
+      const out=await bn_session.run({INPUT:new ort.Tensor('float32',chunk,[1,BN_WIN])});
       const logits=out[Object.keys(out)[0]].data;
       for(const idx in bn_map){ const c=sigmoid(logits[idx]), nm=bn_map[idx]; if(c>(best[nm]||0)) best[nm]=c; }
       nwin++; if(off+BN_WIN>=spanS) break; off+=hop;
