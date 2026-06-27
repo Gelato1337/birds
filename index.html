@@ -1428,19 +1428,26 @@ async function decodeWithWebCodecs({track,samples,asc}){
 }
 // reliable path: wrap the raw AAC frames as an ADTS (.aac) stream and let the
 // browser's NATIVE decoder (the one that plays the video) decode it. Not real-time.
+const AAC_SR_INDEX=[96000,88200,64000,48000,44100,32000,24000,22050,16000,12000,11025,8000,7350];
 async function decodeWithRemux({track,samples,asc}){
-  if(!asc) throw new Error('no AAC config');
-  const adts=aacToAdts(samples, asc);
+  // ADTS params: use the AudioSpecificConfig if mp4box gave us one, else derive
+  // from the track (codec string -> AAC object type, plus sample rate/channels).
+  let aot,freqIdx,chanCfg;
+  if(asc && asc.length>=2){
+    aot=(asc[0]>>3)&0x1f; freqIdx=((asc[0]&0x07)<<1)|((asc[1]>>7)&0x01); chanCfg=(asc[1]>>3)&0x0f;
+  } else {
+    aot=+((/mp4a\.40\.(\d+)/.exec(track.codec||'')||[])[1])||2;          // .2 = AAC-LC
+    const i=AAC_SR_INDEX.indexOf(track.audio.sample_rate); freqIdx=(i<0)?4:i;
+    const ch=track.audio.channel_count; chanCfg=(ch>=1&&ch<=6)?ch:2;
+  }
+  if(!chanCfg) chanCfg=(track.audio.channel_count||2);
+  const adts=aacToAdts(samples, Math.max(0,aot-1), freqIdx&0xf, chanCfg&0xf);
   const ac=new (window.AudioContext||window.webkitAudioContext)();
   const dec=await ac.decodeAudioData(adts.buffer); ac.close();
   return resampleTo48kMono(dec);
 }
-// build ADTS headers (7 bytes/frame) from the AudioSpecificConfig + raw AAC samples
-function aacToAdts(samples, asc){
-  const aot=(asc[0]>>3)&0x1f;                                 // audio object type
-  const freqIdx=((asc[0]&0x07)<<1)|((asc[1]>>7)&0x01);
-  const chanCfg=(asc[1]>>3)&0x0f;
-  const profile=Math.max(0,aot-1);                           // ADTS profile = AOT-1
+// build ADTS headers (7 bytes/frame) in front of each raw AAC frame
+function aacToAdts(samples, profile, freqIdx, chanCfg){
   let total=0; for(const s of samples) total+=7+s.data.byteLength;
   const out=new Uint8Array(total); let o=0;
   for(const s of samples){
