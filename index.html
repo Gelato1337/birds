@@ -1357,12 +1357,14 @@ async function decodeMono48k(blob){
     return await resampleTo48kMono(dec);
   }catch(_){}
   // 2) WebCodecs + mp4 demux — fast & reliable for video on phones (Android, iOS 16.4+).
-  if(typeof AudioDecoder!=='undefined'){
+  let wcReason="";
+  if(typeof AudioDecoder==='undefined'){ wcReason="AudioDecoder undefined"; }
+  else {
     try{ dbg("webcodecs"); return await withTimeout(decodeViaWebCodecs(buf.slice(0)), 25000); }
-    catch(e){ const m=(e&&e.message)||e; console.warn('WebCodecs failed:', m); toast("WebCodecs: "+m); }
-  } else { toast("WebCodecs: not supported on this browser"); }
+    catch(e){ wcReason=(e&&e.message)||String(e); console.warn('WebCodecs failed:', wcReason); toast("WebCodecs: "+wcReason); }
+  }
   // 3) last resort: real-time element capture (bounded so it can't hang forever)
-  dbg("realtime");
+  dbg("realtime — wc: "+wcReason);
   return await withTimeout(decodeViaElement(blob), 95000);
 }
 async function resampleTo48kMono(audioBuffer){
