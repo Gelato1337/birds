@@ -1321,7 +1321,7 @@ window.addEventListener("resize",()=>{ if(lastDets&&lastImg&&$("#photo").style.d
 let bn_session=null, bn_map=null, recRec=null, recChunks=[], recStream=null;
 let AUD=null;   // {pcm:Float32(48k mono), dur:sec, specImg:ImageData, start:sec, len:sec}
 let playCtx=null, playSrc=null;   // preview playback of the selected window
-const BN_URL='./birdnet.onnx', BN_WIN=144000, BN_SR=48000, BN_CONF=0.5, REC_MS=8000;
+const BN_URL='./birdnet.onnx', BN_WIN=144000, BN_SR=48000, BN_CONF=0.5, REC_MS=120000;  // 2-min safety cap; you stop with the button
 const sigmoid=x=>1/(1+Math.exp(-x));
 // scale so the loudest sample hits `target`. maxGain caps how much a quiet clip
 // is boosted (so near-silence isn't amplified into noise). Returns a new array.
@@ -1369,10 +1369,19 @@ function decodeViaElement(blob){
     const ac=new (window.AudioContext||window.webkitAudioContext)({sampleRate:BN_SR});
     const sp=ac.createScriptProcessor(4096,1,1), gain=ac.createGain(), chunks=[];
     gain.gain.value=0; sp.onaudioprocess=ev=>chunks.push(new Float32Array(ev.inputBuffer.getChannelData(0)));
-    const cleanup=()=>{ try{sp.disconnect();gain.disconnect();ac.close();}catch(_){} URL.revokeObjectURL(el.src); el.remove(); };
-    el.oncanplay=()=>{ try{ ac.createMediaElementSource(el).connect(sp); sp.connect(gain); gain.connect(ac.destination); el.play(); }catch(e){ cleanup(); reject(e); } };
-    el.onended=()=>{ cleanup(); const len=chunks.reduce((a,c)=>a+c.length,0), out=new Float32Array(len); let o=0; for(const c of chunks){out.set(c,o);o+=c.length;} resolve(out); };
-    el.onerror=()=>{ cleanup(); reject(new Error('media decode failed')); };
+    let done=false, timer=null;
+    const collect=()=>{ const len=chunks.reduce((a,c)=>a+c.length,0), out=new Float32Array(len); let o=0; for(const c of chunks){out.set(c,o);o+=c.length;} return out; };
+    const finish=(fn,arg)=>{ if(done) return; done=true; clearTimeout(timer);
+      try{sp.disconnect();gain.disconnect();ac.close();}catch(_){} URL.revokeObjectURL(el.src); el.remove(); fn(arg); };
+    el.oncanplay=()=>{ try{
+        if(ac.state==='suspended') ac.resume();          // mobile: context starts suspended
+        ac.createMediaElementSource(el).connect(sp); sp.connect(gain); gain.connect(ac.destination); el.play();
+        // hard cap: if 'ended' never fires (common on mobile video), grab what we captured
+        const cap=Math.min(90000, ((isFinite(el.duration)&&el.duration)?el.duration*1000:60000)+5000);
+        timer=setTimeout(()=>{ const out=collect(); out.length? finish(resolve,out) : finish(reject,new Error('decode timed out')); }, cap);
+      }catch(e){ finish(reject,e); } };
+    el.onended=()=>finish(resolve, collect());
+    el.onerror=()=>finish(reject, new Error('media decode failed'));
   });
 }
 
@@ -1518,7 +1527,9 @@ $("#recBtn").onclick=async ()=>{
   if(recRec){ stopRec(); return; }
   ensureGps();   // prompt now (in the gesture); resolves while you record
   try{
-    recStream=await navigator.mediaDevices.getUserMedia({audio:true});
+    // raw mic: phones default to speech processing (noiseSuppression/AGC/echo) that
+    // gates bird calls down to near-silence — turn it all off, peakNorm makes it loud.
+    recStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
     recChunks=[]; recRec=new MediaRecorder(recStream);
     recRec.ondataavailable=ev=>{ if(ev.data.size) recChunks.push(ev.data); };
     recRec.onstop=async ()=>{
