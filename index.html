@@ -389,7 +389,7 @@
     <input type="file" id="nativeCamInput" accept="image/*" capture="environment">
     <input type="file" id="audioInput" accept="audio/*,video/*">
     <footer>
-      Detector: <b id="modelTag">Fieldmark-s v3 · 313 Finnish species</b>.
+      Detector: <b id="modelTag">Fieldmark-s v3 · 313 Finnish species</b>. <span id="buildTag" style="opacity:.5"></span>
     </footer>
   </main>
 </div>
@@ -467,6 +467,9 @@
 <script type="module">
 import * as ort from 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.webgpu.min.mjs';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const BUILD='v23';   // bump with sw cache; shown in footer so we can tell cached vs fresh
+{ const b=document.getElementById('buildTag'); if(b) b.textContent='build '+BUILD; }
 
 /* ============ Supabase config — FILL THESE IN ============
    Project Settings > API in supabase.com. anon key is safe to ship. */
