@@ -5,7 +5,7 @@
 //   - HTML / JS / other  network-first (deploys show up immediately)
 //   - Supabase / APIs    never touched (user data must never be cached)
 // Bump CACHE to force-drop everything from older versions (e.g. the old v1 model).
-const CACHE = 'fieldmark-v17';
+const CACHE = 'fieldmark-v18';
 
 // big, rarely-changing assets worth caching aggressively (cache-first)
 const STATIC = ['./fieldmark-s-v3.onnx', './icon.svg', './manifest.webmanifest'];

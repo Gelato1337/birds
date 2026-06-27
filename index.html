@@ -1348,15 +1348,74 @@ async function bnLoad(){
 // ---- decode audio OR video to 48kHz mono Float32 (whole clip) ----
 async function decodeMono48k(blob){
   const buf=await blob.arrayBuffer();
+  // 1) native decode — fast; handles audio files and (on desktop) most video
   try{
     const ac=new (window.AudioContext||window.webkitAudioContext)();
     const dec=await ac.decodeAudioData(buf.slice(0)); ac.close();
-    const off=new OfflineAudioContext(1, Math.max(1,Math.ceil(dec.duration*BN_SR)), BN_SR);
-    const s=off.createBufferSource(); s.buffer=dec; s.connect(off.destination); s.start();
-    return (await off.startRendering()).getChannelData(0);
-  }catch(_){
-    return decodeViaElement(blob);     // m4a / some video containers decodeAudioData can't handle
+    return await resampleTo48kMono(dec);
+  }catch(_){}
+  // 2) WebCodecs + mp4 demux — fast & reliable for video on phones (Android, iOS 16.4+).
+  //    Not real-time, no heavy wasm. Falls through on anything it can't handle.
+  if(typeof AudioDecoder!=='undefined'){
+    try{ return await decodeViaWebCodecs(buf.slice(0)); }
+    catch(e){ console.warn('WebCodecs decode failed, falling back:', e&&e.message||e); }
   }
+  // 3) last resort: play it through silently and capture (real-time, fragile on iOS)
+  return decodeViaElement(blob);
+}
+async function resampleTo48kMono(audioBuffer){
+  const off=new OfflineAudioContext(1, Math.max(1,Math.ceil(audioBuffer.duration*BN_SR)), BN_SR);
+  const s=off.createBufferSource(); s.buffer=audioBuffer; s.connect(off.destination); s.start();
+  return (await off.startRendering()).getChannelData(0);
+}
+async function resampleFloat48kMono(f32, srcRate){
+  if(srcRate===BN_SR) return f32;
+  const off=new OfflineAudioContext(1, Math.max(1,Math.ceil(f32.length*BN_SR/srcRate)), BN_SR);
+  const b=off.createBuffer(1, f32.length, srcRate); b.copyToChannel(f32,0);
+  const s=off.createBufferSource(); s.buffer=b; s.connect(off.destination); s.start();
+  return (await off.startRendering()).getChannelData(0);
+}
+// demux an mp4/m4a with mp4box (loaded on demand) and decode the AAC track with
+// WebCodecs — fast, no real-time playback, no 30MB ffmpeg. Throws to fall back.
+async function decodeViaWebCodecs(ab){
+  const M=await import('https://esm.sh/mp4box@0.5.2'); const MP4Box=M.default||M;
+  const mp4=MP4Box.createFile();
+  let track=null, perr=null; const samples=[];
+  mp4.onError=e=>{ perr=e; };
+  mp4.onReady=info=>{ track=(info.audioTracks||[])[0];
+    if(track){ mp4.setExtractionOptions(track.id,null,{nbSamples:Infinity}); mp4.start(); } };
+  mp4.onSamples=(id,u,s)=>{ for(const x of s) samples.push(x); };
+  ab.fileStart=0; mp4.appendBuffer(ab); mp4.flush();       // whole file at once -> handlers fire now
+  if(perr) throw new Error('mp4 parse: '+perr);
+  if(!track) throw new Error('no audio track');
+  if(!samples.length) throw new Error('no audio samples');
+  const desc=aacDescription(mp4, track.id);
+  const srcRate=track.audio.sample_rate, nch=track.audio.channel_count, chunks=[];
+  const dec=new AudioDecoder({
+    output:ad=>{ const fr=ad.numberOfFrames, ch=ad.numberOfChannels, mono=new Float32Array(fr), pl=new Float32Array(fr);
+      for(let c=0;c<ch;c++){ ad.copyTo(pl,{planeIndex:c,format:'f32-planar'}); for(let i=0;i<fr;i++) mono[i]+=pl[i]/ch; }
+      chunks.push(mono); ad.close(); },
+    error:e=>console.warn('AudioDecoder:', e&&e.message||e)
+  });
+  const cfg={codec:track.codec, sampleRate:srcRate, numberOfChannels:nch}; if(desc) cfg.description=desc;
+  dec.configure(cfg);
+  for(const s of samples) dec.decode(new EncodedAudioChunk({
+    type:s.is_sync?'key':'delta',
+    timestamp:Math.round(s.cts*1e6/s.timescale),
+    duration:Math.round(s.duration*1e6/s.timescale),
+    data:s.data }));
+  await dec.flush(); dec.close();
+  if(!chunks.length) throw new Error('no decoded audio');
+  let total=0; for(const c of chunks) total+=c.length;
+  const merged=new Float32Array(total); let o=0; for(const c of chunks){ merged.set(c,o); o+=c.length; }
+  return resampleFloat48kMono(merged, srcRate);
+}
+function aacDescription(mp4file, trackId){
+  const trak=mp4file.getTrackById(trackId);
+  const entries=((((trak||{}).mdia||{}).minf||{}).stbl||{}).stsd?.entries||[];
+  for(const e of entries){ const esds=e.esds;
+    if(esds&&esds.esd){ try{ return new Uint8Array(esds.esd.descs[0].descs[0].data); }catch(_){} } }
+  return null;
 }
 // fallback: play (silent) through Web Audio at 48k and capture PCM. Real-time.
 function decodeViaElement(blob){
