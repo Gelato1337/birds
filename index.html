@@ -468,7 +468,7 @@
 import * as ort from 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.webgpu.min.mjs';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-const BUILD='v23';   // bump with sw cache; shown in footer so we can tell cached vs fresh
+const BUILD='v24';   // bump with sw cache; shown in footer so we can tell cached vs fresh
 { const b=document.getElementById('buildTag'); if(b) b.textContent='build '+BUILD; }
 
 /* ============ Supabase config — FILL THESE IN ============
@@ -1324,7 +1324,7 @@ window.addEventListener("resize",()=>{ if(lastDets&&lastImg&&$("#photo").style.d
 let bn_session=null, bn_map=null, recRec=null, recChunks=[], recStream=null;
 let AUD=null;   // {pcm:Float32(48k mono), dur:sec, specImg:ImageData, start:sec, len:sec}
 let playCtx=null, playSrc=null;   // preview playback of the selected window
-const BN_URL='./birdnet.onnx', BN_WIN=144000, BN_SR=48000, BN_CONF=0.4, REC_MS=120000;  // 0.4 log threshold; 2-min rec safety cap (stop with button)
+const BN_URL='./birdnet.onnx', BN_WIN=144000, BN_SR=48000, BN_CONF=0.5, REC_MS=120000;  // 0.5 log threshold; 2-min rec safety cap (stop with button)
 const sigmoid=x=>1/(1+Math.exp(-x));
 // scale so the loudest sample hits `target`. maxGain caps how much a quiet clip
 // is boosted (so near-silence isn't amplified into noise). Returns a new array.
@@ -1551,7 +1551,9 @@ async function loadClip(blob){
     const pcm=await decodeMono48k(blob);
     if(!pcm || pcm.length<BN_SR*0.4){ setStatus(t("sound_decodefail"),"err"); return; }
     const dur=pcm.length/BN_SR;
-    AUD={pcm, dur, start:0, len:Math.min(5,dur), specImg:null};   // default 5s window
+    // default: scan the whole clip (up to 30s) so it auto-finds the best 3s window;
+    // narrow with the length slider if you want one specific call.
+    AUD={pcm, dur, start:0, len:Math.min(30,dur), specImg:null};
     renderSpectro(pcm);
     const ls=$("#soundLen"); ls.min=Math.min(3,dur).toFixed(2); ls.max=Math.min(30,dur).toFixed(2); ls.step="1"; ls.value=AUD.len.toFixed(2); ls.disabled=dur<=3;
     const sl=$("#soundStart"); sl.max=Math.max(0,(dur-AUD.len)).toFixed(2); sl.step="0.05"; sl.value="0"; sl.disabled=dur<=AUD.len;
@@ -1584,12 +1586,12 @@ async function identify(){
     if(!key || conf<BN_CONF){
       // not confident enough to log — but tell the user the best guess so a quiet
       // bird reads differently from a dead/birdless clip.
-      if(key && conf>=0.12){ const msg=`${t("sound_best")}: ${dn(key)} ${Math.round(conf*100)}%`; setStatus(msg,""); toast(msg); }
+      if(key && conf>=0.25){ const msg=`${t("sound_best")}: ${dn(key)} ${Math.round(conf*100)}%`; setStatus(msg,""); toast(msg); }
       else { setStatus(t("sound_none"),""); toast(t("sound_none")); }
       return;
     }
     await award([key],[{key,conf,viaSound:true}], spectroThumb());   // save the spectrogram
-    setStatus(t("heard",dn(key)),"ok");
+    setStatus(t("heard",dn(key))+` · ${Math.round(conf*100)}%`,"ok");   // always show confidence
   }catch(e){ setStatus(t("sound_decodefail"),"err"); }
 }
 // preview: play exactly the selected window from the decoded audio
