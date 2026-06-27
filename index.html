@@ -1350,21 +1350,24 @@ function withTimeout(p, ms){ return Promise.race([p, new Promise((_,rej)=>setTim
 async function decodeMono48k(blob){
   const buf=await blob.arrayBuffer();
   const dbg=m=>setStatus(t("sound_decoding")+" · "+m,"busy");   // show which path is running
-  // 1) native decode — fast; handles audio files and (on desktop) most video
+  // 1) native decode of the whole file — fast; audio files & (desktop) video
   try{ dbg("native");
     const ac=new (window.AudioContext||window.webkitAudioContext)();
     const dec=await ac.decodeAudioData(buf.slice(0)); ac.close();
     return await resampleTo48kMono(dec);
   }catch(_){}
-  // 2) WebCodecs + mp4 demux — fast & reliable for video on phones (Android, iOS 16.4+).
-  let wcReason="";
-  if(typeof AudioDecoder==='undefined'){ wcReason="AudioDecoder undefined"; }
-  else {
-    try{ dbg("webcodecs"); return await withTimeout(decodeViaWebCodecs(buf.slice(0)), 25000); }
-    catch(e){ wcReason=(e&&e.message)||String(e); console.warn('WebCodecs failed:', wcReason); toast("WebCodecs: "+wcReason); }
+  // 2) likely a video container: demux the mp4 once, then decode the AAC track.
+  let dx=null, why="";
+  try{ dbg("demux"); dx=await withTimeout(demuxMp4Audio(buf.slice(0)), 15000); }
+  catch(e){ why="demux: "+((e&&e.message)||e); }
+  if(dx){
+    try{ dbg("webcodecs"); return await withTimeout(decodeWithWebCodecs(dx), 25000); }
+    catch(e){ why="wc:"+((e&&e.message)||e); console.warn(why); }
+    try{ dbg("remux"); return await withTimeout(decodeWithRemux(dx), 20000); }   // <- the reliable one
+    catch(e){ why+=" | remux:"+((e&&e.message)||e); console.warn('remux failed:',e); }
   }
-  // 3) last resort: real-time element capture (bounded so it can't hang forever)
-  dbg("realtime — wc: "+wcReason);
+  // 3) last resort: real-time capture (bounded). Surface why we got here.
+  dbg("realtime — "+why); toast(why||"fell back to realtime");
   return await withTimeout(decodeViaElement(blob), 95000);
 }
 async function resampleTo48kMono(audioBuffer){
@@ -1379,9 +1382,9 @@ async function resampleFloat48kMono(f32, srcRate){
   const s=off.createBufferSource(); s.buffer=b; s.connect(off.destination); s.start();
   return (await off.startRendering()).getChannelData(0);
 }
-// demux an mp4/m4a with mp4box (loaded on demand) and decode the AAC track with
-// WebCodecs — fast, no real-time playback, no 30MB ffmpeg. Throws to fall back.
-async function decodeViaWebCodecs(ab){
+// demux an mp4/m4a's audio track with mp4box (loaded on demand). Returns the
+// encoded AAC samples + config; fed to either WebCodecs or a native re-wrap.
+async function demuxMp4Audio(ab){
   const M=await import('https://esm.sh/mp4box@0.5.2'); const MP4Box=M.default||M;
   const mp4=MP4Box.createFile();
   let track=null, perr=null; const samples=[];
@@ -1393,9 +1396,13 @@ async function decodeViaWebCodecs(ab){
   if(perr) throw new Error('mp4 parse: '+perr);
   if(!track) throw new Error('no audio track');
   if(!samples.length) throw new Error('no audio samples');
-  const desc=aacDescription(mp4, track.id);
-  const srcRate=track.audio.sample_rate, nch=track.audio.channel_count, chunks=[];
-  let decErr=null;
+  return {track, samples, asc:aacDescription(mp4, track.id)};
+}
+// fast path: hardware AAC via WebCodecs. Android Chrome often omits the AAC
+// decoder (licensing) — we throw and fall back to the native re-wrap below.
+async function decodeWithWebCodecs({track,samples,asc}){
+  if(typeof AudioDecoder==='undefined') throw new Error('AudioDecoder undefined');
+  const srcRate=track.audio.sample_rate, nch=track.audio.channel_count, chunks=[]; let decErr=null;
   const dec=new AudioDecoder({
     output:ad=>{ try{
         const fr=ad.numberOfFrames, ch=ad.numberOfChannels, mono=new Float32Array(fr), pl=new Float32Array(fr);
@@ -1404,7 +1411,7 @@ async function decodeViaWebCodecs(ab){
       }catch(err){ decErr=decErr||err; } finally{ ad.close(); } },
     error:e=>{ decErr=decErr||e; }
   });
-  const cfg={codec:track.codec, sampleRate:srcRate, numberOfChannels:nch}; if(desc) cfg.description=desc;
+  const cfg={codec:track.codec, sampleRate:srcRate, numberOfChannels:nch}; if(asc) cfg.description=asc;
   if(AudioDecoder.isConfigSupported){ const sup=await AudioDecoder.isConfigSupported(cfg); if(!sup||!sup.supported) throw new Error('codec '+track.codec+' unsupported'); }
   dec.configure(cfg);
   for(const s of samples) dec.decode(new EncodedAudioChunk({
@@ -1418,6 +1425,36 @@ async function decodeViaWebCodecs(ab){
   let total=0; for(const c of chunks) total+=c.length;
   const merged=new Float32Array(total); let o=0; for(const c of chunks){ merged.set(c,o); o+=c.length; }
   return resampleFloat48kMono(merged, srcRate);
+}
+// reliable path: wrap the raw AAC frames as an ADTS (.aac) stream and let the
+// browser's NATIVE decoder (the one that plays the video) decode it. Not real-time.
+async function decodeWithRemux({track,samples,asc}){
+  if(!asc) throw new Error('no AAC config');
+  const adts=aacToAdts(samples, asc);
+  const ac=new (window.AudioContext||window.webkitAudioContext)();
+  const dec=await ac.decodeAudioData(adts.buffer); ac.close();
+  return resampleTo48kMono(dec);
+}
+// build ADTS headers (7 bytes/frame) from the AudioSpecificConfig + raw AAC samples
+function aacToAdts(samples, asc){
+  const aot=(asc[0]>>3)&0x1f;                                 // audio object type
+  const freqIdx=((asc[0]&0x07)<<1)|((asc[1]>>7)&0x01);
+  const chanCfg=(asc[1]>>3)&0x0f;
+  const profile=Math.max(0,aot-1);                           // ADTS profile = AOT-1
+  let total=0; for(const s of samples) total+=7+s.data.byteLength;
+  const out=new Uint8Array(total); let o=0;
+  for(const s of samples){
+    const len=7+s.data.byteLength;
+    out[o]=0xFF; out[o+1]=0xF1;                              // syncword; MPEG-4, no CRC
+    out[o+2]=((profile&0x3)<<6)|((freqIdx&0xf)<<2)|((chanCfg>>2)&0x1);
+    out[o+3]=((chanCfg&0x3)<<6)|((len>>11)&0x3);
+    out[o+4]=(len>>3)&0xff;
+    out[o+5]=((len&0x7)<<5)|0x1f;
+    out[o+6]=0xfc;
+    out.set(new Uint8Array(s.data), o+7);
+    o+=len;
+  }
+  return out;
 }
 function aacDescription(mp4file, trackId){
   const trak=mp4file.getTrackById(trackId);
