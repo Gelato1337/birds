@@ -1346,22 +1346,24 @@ async function bnLoad(){
 }
 
 // ---- decode audio OR video to 48kHz mono Float32 (whole clip) ----
+function withTimeout(p, ms){ return Promise.race([p, new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout '+ms+'ms')), ms))]); }
 async function decodeMono48k(blob){
   const buf=await blob.arrayBuffer();
+  const dbg=m=>setStatus(t("sound_decoding")+" · "+m,"busy");   // show which path is running
   // 1) native decode — fast; handles audio files and (on desktop) most video
-  try{
+  try{ dbg("native");
     const ac=new (window.AudioContext||window.webkitAudioContext)();
     const dec=await ac.decodeAudioData(buf.slice(0)); ac.close();
     return await resampleTo48kMono(dec);
   }catch(_){}
   // 2) WebCodecs + mp4 demux — fast & reliable for video on phones (Android, iOS 16.4+).
-  //    Not real-time, no heavy wasm. Falls through on anything it can't handle.
   if(typeof AudioDecoder!=='undefined'){
-    try{ return await decodeViaWebCodecs(buf.slice(0)); }
-    catch(e){ console.warn('WebCodecs decode failed, falling back:', e&&e.message||e); }
-  }
-  // 3) last resort: play it through silently and capture (real-time, fragile on iOS)
-  return decodeViaElement(blob);
+    try{ dbg("webcodecs"); return await withTimeout(decodeViaWebCodecs(buf.slice(0)), 25000); }
+    catch(e){ const m=(e&&e.message)||e; console.warn('WebCodecs failed:', m); toast("WebCodecs: "+m); }
+  } else { toast("WebCodecs: not supported on this browser"); }
+  // 3) last resort: real-time element capture (bounded so it can't hang forever)
+  dbg("realtime");
+  return await withTimeout(decodeViaElement(blob), 95000);
 }
 async function resampleTo48kMono(audioBuffer){
   const off=new OfflineAudioContext(1, Math.max(1,Math.ceil(audioBuffer.duration*BN_SR)), BN_SR);
@@ -1391,13 +1393,17 @@ async function decodeViaWebCodecs(ab){
   if(!samples.length) throw new Error('no audio samples');
   const desc=aacDescription(mp4, track.id);
   const srcRate=track.audio.sample_rate, nch=track.audio.channel_count, chunks=[];
+  let decErr=null;
   const dec=new AudioDecoder({
-    output:ad=>{ const fr=ad.numberOfFrames, ch=ad.numberOfChannels, mono=new Float32Array(fr), pl=new Float32Array(fr);
-      for(let c=0;c<ch;c++){ ad.copyTo(pl,{planeIndex:c,format:'f32-planar'}); for(let i=0;i<fr;i++) mono[i]+=pl[i]/ch; }
-      chunks.push(mono); ad.close(); },
-    error:e=>console.warn('AudioDecoder:', e&&e.message||e)
+    output:ad=>{ try{
+        const fr=ad.numberOfFrames, ch=ad.numberOfChannels, mono=new Float32Array(fr), pl=new Float32Array(fr);
+        for(let c=0;c<ch;c++){ ad.copyTo(pl,{planeIndex:c,format:'f32-planar'}); for(let i=0;i<fr;i++) mono[i]+=pl[i]/ch; }
+        chunks.push(mono);
+      }catch(err){ decErr=decErr||err; } finally{ ad.close(); } },
+    error:e=>{ decErr=decErr||e; }
   });
   const cfg={codec:track.codec, sampleRate:srcRate, numberOfChannels:nch}; if(desc) cfg.description=desc;
+  if(AudioDecoder.isConfigSupported){ const sup=await AudioDecoder.isConfigSupported(cfg); if(!sup||!sup.supported) throw new Error('codec '+track.codec+' unsupported'); }
   dec.configure(cfg);
   for(const s of samples) dec.decode(new EncodedAudioChunk({
     type:s.is_sync?'key':'delta',
@@ -1405,6 +1411,7 @@ async function decodeViaWebCodecs(ab){
     duration:Math.round(s.duration*1e6/s.timescale),
     data:s.data }));
   await dec.flush(); dec.close();
+  if(decErr) throw new Error((decErr&&decErr.message)||decErr);
   if(!chunks.length) throw new Error('no decoded audio');
   let total=0; for(const c of chunks) total+=c.length;
   const merged=new Float32Array(total); let o=0; for(const c of chunks){ merged.set(c,o); o+=c.length; }
