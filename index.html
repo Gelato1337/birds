@@ -244,6 +244,8 @@
     <input class="field" id="gEmail" placeholder="email" autocomplete="username">
     <input class="field" id="gPw" type="password" placeholder="password" autocomplete="current-password">
     <button class="btn wide" id="gSignin">Sign in</button>
+    <button class="btn wide ghost" id="gGuest" style="margin-top:8px">Continue without logging in</button>
+    <div class="hint" id="gGuestHint" style="margin-top:10px">Local mode: sightings stay on this device only — no account, no sync, no leaderboard.</div>
     <div id="gateErr"></div>
   </div>
 </div>
@@ -368,6 +370,10 @@
     </section>
 
     <section class="view" id="v-profile">
+      <div id="guestBanner" style="display:none;border:1.5px solid var(--ink);background:var(--paper-2);padding:12px 14px;margin-bottom:18px;font-size:12.5px;line-height:1.5">
+        <b id="guestBannerTitle">Local mode.</b> <span id="guestBannerBody">Your sightings are saved only on this device — they aren't synced and don't appear on the leaderboard.</span>
+        <button class="btn wide" id="guestSignInBtn" style="margin-top:10px">Sign in to sync</button>
+      </div>
       <div class="sechead" id="profileLangHead">Language / Kieli</div>
       <div class="modes" id="langToggle" style="margin-bottom:18px">
         <button data-lang="fi">Suomi</button>
@@ -477,6 +483,7 @@ const SUPABASE_URL = 'https://ljuendcuoruxorjdcdmu.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_ZPJYzhstIt9ccIv-vm7Mhg_pMssWP18';
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let session = null;
+let guest = false;   // local-only mode: no account, everything stays in this device's cache
 
 /* ===================================================================== */
 const MODEL_URL = './fieldmark-s-v3.onnx';   // tracked model name; bump version on retrain
@@ -553,6 +560,11 @@ const I18N = {
     detail_nogeo:"Ei tallennettua sijaintia tälle havainnolle.",
     gate_tagline:"Kirjaudu synkronoidaksesi havaintosi laitteiden välillä.",
     gate_email:"sähköposti", gate_pw:"salasana", gate_signin:"Kirjaudu sisään",
+    gate_guest:"Jatka kirjautumatta",
+    gate_guest_hint:"Paikallinen tila: havainnot tallennetaan vain tälle laitteelle — ei tiliä, ei synkronointia, ei tulostaulua.",
+    guest_banner_title:"Paikallinen tila.",
+    guest_banner_body:"Havaintosi tallennetaan vain tälle laitteelle — niitä ei synkronoida eivätkä ne näy tulostaulussa.",
+    guest_signin:"Kirjaudu synkronoidaksesi",
     gate_fail:"Kirjautuminen epäonnistui: ",
     label_link:"Merkintä →",
     toast_namefirst:"Anna ensin kenttänimi", toast_namesaved:"Nimi tallennettu.",
@@ -639,6 +651,11 @@ const I18N = {
     detail_nogeo:"No location recorded for this sighting.",
     gate_tagline:"Sign in to sync your sightings across devices.",
     gate_email:"email", gate_pw:"password", gate_signin:"Sign in",
+    gate_guest:"Continue without logging in",
+    gate_guest_hint:"Local mode: sightings stay on this device only — no account, no sync, no leaderboard.",
+    guest_banner_title:"Local mode.",
+    guest_banner_body:"Your sightings are saved only on this device — they aren't synced and don't appear on the leaderboard.",
+    guest_signin:"Sign in to sync",
     gate_fail:"Sign-in failed: ",
     label_link:"Labeling →",
     toast_namefirst:"Enter a field name first", toast_namesaved:"Name saved.",
@@ -853,15 +870,31 @@ async function boot(){
   const {data}=await sb.auth.getSession();
   session=data.session;
   sb.auth.onAuthStateChange((_e,s)=>{ session=s; });
-  if(session){ enterApp(); } else { $("#gate").style.display="flex"; }
+  if(session){ enterApp(); }
+  else if(localStorage.getItem('fieldmark_guest')==='1'){ guest=true; enterApp(); }
+  else { $("#gate").style.display="flex"; }
 }
 $("#gSignin").onclick = async ()=>{
   const email=$("#gEmail").value.trim(), pw=$("#gPw").value;
   try{
     const {data,error}=await sb.auth.signInWithPassword({email,password:pw});
     if(error) throw error;
-    session=data.session; enterApp();
+    session=data.session; guest=false;
+    try{ localStorage.removeItem('fieldmark_guest'); }catch{}
+    enterApp();
   }catch(e){ $("#gateErr").textContent=t("gate_fail")+e.message; }
+};
+// local-only: skip the account entirely. Storage already falls back to
+// localStorage (namespaced 'anon') whenever there's no session, so nothing syncs.
+$("#gGuest").onclick = ()=>{
+  guest=true;
+  try{ localStorage.setItem('fieldmark_guest','1'); }catch{}
+  enterApp();
+};
+// from local mode, go back to the sign-in gate (keeps local data in the 'anon' cache)
+$("#guestSignInBtn").onclick = ()=>{
+  try{ localStorage.removeItem('fieldmark_guest'); }catch{}
+  location.reload();
 };
 $("#signOutBtn").onclick = async ()=>{
   await sb.auth.signOut();
@@ -896,12 +929,18 @@ $("#deleteDataBtn").onclick = async ()=>{
 
 async function enterApp(){
   $("#gate").style.display="none";
+  // local-only mode UI: show the banner, hide the sign-out (there's no account to leave)
+  $("#guestBanner").style.display = guest ? "block" : "none";
+  $("#signOutBtn").style.display  = guest ? "none"  : "block";
   await init();
 }
 
 // ============ init ============
 async function init(){
   me = await sget("me");
+  // guest (or a first-run with no cached profile) has no account name yet
+  if(!me) me = { id:(session?.user?.id||'anon'),
+                 name:(session ? (session.user.email||'naturalist').split('@')[0] : (LANG==='fi'?'Vieras':'Guest')) };
   log = await sget("log") || {points:0, finds:[], species:{}, cells:{}, quests:{}};
   applyStaticI18n();
   renderAll();
@@ -931,7 +970,7 @@ async function init(){
 $("#saveName").onclick = async ()=>{
   const n=$("#nameInput").value.trim();
   if(!n){ toast(t("toast_namefirst")); return; }
-  me={id:session.user.id, name:n};
+  me={id:(session?.user?.id||me?.id||'anon'), name:n};
   lset("me", me); await pushBoard(); renderAll();
   toast(t("toast_namesaved"));
 };
@@ -1982,6 +2021,11 @@ function applyStaticI18n(){
   setPlaceholder("#gEmail", t("gate_email"));
   setPlaceholder("#gPw", t("gate_pw"));
   setText("#gSignin", t("gate_signin"));
+  setText("#gGuest", t("gate_guest"));
+  setText("#gGuestHint", t("gate_guest_hint"));
+  setText("#guestBannerTitle", t("guest_banner_title"));
+  setText("#guestBannerBody", t("guest_banner_body"));
+  setText("#guestSignInBtn", t("guest_signin"));
   // header
   setText("header .eyebrow", t("eyebrow"));
   const statL = document.querySelectorAll(".ribbon .stat .l");

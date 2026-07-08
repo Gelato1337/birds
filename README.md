@@ -5,8 +5,31 @@ what it is, right there in the browser, no server round-trip. Log it, rack up po
 chase missions, and compete with whoever you've roped into spotting with you. 313
 species, birds and mammals.
 
-PWA on GitHub Pages; Supabase handles the shared stuff (login, sightings, leaderboard).
-It's rate-limited, so you need an account to use it.
+PWA on GitHub Pages; Supabase handles the shared stuff (login, cross-device sync,
+leaderboard). You can also **continue without logging in** — local-only mode keeps
+every sighting in the device's cache and never touches a server.
+
+## Run your own
+
+The app is a static PWA — serve `index.html` from anywhere (GitHub Pages works).
+For login + sync + leaderboard, spin up a free Supabase project and run the three
+SQL scripts in [`db/`](db/); full walkthrough in [`db/SETUP.md`](db/SETUP.md). Skip
+all of it and use local-only mode if you just want to try it.
+
+## Screenshots
+
+<table>
+  <tr>
+    <td align="center"><img src="docs/screenshots/spot.png" width="220" alt="Spot — photo species ID"><br><sub><b>Spot</b> — photo → species ID</sub></td>
+    <td align="center"><img src="docs/screenshots/sound.png" width="220" alt="Sound ID"><br><sub><b>Sound</b> — record a call → BirdNET</sub></td>
+    <td align="center"><img src="docs/screenshots/journal.png" width="220" alt="Journal"><br><sub><b>Journal</b> — your recorded species</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/quests.png" width="220" alt="Quests"><br><sub><b>Quests</b> — missions & assignments</sub></td>
+    <td align="center"><img src="docs/screenshots/map.png" width="220" alt="Map"><br><sub><b>Map</b> — where you've spotted</sub></td>
+    <td align="center"><img src="docs/screenshots/species-page.png" width="220" alt="Species page"><br><sub><b>Species page</b> — photo, call, stats, map</sub></td>
+  </tr>
+</table>
 
 ## What you can do
 

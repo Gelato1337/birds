@@ -1,6 +1,6 @@
 # local dev / pipeline scripts (kept locally, not deployed)
 dev/
-
+dev_without_data/
 # heavy training data — lives on LUMI, regenerable
 dataset/
 dataset.zip
