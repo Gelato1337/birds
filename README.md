@@ -2,7 +2,7 @@
 
 Point your phone at a Finnish bird or mammal — or record its call — and it tells you
 what it is, right there in the browser, no server round-trip. Log it, rack up points,
-chase missions, and compete with whoever you've roped into spotting with you. 313
+chase missions, and compete with whoever you've roped into spotting with you. 311
 species, birds and mammals.
 
 PWA on GitHub Pages; Supabase handles the shared stuff (login, cross-device sync,
@@ -73,7 +73,7 @@ flowchart TD
   B -->|same photo in 2 species' piles| M["Hand-label:<br/>which box is which animal"]
   M --> D
   D --> E["Augment<br/>flip · colour · scale · mosaic"]
-  E --> F["Train fieldmark-s (YOLO)<br/>313 species, GPU"]
+  E --> F["Train fieldmark-s (YOLO)<br/>311 species, GPU"]
   F --> G[Export to ONNX → runs in the browser]
 ```
 
@@ -84,14 +84,14 @@ Both run on-device in the browser (WebGPU, falling back to WASM):
 - **fieldmark-s** — *our* YOLO detector, trained on the dataset above. This is the one
   we build and retrain.
 - **BirdNET** — an off-the-shelf, already-pretrained bird-sound model; we just map its
-  output onto our 313 species.
+  output onto our 311 species.
 
 Hand-label more shared photos in the app → they feed back into the dataset → retrain
 fieldmark-s.
 
 ## Evaluation
 
-fieldmark is a **YOLO11 object detector trained on 313 Finnish species** (261 birds,
+fieldmark is a **YOLO11 object detector trained on 311 Finnish species** (259 birds,
 52 mammals). Because it is a detector rather than a whole-image classifier, it outputs a
 box *and* a species label for every animal it finds. One photo can therefore contain
 several individuals or several different species, and each one is identified and
@@ -130,8 +130,7 @@ next target for additional training data.
 
 <p align="center"><img src="docs/eval/top50_species.png" width="560" alt="Per-species mAP@0.5 for the 50 most-observed species"></p>
 
-<details>
-<summary>Per-species table (fieldmark-s-v3, ranked by observations in Finland)</summary>
+**Per-species results** (fieldmark-s-v3, ranked by observations in Finland):
 
 | # | Species | Finnish | Group | Val boxes | Precision | Recall | mAP@0.5 |
 |---|---|---|---|---|---|---|---|
@@ -165,6 +164,12 @@ next target for additional training data.
 | 28 | Eurasian Magpie | Harakka | Bird | 121 | 0.91 | 0.65 | 0.78 |
 | 29 | Canada Goose (canadensis Group) | Kanadanhanhi | Bird | 524 | 0.87 | 0.83 | 0.91 |
 | 30 | European Robin | Punarinta | Bird | 105 | 0.87 | 0.88 | 0.94 |
+
+<details>
+<summary>Species 31–50</summary>
+
+| # | Species | Finnish | Group | Val boxes | Precision | Recall | mAP@0.5 |
+|---|---|---|---|---|---|---|---|
 | 31 | European Greenfinch | Viherpeippo | Bird | 127 | 0.90 | 0.72 | 0.77 |
 | 32 | Eurasian Wigeon | Haapana | Bird | 223 | 0.91 | 0.81 | 0.87 |
 | 33 | Yellowhammer | Keltasirkku | Bird | 125 | 0.86 | 0.82 | 0.89 |
