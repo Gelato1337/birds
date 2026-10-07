@@ -89,6 +89,8 @@ Both run on-device in the browser (WebGPU, falling back to WASM):
 Hand-label more shared photos in the app → they feed back into the dataset → retrain
 fieldmark-s.
 
+The data, labeling and training scripts are in [`pipeline/`](pipeline/).
+
 ## Evaluation
 
 fieldmark is a **YOLO11 object detector trained on 311 Finnish species** (259 birds,
